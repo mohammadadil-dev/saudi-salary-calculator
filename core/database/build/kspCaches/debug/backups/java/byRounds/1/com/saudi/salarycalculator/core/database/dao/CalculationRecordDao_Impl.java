@@ -35,13 +35,15 @@ public final class CalculationRecordDao_Impl implements CalculationRecordDao {
 
   private final SharedSQLiteStatement __preparedStmtOfClearAll;
 
+  private final SharedSQLiteStatement __preparedStmtOfDeleteById;
+
   public CalculationRecordDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
     this.__insertionAdapterOfCalculationRecordEntity = new EntityInsertionAdapter<CalculationRecordEntity>(__db) {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR REPLACE INTO `calculation_records` (`id`,`type`,`title`,`inputSummary`,`resultSummary`,`createdAtMillis`) VALUES (?,?,?,?,?,?)";
+        return "INSERT OR REPLACE INTO `calculation_records` (`id`,`type`,`title`,`inputSummary`,`resultSummary`,`createdAtMillis`,`netSalaryInputSnapshot`) VALUES (?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -53,6 +55,11 @@ public final class CalculationRecordDao_Impl implements CalculationRecordDao {
         statement.bindString(4, entity.getInputSummary());
         statement.bindString(5, entity.getResultSummary());
         statement.bindLong(6, entity.getCreatedAtMillis());
+        if (entity.getNetSalaryInputSnapshot() == null) {
+          statement.bindNull(7);
+        } else {
+          statement.bindString(7, entity.getNetSalaryInputSnapshot());
+        }
       }
     };
     this.__preparedStmtOfClearAll = new SharedSQLiteStatement(__db) {
@@ -60,6 +67,14 @@ public final class CalculationRecordDao_Impl implements CalculationRecordDao {
       @NonNull
       public String createQuery() {
         final String _query = "DELETE FROM calculation_records";
+        return _query;
+      }
+    };
+    this.__preparedStmtOfDeleteById = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "DELETE FROM calculation_records WHERE id = ?";
         return _query;
       }
     };
@@ -108,6 +123,31 @@ public final class CalculationRecordDao_Impl implements CalculationRecordDao {
   }
 
   @Override
+  public Object deleteById(final String id, final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfDeleteById.acquire();
+        int _argIndex = 1;
+        _stmt.bindString(_argIndex, id);
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfDeleteById.release(_stmt);
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
   public Flow<List<CalculationRecordEntity>> observeAll() {
     final String _sql = "SELECT * FROM calculation_records ORDER BY createdAtMillis DESC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
@@ -123,6 +163,7 @@ public final class CalculationRecordDao_Impl implements CalculationRecordDao {
           final int _cursorIndexOfInputSummary = CursorUtil.getColumnIndexOrThrow(_cursor, "inputSummary");
           final int _cursorIndexOfResultSummary = CursorUtil.getColumnIndexOrThrow(_cursor, "resultSummary");
           final int _cursorIndexOfCreatedAtMillis = CursorUtil.getColumnIndexOrThrow(_cursor, "createdAtMillis");
+          final int _cursorIndexOfNetSalaryInputSnapshot = CursorUtil.getColumnIndexOrThrow(_cursor, "netSalaryInputSnapshot");
           final List<CalculationRecordEntity> _result = new ArrayList<CalculationRecordEntity>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final CalculationRecordEntity _item;
@@ -138,7 +179,13 @@ public final class CalculationRecordDao_Impl implements CalculationRecordDao {
             _tmpResultSummary = _cursor.getString(_cursorIndexOfResultSummary);
             final long _tmpCreatedAtMillis;
             _tmpCreatedAtMillis = _cursor.getLong(_cursorIndexOfCreatedAtMillis);
-            _item = new CalculationRecordEntity(_tmpId,_tmpType,_tmpTitle,_tmpInputSummary,_tmpResultSummary,_tmpCreatedAtMillis);
+            final String _tmpNetSalaryInputSnapshot;
+            if (_cursor.isNull(_cursorIndexOfNetSalaryInputSnapshot)) {
+              _tmpNetSalaryInputSnapshot = null;
+            } else {
+              _tmpNetSalaryInputSnapshot = _cursor.getString(_cursorIndexOfNetSalaryInputSnapshot);
+            }
+            _item = new CalculationRecordEntity(_tmpId,_tmpType,_tmpTitle,_tmpInputSummary,_tmpResultSummary,_tmpCreatedAtMillis,_tmpNetSalaryInputSnapshot);
             _result.add(_item);
           }
           return _result;

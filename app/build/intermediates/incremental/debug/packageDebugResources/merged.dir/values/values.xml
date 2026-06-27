@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">Saudi Salary Calculator</string>
-    <style name="Theme.SaudiSalaryCalculator" parent="@android:style/Theme.DeviceDefault">
-    <item name="android:windowNoTitle">true</item>
-  </style>
-</resources>

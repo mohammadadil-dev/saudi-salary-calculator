@@ -1,12 +1,18 @@
 package com.saudi.salarycalculator;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
+import android.view.View;
 import androidx.activity.ComponentActivity;
 import androidx.compose.runtime.Composable;
 import androidx.compose.ui.Modifier;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.saudi.salarycalculator.feature.calculator.SalaryViewModel;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @dagger.hilt.android.AndroidEntryPoint()

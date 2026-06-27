@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.saudi.salarycalculator.app-mergeDebugResources-70:/values-si/values-si.xml",
+            "outputFile": "com.saudi.salarycalculator.app-mergeDebugResources-72:/values-si/values-si.xml",
             "map": [
                 {
                     "source": "/Users/mdadil/.gradle/caches/8.12/transforms/9764b79d4dfb9c10e916159b4bad297a/transformed/material3-release/res/values-si/values-si.xml",

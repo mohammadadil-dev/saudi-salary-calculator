@@ -42,43 +42,81 @@ interface SavingsCalculatorService {
   fun calculate(input: SavingsInput): SavingsResult
 }
 
-class DefaultNetSalaryCalculatorService : NetSalaryCalculatorService {
+/**
+ * Placeholder, production-shaped calculation logic for Saudi net salary.
+ * Approximates GOSI (per GOSI rate inputs), unpaid leave / absence / loan deductions,
+ * overtime pay (1.5x hourly), and an End-of-Service (EOSB) estimate derived from the
+ * employee's joining date through the selected calculation month. Intended to be swapped
+ * for verified, law-accurate logic later without touching the UI layer.
+ */
+class DefaultNetSalaryCalculatorService(
+  private val endOfServiceCalculatorService: EndOfServiceCalculatorService = DefaultEndOfServiceCalculatorService()
+) : NetSalaryCalculatorService {
   override fun calculate(input: NetSalaryInput): NetSalaryResult {
-    val gross = input.basicSalary +
-      input.housingAllowance +
-      input.transportAllowance +
-      input.foodAllowance +
-      input.mobileAllowance +
-      input.otherAllowances
+    val allowances = input.housingAllowance + input.transportAllowance +
+      input.foodAllowance + input.mobileAllowance + input.otherAllowances
 
-    val gosiInput = GosiInput(
-      baseAmount = input.basicSalary + input.housingAllowance,
-      employeeType = input.employeeType,
-      rates = input.gosiRates
-    )
-    val gosi = DefaultGosiCalculatorService().calculate(gosiInput)
-    val net = gross - gosi.employeeContribution - input.deductions
-    val employerCost = gross + gosi.employerContribution
+    val hourlyRate = input.overtimeHourlyRateOverride ?: (input.basicSalary / 240.0)
+    val overtimePay = (hourlyRate * 1.5 * input.overtimeHours).toCurrency()
+    val earningsAddOns = (input.bonus + input.commission + overtimePay).toCurrency()
+
+    val gross = (input.basicSalary + allowances + earningsAddOns).toCurrency()
+
+    val gosi = if (input.gosiIncluded) {
+      DefaultGosiCalculatorService().calculate(
+        GosiInput(
+          baseAmount = input.basicSalary + input.housingAllowance,
+          employeeType = input.employeeType,
+          rates = input.gosiRates
+        )
+      )
+    } else {
+      GosiResult(employeeContribution = 0.0, employerContribution = 0.0, totalContribution = 0.0)
+    }
+
+    val unpaidLeaveDeduction = ((input.basicSalary / 30.0) * input.unpaidLeaveDays).toCurrency()
+    val totalDeductions = (
+      input.loanDeduction + input.absenceDeduction + unpaidLeaveDeduction +
+        input.deductions + gosi.employeeContribution
+      ).toCurrency()
+
+    val net = (gross - totalDeductions).toCurrency()
+    val employerCost = (gross + gosi.employerContribution).toCurrency()
+
+    val yearsOfService = yearsBetween(input.joiningDateMillis, input.calculationMonthMillis)
+    val eosb = endOfServiceCalculatorService.calculate(
+      EndOfServiceInput(
+        lastBasicSalary = input.basicSalary,
+        yearsOfService = yearsOfService,
+        resigned = input.resigned
+      )
+    ).rewardAmount
 
     return NetSalaryResult(
-      grossSalary = gross.toCurrency(),
+      grossSalary = gross,
+      totalAllowances = allowances.toCurrency(),
+      totalEarningsAddOns = earningsAddOns,
+      overtimePay = overtimePay,
+      totalDeductions = totalDeductions,
       employeeGosiAmount = gosi.employeeContribution,
       employerGosiAmount = gosi.employerContribution,
-      employerMonthlyCost = employerCost.toCurrency(),
-      netSalary = net.toCurrency(),
+      employerMonthlyCost = employerCost,
+      netSalary = net,
       yearlyGrossSalary = (gross * 12.0).toCurrency(),
       yearlyNetSalary = (net * 12.0).toCurrency(),
       yearlyEmployerCost = (employerCost * 12.0).toCurrency(),
-      smartSummary = "Your monthly take-home salary is SAR ${net.toCurrency().formatSar()}",
+      estimatedEosb = eosb,
+      yearsOfService = yearsOfService,
+      smartSummary = "Your monthly take-home salary is SAR ${net.formatSar()}",
       breakdown = listOf(
-        SalaryBreakdownItem("Basic", input.basicSalary.toCurrency(), 0xFF2563EB),
-        SalaryBreakdownItem("Housing", input.housingAllowance.toCurrency(), 0xFFFF8A3D),
-        SalaryBreakdownItem("Transport", input.transportAllowance.toCurrency(), 0xFF14B8A6),
-        SalaryBreakdownItem("Food", input.foodAllowance.toCurrency(), 0xFFEAB308),
-        SalaryBreakdownItem("Mobile", input.mobileAllowance.toCurrency(), 0xFF7C3AED),
-        SalaryBreakdownItem("Other", input.otherAllowances.toCurrency(), 0xFF0EA5E9),
-        SalaryBreakdownItem("GOSI", gosi.employeeContribution, 0xFFEF4444, isDeduction = true),
-        SalaryBreakdownItem("Deductions", input.deductions.toCurrency(), 0xFFB91C1C, isDeduction = true)
+        SalaryBreakdownItem("Basic salary", input.basicSalary.toCurrency(), 0xFF0F7A4D),
+        SalaryBreakdownItem("Housing allowance", input.housingAllowance.toCurrency(), 0xFF34C28E),
+        SalaryBreakdownItem("Transport allowance", input.transportAllowance.toCurrency(), 0xFF2DA8A8),
+        SalaryBreakdownItem("Food & other allowances", (input.foodAllowance + input.mobileAllowance + input.otherAllowances).toCurrency(), 0xFFC8932B),
+        SalaryBreakdownItem("Bonus & commission", (input.bonus + input.commission).toCurrency(), 0xFF8A6BD6),
+        SalaryBreakdownItem("Overtime pay", overtimePay, 0xFF1F9D8A),
+        SalaryBreakdownItem("GOSI (employee)", gosi.employeeContribution, 0xFFE5484D, isDeduction = true),
+        SalaryBreakdownItem("Loan, absence & leave", (input.loanDeduction + input.absenceDeduction + unpaidLeaveDeduction + input.deductions).toCurrency(), 0xFFB23A3A, isDeduction = true)
       )
     )
   }
@@ -141,13 +179,17 @@ class DefaultEndOfServiceCalculatorService : EndOfServiceCalculatorService {
 }
 
 class DefaultOfferComparisonCalculatorService(
-  private val netSalaryCalculatorService: NetSalaryCalculatorService
+  private val netSalaryCalculatorService: NetSalaryCalculatorService,
+  private val endOfServiceCalculatorService: EndOfServiceCalculatorService = DefaultEndOfServiceCalculatorService()
 ) : OfferComparisonCalculatorService {
   override fun calculate(offerA: OfferInput, offerB: OfferInput): OfferComparisonResult {
-    val scoreA = offerA.toScore(netSalaryCalculatorService)
-    val scoreB = offerB.toScore(netSalaryCalculatorService)
+    val scoreA = offerA.toScore(netSalaryCalculatorService, endOfServiceCalculatorService)
+    val scoreB = offerB.toScore(netSalaryCalculatorService, endOfServiceCalculatorService)
     val better = if (scoreB.netMonthlySalary >= scoreA.netMonthlySalary) scoreB else scoreA
     val diffMonthly = (scoreB.netMonthlySalary - scoreA.netMonthlySalary).toCurrency()
+    val percentageIncrease = if (scoreA.netMonthlySalary > 0.0) {
+      (((scoreB.netMonthlySalary - scoreA.netMonthlySalary) / scoreA.netMonthlySalary) * 100.0).toCurrency()
+    } else 0.0
     val acceptanceScore = ((scoreB.netMonthlySalary / scoreA.netMonthlySalary.coerceAtLeast(1.0)) * 65.0)
       .coerceIn(0.0, 100.0)
       .roundToInt()
@@ -158,6 +200,9 @@ class DefaultOfferComparisonCalculatorService(
       betterOfferTitle = better.title,
       monthlyDifference = diffMonthly,
       yearlyDifference = (diffMonthly * 12.0).toCurrency(),
+      percentageIncrease = percentageIncrease,
+      gosiMonthlyDifference = (scoreB.employeeGosiMonthly - scoreA.employeeGosiMonthly).toCurrency(),
+      eosbDifference = (scoreB.estimatedEosb - scoreA.estimatedEosb).toCurrency(),
       acceptanceScore = acceptanceScore,
       scoreLabel = when {
         acceptanceScore >= 85 -> "Strong offer"
@@ -182,7 +227,10 @@ class DefaultSavingsCalculatorService : SavingsCalculatorService {
   }
 }
 
-private fun OfferInput.toScore(netSalaryCalculatorService: NetSalaryCalculatorService): OfferScore {
+private fun OfferInput.toScore(
+  netSalaryCalculatorService: NetSalaryCalculatorService,
+  endOfServiceCalculatorService: EndOfServiceCalculatorService
+): OfferScore {
   val result = netSalaryCalculatorService.calculate(
     NetSalaryInput(
       basicSalary = basicSalary,
@@ -196,15 +244,27 @@ private fun OfferInput.toScore(netSalaryCalculatorService: NetSalaryCalculatorSe
       gosiRates = gosiRates
     )
   )
+  val eosb = endOfServiceCalculatorService.calculate(
+    EndOfServiceInput(lastBasicSalary = basicSalary, yearsOfService = yearsOfService, resigned = resigned)
+  ).rewardAmount
 
   return OfferScore(
     title = title,
     netMonthlySalary = result.netSalary,
     totalYearlyCompensation = result.yearlyNetSalary,
-    employerMonthlyCost = result.employerMonthlyCost
+    employerMonthlyCost = result.employerMonthlyCost,
+    employeeGosiMonthly = result.employeeGosiAmount,
+    estimatedEosb = eosb
   )
 }
 
 private fun Double.toCurrency(): Double = ((this * 100.0).roundToLong() / 100.0)
 
 private fun Double.formatSar(): String = "%,.2f".format(this)
+
+private fun yearsBetween(joiningMillis: Long?, calculationMonthMillis: Long?): Double {
+  if (joiningMillis == null) return 0.0
+  val end = calculationMonthMillis ?: System.currentTimeMillis()
+  val diffMillis = (end - joiningMillis).coerceAtLeast(0L)
+  return diffMillis / (1000.0 * 60.0 * 60.0 * 24.0 * 365.25)
+}

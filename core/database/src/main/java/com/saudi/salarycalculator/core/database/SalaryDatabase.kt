@@ -7,7 +7,7 @@ import com.saudi.salarycalculator.core.database.entity.CalculationRecordEntity
 
 @Database(
   entities = [CalculationRecordEntity::class],
-  version = 1,
+  version = 2,
   exportSchema = false
 )
 abstract class SalaryDatabase : RoomDatabase() {

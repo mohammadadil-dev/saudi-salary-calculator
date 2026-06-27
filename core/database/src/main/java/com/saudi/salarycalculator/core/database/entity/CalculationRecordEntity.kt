@@ -10,5 +10,8 @@ data class CalculationRecordEntity(
   val title: String,
   val inputSummary: String,
   val resultSummary: String,
-  val createdAtMillis: Long
+  val createdAtMillis: Long,
+  /** Delimited encoding of a NetSalaryInput snapshot (see OfflineFirstSalaryRepository), or null
+   * for records that don't support reopening into the wizard. */
+  val netSalaryInputSnapshot: String? = null
 )

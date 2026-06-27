@@ -1,55 +1,193 @@
 <resources>
-  <string name="feature_title">حاسبة الراتب السعودية</string>
-  <string name="tab_net">الصافي</string>
-  <string name="tab_gosi">التأمينات</string>
-  <string name="tab_overtime">العمل الإضافي</string>
-  <string name="tab_eos">نهاية الخدمة</string>
-  <string name="tab_offers">العروض</string>
-  <string name="calculate">احسب</string>
-  <string name="compare">قارن</string>
-  <string name="clear">مسح</string>
-  <string name="saved_calculations">الحسابات المحفوظة</string>
-  <string name="recent_calculations">آخر العمليات</string>
-  <string name="no_saved_records">لا توجد سجلات محفوظة</string>
-  <string name="result">النتيجة</string>
-  <string name="best_offer">أفضل عرض</string>
-  <string name="resigned">استقالة</string>
-  <string name="net_salary">صافي الراتب</string>
-  <string name="gosi">التأمينات</string>
-  <string name="overtime">العمل الإضافي</string>
-  <string name="end_of_service">نهاية الخدمة</string>
-  <string name="offer_a">العرض أ</string>
-  <string name="offer_b">العرض ب</string>
-  <string name="basic_salary">الراتب الأساسي</string>
-  <string name="housing_allowance">بدل السكن</string>
-  <string name="transport_allowance">بدل النقل</string>
-  <string name="other_allowances">بدلات أخرى</string>
-  <string name="deductions">الاستقطاعات</string>
-  <string name="gosi_rate">نسبة التأمينات (مثال 0.10)</string>
-  <string name="base_amount">المبلغ الأساسي</string>
-  <string name="employee_rate">نسبة الموظف</string>
-  <string name="employer_rate">نسبة صاحب العمل</string>
-  <string name="monthly_salary">الراتب الشهري</string>
-  <string name="overtime_hours">ساعات إضافية</string>
-  <string name="multiplier">المعامل</string>
-  <string name="monthly_working_hours">ساعات العمل الشهرية</string>
-  <string name="last_basic_salary">آخر راتب أساسي</string>
-  <string name="years_of_service">سنوات الخدمة</string>
-  <string name="title">الاسم</string>
-  <string name="basic">أساسي</string>
-  <string name="housing">سكن</string>
-  <string name="transport">نقل</string>
-  <string name="other">أخرى</string>
-  <string name="gross">الإجمالي</string>
-  <string name="net">الصافي</string>
-  <string name="employee">الموظف</string>
-  <string name="employer">صاحب العمل</string>
-  <string name="total">الإجمالي</string>
-  <string name="hourly_rate">الأجر بالساعة</string>
-  <string name="overtime_rate">سعر الساعة الإضافية</string>
-  <string name="overtime_pay">إجمالي الإضافي</string>
-  <string name="eligible_years">السنوات المحتسبة</string>
-  <string name="reward">المكافأة</string>
-  <string name="monthly_difference">الفرق الشهري</string>
-  <string name="yearly_difference">الفرق السنوي</string>
+  <!-- Common -->
+  <string name="common_currency_sar">ريال</string>
+  <string name="common_monthly">شهري</string>
+  <string name="common_yearly">سنوي</string>
+  <string name="common_yes">نعم</string>
+  <string name="common_no">لا</string>
+  <string name="common_optional">اختياري</string>
+  <string name="common_next">التالي</string>
+  <string name="common_back">رجوع</string>
+  <string name="common_done">تم</string>
+  <string name="common_edit">تعديل</string>
+  <string name="common_delete">حذف</string>
+  <string name="common_save">حفظ</string>
+  <string name="common_share">مشاركة</string>
+  <string name="common_retry">إعادة المحاولة</string>
+  <string name="common_cancel">إلغاء</string>
+  <string name="common_confirm">تأكيد</string>
+  <string name="common_today">اليوم</string>
+  <string name="common_error_required">هذا الحقل مطلوب</string>
+  <string name="common_error_invalid_number">أدخل رقماً صحيحاً</string>
+  <string name="common_loading">جاري الحساب…</string>
+  <string name="common_step_of">الخطوة %1$d من %2$d</string>
+
+  <!-- Splash -->
+  <string name="splash_app_name">حاسبة الراتب السعودية</string>
+  <string name="splash_tagline">بدون ضريبة دخل. تقارير جاهزة بالريال.</string>
+
+  <!-- Bottom navigation -->
+  <string name="nav_home">الرئيسية</string>
+  <string name="nav_calculator">الحاسبة</string>
+  <string name="nav_result">النتيجة</string>
+  <string name="nav_compare">المقارنة</string>
+  <string name="nav_settings">الإعدادات</string>
+
+  <!-- Home -->
+  <string name="home_greeting_morning">مرحباً! 👋</string>
+  <string name="home_greeting_afternoon">أهلاً بك! 👋</string>
+  <string name="home_greeting_evening">مرحباً بعودتك! 👋</string>
+  <string name="home_subtitle">هذه لقطة سريعة لراتبك</string>
+  <string name="home_quick_summary_title">آخر صافي راتب</string>
+  <string name="home_quick_summary_empty">احسب راتبك الأول لترى الملخص هنا</string>
+  <string name="home_start_calculation">ابدأ الحساب</string>
+  <string name="home_recent_calculations">الحسابات الأخيرة</string>
+  <string name="home_no_recent_calculations">لا توجد حسابات بعد. ستظهر هنا بعد أول عملية حساب.</string>
+  <string name="home_insights_title">نصائح حول الراتب</string>
+  <string name="home_insight_gosi_title">مساهمة التأمينات الاجتماعية</string>
+  <string name="home_insight_gosi_body">يساهم الموظف السعودي بنسبة 9.75% من الراتب الأساسي وبدل السكن شهرياً في التأمينات الاجتماعية.</string>
+  <string name="home_insight_eosb_title">مكافأة نهاية الخدمة تزداد مع الوقت</string>
+  <string name="home_insight_eosb_body">تُحتسب نصف شهر عن كل سنة من أول خمس سنوات، ثم شهر كامل عن كل سنة بعد ذلك.</string>
+  <string name="home_insight_tax_title">بدون ضريبة دخل شخصي</string>
+  <string name="home_insight_tax_body">لا تفرض السعودية ضريبة دخل على الرواتب، فصافي راتبك هو الإجمالي مطروحاً منه التأمينات والاستقطاعات.</string>
+  <string name="home_view_all">عرض الكل</string>
+
+  <!-- Calculator wizard steps -->
+  <string name="step_basic_salary">الراتب الأساسي</string>
+  <string name="step_allowances">البدلات</string>
+  <string name="step_deductions">الاستقطاعات</string>
+  <string name="step_employment_details">تفاصيل الوظيفة</string>
+  <string name="step_gosi_eosb">التأمينات ونهاية الخدمة</string>
+  <string name="step_review">المراجعة والنتيجة</string>
+
+  <!-- Step 1: Basic salary -->
+  <string name="label_employee_name">اسم الموظف</string>
+  <string name="hint_employee_name">مثال: محمد العتيبي</string>
+  <string name="label_job_title">المسمى الوظيفي</string>
+  <string name="hint_job_title">مثال: مهندس برمجيات</string>
+  <string name="label_basic_salary">الراتب الأساسي</string>
+  <string name="helper_basic_salary">راتبك الأساسي الثابت شهرياً قبل البدلات</string>
+
+  <!-- Step 2: Allowances -->
+  <string name="label_housing_allowance">بدل السكن</string>
+  <string name="label_transport_allowance">بدل النقل</string>
+  <string name="label_other_allowance">بدلات أخرى</string>
+  <string name="label_bonus">مكافأة</string>
+  <string name="label_commission">عمولة</string>
+  <string name="section_overtime">العمل الإضافي</string>
+  <string name="label_overtime_hours">ساعات العمل الإضافي</string>
+  <string name="label_overtime_rate_override">سعر الساعة المخصص</string>
+  <string name="helper_overtime_rate_override">اتركه فارغاً للحساب التلقائي من الراتب الأساسي ÷ 240 ساعة × 1.5</string>
+
+  <!-- Step 3: Deductions -->
+  <string name="label_loan_deduction">استقطاع القرض</string>
+  <string name="label_absence_deduction">استقطاع الغياب</string>
+  <string name="label_unpaid_leave_days">أيام الإجازة بدون راتب</string>
+  <string name="helper_unpaid_leave_days">يتم الاستقطاع بمعدل الراتب الأساسي ÷ 30 لليوم</string>
+
+  <!-- Step 4: Employment details -->
+  <string name="label_nationality">الجنسية</string>
+  <string name="option_saudi">سعودي</string>
+  <string name="option_non_saudi">غير سعودي</string>
+  <string name="label_employment_sector">القطاع الوظيفي</string>
+  <string name="option_private">خاص</string>
+  <string name="option_government">حكومي</string>
+  <string name="label_contract_type">نوع العقد</string>
+  <string name="option_limited">محدد المدة</string>
+  <string name="option_unlimited">غير محدد المدة</string>
+  <string name="label_joining_date">تاريخ الالتحاق</string>
+  <string name="label_calculation_month">شهر الحساب</string>
+  <string name="action_pick_date">اختر التاريخ</string>
+  <string name="action_pick_month">اختر الشهر</string>
+
+  <!-- Step 5: GOSI & EOSB -->
+  <string name="label_gosi_included">تضمين التأمينات الاجتماعية</string>
+  <string name="helper_gosi_included">استقطاع مساهمة الموظف في التأمينات تلقائياً من صافي الراتب</string>
+  <string name="label_resigned">المغادرة عن طريق الاستقالة؟</string>
+  <string name="helper_resigned">يؤثر على نسبة مكافأة نهاية الخدمة</string>
+  <string name="label_years_of_service">سنوات الخدمة</string>
+  <string name="preview_gosi_employee">تأمينات الموظف</string>
+  <string name="preview_gosi_employer">تأمينات صاحب العمل</string>
+  <string name="preview_eosb_estimate">تقدير مكافأة نهاية الخدمة</string>
+
+  <!-- Step 6: Review -->
+  <string name="review_title">راجع تفاصيلك</string>
+  <string name="review_subtitle">تأكد من كل شيء قبل الحساب</string>
+  <string name="review_section_basic">الراتب الأساسي</string>
+  <string name="review_section_allowances">البدلات والمكاسب</string>
+  <string name="review_section_deductions">الاستقطاعات</string>
+  <string name="review_section_employment">تفاصيل الوظيفة</string>
+  <string name="review_section_gosi_eosb">التأمينات ونهاية الخدمة</string>
+  <string name="action_calculate_net_salary">احسب صافي الراتب</string>
+
+  <!-- Result screen -->
+  <string name="result_title">لوحة النتائج</string>
+  <string name="result_gross_salary">الراتب الإجمالي</string>
+  <string name="result_total_allowances">إجمالي البدلات</string>
+  <string name="result_total_deductions">إجمالي الاستقطاعات</string>
+  <string name="result_gosi_employee">تأمينات الموظف</string>
+  <string name="result_gosi_employer">تأمينات صاحب العمل</string>
+  <string name="result_overtime_amount">مبلغ العمل الإضافي</string>
+  <string name="result_eosb_estimate">تقدير مكافأة نهاية الخدمة</string>
+  <string name="result_net_salary">صافي الراتب</string>
+  <string name="result_breakdown_title">تفاصيل الراتب</string>
+  <string name="result_bar_chart_title">المكاسب مقابل الاستقطاعات</string>
+  <string name="result_bar_earnings">المكاسب</string>
+  <string name="result_bar_deductions">الاستقطاعات</string>
+  <string name="result_progress_title">الصافي من الإجمالي</string>
+  <string name="result_empty_title">لا توجد نتيجة بعد</string>
+  <string name="result_empty_body">شغّل الحاسبة لترى تفاصيل راتبك هنا</string>
+  <string name="action_view_payslip">عرض قسيمة الراتب</string>
+  <string name="action_compare_offer">قارن مع عرض آخر</string>
+
+  <!-- Payslip -->
+  <string name="payslip_title">معاينة قسيمة الراتب</string>
+  <string name="payslip_employee_details">تفاصيل الموظف</string>
+  <string name="payslip_employee_name">الموظف</string>
+  <string name="payslip_job_title">المسمى الوظيفي</string>
+  <string name="payslip_nationality">الجنسية</string>
+  <string name="payslip_sector">القطاع</string>
+  <string name="payslip_contract_type">العقد</string>
+  <string name="payslip_joining_date">تاريخ الالتحاق</string>
+  <string name="payslip_calculation_month">شهر الحساب</string>
+  <string name="payslip_earnings">المكاسب</string>
+  <string name="payslip_allowances">البدلات</string>
+  <string name="payslip_deductions">الاستقطاعات</string>
+  <string name="payslip_gosi">التأمينات الاجتماعية</string>
+  <string name="payslip_employer_contribution">مساهمة صاحب العمل</string>
+  <string name="payslip_net_salary">صافي الراتب</string>
+  <string name="action_export_pdf">تصدير PDF</string>
+  <string name="action_save_calculation">حفظ الحساب</string>
+  <string name="payslip_saved_confirmation">تم حفظ الحساب في السجل</string>
+  <string name="payslip_exported_confirmation">تم تصدير PDF</string>
+
+  <!-- Comparison -->
+  <string name="comparison_title">مقارنة العروض</string>
+  <string name="comparison_current_offer">الراتب الحالي</string>
+  <string name="comparison_new_offer">الراتب المتوقع</string>
+  <string name="action_compare">قارن العروض</string>
+  <string name="comparison_net_increase">الزيادة الصافية</string>
+  <string name="comparison_percentage_increase">نسبة الزيادة</string>
+  <string name="comparison_gosi_difference">الفرق في التأمينات</string>
+  <string name="comparison_eosb_difference">الفرق في مكافأة نهاية الخدمة</string>
+  <string name="comparison_monthly_impact">الأثر الشهري</string>
+  <string name="comparison_yearly_impact">الأثر السنوي</string>
+  <string name="comparison_better_offer">العرض الأفضل</string>
+  <string name="comparison_empty_title">أضف العرضين للمقارنة</string>
+
+  <!-- Settings -->
+  <string name="settings_title">الإعدادات</string>
+  <string name="settings_language">اللغة</string>
+  <string name="settings_dark_mode">الوضع الداكن</string>
+  <string name="settings_gosi_rates">نسب التأمينات الاجتماعية</string>
+  <string name="settings_saudi_employee_rate">نسبة الموظف السعودي</string>
+  <string name="settings_saudi_employer_rate">نسبة صاحب العمل للسعودي</string>
+  <string name="settings_expat_employee_rate">نسبة الموظف غير السعودي</string>
+  <string name="settings_expat_employer_rate">نسبة مخاطر صاحب العمل لغير السعودي</string>
+  <string name="settings_history">السجل</string>
+  <string name="settings_clear_history">مسح السجل</string>
+
+  <!-- Generic empty / error / loading states -->
+  <string name="state_error_title">حدث خطأ ما</string>
+  <string name="state_error_body">لم نتمكن من إكمال هذا الإجراء. حاول مرة أخرى.</string>
 </resources>

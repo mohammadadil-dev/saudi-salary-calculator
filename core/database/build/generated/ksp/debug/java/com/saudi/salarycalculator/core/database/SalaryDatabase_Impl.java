@@ -33,12 +33,12 @@ public final class SalaryDatabase_Impl extends SalaryDatabase {
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(1) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(2) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS `calculation_records` (`id` TEXT NOT NULL, `type` TEXT NOT NULL, `title` TEXT NOT NULL, `inputSummary` TEXT NOT NULL, `resultSummary` TEXT NOT NULL, `createdAtMillis` INTEGER NOT NULL, PRIMARY KEY(`id`))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `calculation_records` (`id` TEXT NOT NULL, `type` TEXT NOT NULL, `title` TEXT NOT NULL, `inputSummary` TEXT NOT NULL, `resultSummary` TEXT NOT NULL, `createdAtMillis` INTEGER NOT NULL, `netSalaryInputSnapshot` TEXT, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1f60d591bc40ef458ae0fd0aa944117d')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '32a7e58a75668f886340b02be9aa746d')");
       }
 
       @Override
@@ -87,13 +87,14 @@ public final class SalaryDatabase_Impl extends SalaryDatabase {
       @NonNull
       public RoomOpenHelper.ValidationResult onValidateSchema(
           @NonNull final SupportSQLiteDatabase db) {
-        final HashMap<String, TableInfo.Column> _columnsCalculationRecords = new HashMap<String, TableInfo.Column>(6);
+        final HashMap<String, TableInfo.Column> _columnsCalculationRecords = new HashMap<String, TableInfo.Column>(7);
         _columnsCalculationRecords.put("id", new TableInfo.Column("id", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCalculationRecords.put("type", new TableInfo.Column("type", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCalculationRecords.put("title", new TableInfo.Column("title", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCalculationRecords.put("inputSummary", new TableInfo.Column("inputSummary", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCalculationRecords.put("resultSummary", new TableInfo.Column("resultSummary", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCalculationRecords.put("createdAtMillis", new TableInfo.Column("createdAtMillis", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsCalculationRecords.put("netSalaryInputSnapshot", new TableInfo.Column("netSalaryInputSnapshot", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysCalculationRecords = new HashSet<TableInfo.ForeignKey>(0);
         final HashSet<TableInfo.Index> _indicesCalculationRecords = new HashSet<TableInfo.Index>(0);
         final TableInfo _infoCalculationRecords = new TableInfo("calculation_records", _columnsCalculationRecords, _foreignKeysCalculationRecords, _indicesCalculationRecords);
@@ -105,7 +106,7 @@ public final class SalaryDatabase_Impl extends SalaryDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "1f60d591bc40ef458ae0fd0aa944117d", "b7d61a784ab2cf4daa5746ae67340f0f");
+    }, "32a7e58a75668f886340b02be9aa746d", "e2f335fc51b07a630da6744b6b079bcc");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;

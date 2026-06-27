@@ -17,4 +17,7 @@ interface CalculationRecordDao {
 
   @Query("DELETE FROM calculation_records")
   suspend fun clearAll()
+
+  @Query("DELETE FROM calculation_records WHERE id = :id")
+  suspend fun deleteById(id: String)
 }

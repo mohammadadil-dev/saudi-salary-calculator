@@ -31,7 +31,12 @@ object StorageModule {
   @Provides
   @Singleton
   fun provideSalaryDatabase(@ApplicationContext context: Context): SalaryDatabase =
-    Room.databaseBuilder(context, SalaryDatabase::class.java, "salary_database").build()
+    Room.databaseBuilder(context, SalaryDatabase::class.java, "salary_database")
+      // No formal Migration is defined yet for the v1 -> v2 schema change (added
+      // netSalaryInputSnapshot column); destructively resetting history on schema bumps is an
+      // acceptable trade-off pre-release rather than crashing existing installs outright.
+      .fallbackToDestructiveMigration()
+      .build()
 
   @Provides
   fun provideCalculationRecordDao(database: SalaryDatabase): CalculationRecordDao =

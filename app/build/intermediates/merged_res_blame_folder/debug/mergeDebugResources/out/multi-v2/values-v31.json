@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.saudi.salarycalculator.app-mergeDebugResources-72:/values-v31/values-v31.xml",
+            "map": [
+                {
+                    "source": "/Users/mdadil/.gradle/caches/8.12/transforms/daf06fe8f6c33ad996b89a4ea61dc373/transformed/core-splashscreen-1.0.1/res/values-v31/values-v31.xml",
+                    "from": {
+                        "startLines": "2,9",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,473",
+                        "endLines": "8,13",
+                        "endColumns": "12,12",
+                        "endOffsets": "468,697"
+                    }
+                }
+            ]
+        }
+    ]
+}

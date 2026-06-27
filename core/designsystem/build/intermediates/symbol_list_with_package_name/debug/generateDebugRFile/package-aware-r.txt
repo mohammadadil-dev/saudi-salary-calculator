@@ -1,0 +1,2 @@
+com.saudi.salarycalculator.core.designsystem
+drawable ic_riyal

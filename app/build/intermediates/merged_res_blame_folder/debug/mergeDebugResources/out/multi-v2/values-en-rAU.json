@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.saudi.salarycalculator.app-mergeDebugResources-70:/values-en-rAU/values-en-rAU.xml",
+            "outputFile": "com.saudi.salarycalculator.app-mergeDebugResources-72:/values-en-rAU/values-en-rAU.xml",
             "map": [
                 {
                     "source": "/Users/mdadil/.gradle/caches/8.12/transforms/d1fe2d714c889027b67bbcf20d7e2147/transformed/browser-1.4.0/res/values-en-rAU/values-en-rAU.xml",

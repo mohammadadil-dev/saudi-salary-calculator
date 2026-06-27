@@ -1,5 +1,12 @@
 R_DEF: Internal format may change without notice
 local
+drawable ic_launcher_background
+drawable ic_launcher_foreground
+drawable splash_icon
+mipmap ic_launcher
+mipmap ic_launcher_preview_1024
+mipmap ic_launcher_round
 string app_name
 style Theme.SaudiSalaryCalculator
+style Theme.SaudiSalaryCalculator.Main
 xml file_paths

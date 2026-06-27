@@ -26,9 +26,12 @@ interface SalaryRepository {
   fun observeHistory(): Flow<List<CalculationRecord>>
   suspend fun saveRecord(record: CalculationRecord)
   suspend fun clearHistory()
+  suspend fun deleteRecord(id: String)
 
   fun observeLanguage(): Flow<String>
   suspend fun setLanguage(language: String)
   fun observeSelectedTab(): Flow<Int>
   suspend fun setSelectedTab(index: Int)
+  fun observeDarkMode(): Flow<Boolean>
+  suspend fun setDarkMode(enabled: Boolean)
 }

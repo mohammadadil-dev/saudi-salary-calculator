@@ -1,31 +1,32 @@
 -- Merging decision tree log ---
 meta-data#com.google.android.gms.ads.APPLICATION_ID
-INJECTED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:14:5-16:41
+INJECTED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:16:5-18:41
 	android:value
 		INJECTED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml
-		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:16:7-38
+		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:18:7-38
 	android:name
-		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:15:7-63
+		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:17:7-63
 provider#androidx.core.content.FileProvider
-INJECTED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:27:5-35:16
+INJECTED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:29:5-37:16
 	android:grantUriPermissions
-		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:31:7-41
+		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:33:7-41
 	android:authorities
 		INJECTED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml
-		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:29:7-58
+		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:31:7-58
 	android:exported
-		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:30:7-31
+		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:32:7-31
 	android:name
-		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:28:7-56
+		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:30:7-56
 manifest
-ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:2:1-38:12
-INJECTED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:2:1-38:12
-INJECTED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:2:1-38:12
-INJECTED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:2:1-38:12
+ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:2:1-40:12
+INJECTED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:2:1-40:12
+INJECTED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:2:1-40:12
+INJECTED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:2:1-40:12
 MERGED from [:feature:calculator] /Users/mdadil/Documents/Playground/android/feature/calculator/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
 MERGED from [:core:data] /Users/mdadil/Documents/Playground/android/core/data/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
 MERGED from [:core:database] /Users/mdadil/Documents/Playground/android/core/database/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
 MERGED from [:core:preferences] /Users/mdadil/Documents/Playground/android/core/preferences/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
+MERGED from [:core:designsystem] /Users/mdadil/Documents/Playground/android/core/designsystem/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.hilt:hilt-navigation-compose:1.2.0] /Users/mdadil/.gradle/caches/8.12/transforms/1abbccd35527d5a25cc04125a4dc037e/transformed/hilt-navigation-compose-1.2.0/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.hilt:hilt-navigation:1.2.0] /Users/mdadil/.gradle/caches/8.12/transforms/0a79c8b2e829e5692685f4b64419161b/transformed/hilt-navigation-1.2.0/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.navigation:navigation-common:2.7.7] /Users/mdadil/.gradle/caches/8.12/transforms/7a5d968515dcee5d409f943fea71ff44/transformed/navigation-common-2.7.7/AndroidManifest.xml:17:1-22:12
@@ -50,6 +51,7 @@ MERGED from [androidx.activity:activity:1.9.0] /Users/mdadil/.gradle/caches/8.12
 MERGED from [androidx.compose.material3:material3-android:1.2.1] /Users/mdadil/.gradle/caches/8.12/transforms/9764b79d4dfb9c10e916159b4bad297a/transformed/material3-release/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.compose.material:material-ripple-android:1.6.8] /Users/mdadil/.gradle/caches/8.12/transforms/74ea9a0251b2d94423dc45a6fd5126b7/transformed/material-ripple-release/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.compose.material:material-icons-core-android:1.6.8] /Users/mdadil/.gradle/caches/8.12/transforms/1c023be1727c1e01579800384831514c/transformed/material-icons-core-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-icons-extended-android:1.6.8] /Users/mdadil/.gradle/caches/8.12/transforms/eca99b4a5d117563a26312a0d0544cf3/transformed/material-icons-extended-release/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.compose.material:material-android:1.6.8] /Users/mdadil/.gradle/caches/8.12/transforms/53906c73b02c80b30765a29ee080c6ab/transformed/material-release/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.compose.animation:animation-core-android:1.6.8] /Users/mdadil/.gradle/caches/8.12/transforms/ed92566db6993bff424f3af366c0d48d/transformed/animation-core-release/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.compose.animation:animation-android:1.6.8] /Users/mdadil/.gradle/caches/8.12/transforms/9d8e6617893e25a2327f252faf502243/transformed/animation-release/AndroidManifest.xml:2:1-7:12
@@ -94,6 +96,7 @@ MERGED from [androidx.lifecycle:lifecycle-viewmodel-compose-android:2.8.2] /User
 MERGED from [androidx.compose.ui:ui-android:1.6.8] /Users/mdadil/.gradle/caches/8.12/transforms/07583f52f6fbf9f78e3e400b204d4a79/transformed/ui-release/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.activity:activity-ktx:1.9.0] /Users/mdadil/.gradle/caches/8.12/transforms/6e24f22ed4bff4513e1397b575be64ed/transformed/activity-ktx-1.9.0/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.activity:activity-compose:1.9.0] /Users/mdadil/.gradle/caches/8.12/transforms/8b207ab4eb8ed1ac86579a953866fc2e/transformed/activity-compose-1.9.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.core:core-splashscreen:1.0.1] /Users/mdadil/.gradle/caches/8.12/transforms/daf06fe8f6c33ad996b89a4ea61dc373/transformed/core-splashscreen-1.0.1/AndroidManifest.xml:17:1-24:12
 MERGED from [:core:calculator] /Users/mdadil/Documents/Playground/android/core/calculator/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
 MERGED from [:core:model] /Users/mdadil/Documents/Playground/android/core/model/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.room:room-runtime:2.6.1] /Users/mdadil/.gradle/caches/8.12/transforms/d5b23c3e1bbf64740db83aa3d8f5f7df/transformed/room-runtime-2.6.1/AndroidManifest.xml:17:1-31:12
@@ -140,8 +143,8 @@ MERGED from [androidx.work:work-runtime:2.7.0] /Users/mdadil/.gradle/caches/8.12
 	android:name
 		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:5:20-74
 application
-ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:7:3-36:17
-INJECTED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:7:3-36:17
+ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:7:3-38:17
+INJECTED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:7:3-38:17
 MERGED from [com.google.android.gms:play-services-ads-lite:23.2.0] /Users/mdadil/.gradle/caches/8.12/transforms/c9272d0ea8395f8a0b17fe8c15995c62/transformed/play-services-ads-lite-23.2.0/AndroidManifest.xml:53:5-93:19
 MERGED from [com.google.android.gms:play-services-ads-lite:23.2.0] /Users/mdadil/.gradle/caches/8.12/transforms/c9272d0ea8395f8a0b17fe8c15995c62/transformed/play-services-ads-lite-23.2.0/AndroidManifest.xml:53:5-93:19
 MERGED from [com.google.android.gms:play-services-ads-base:23.2.0] /Users/mdadil/.gradle/caches/8.12/transforms/8416304963340d4e439941662790c553/transformed/play-services-ads-base-23.2.0/AndroidManifest.xml:7:5-20
@@ -183,37 +186,41 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/mdad
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.13.1] /Users/mdadil/.gradle/caches/8.12/transforms/181d8743e96640141f272392239e62a8/transformed/core-1.13.1/AndroidManifest.xml:28:18-86
 	android:supportsRtl
-		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:11:5-31
+		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:13:5-31
 	android:label
 		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:10:5-37
+	android:roundIcon
+		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:12:5-50
+	android:icon
+		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:11:5-39
 	android:allowBackup
 		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:9:5-31
 	android:theme
-		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:12:5-55
+		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:14:5-55
 	android:name
 		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:8:5-40
 activity#com.saudi.salarycalculator.MainActivity
-ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:18:5-25:16
+ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:20:5-27:16
 	android:exported
-		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:20:7-30
+		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:22:7-30
 	android:name
-		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:19:7-35
+		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:21:7-35
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:21:7-24:23
+ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:23:7-26:23
 action#android.intent.action.MAIN
-ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:22:9-61
+ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:24:9-61
 	android:name
-		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:22:17-58
+		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:24:17-58
 category#android.intent.category.LAUNCHER
-ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:23:9-69
+ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:25:9-69
 	android:name
-		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:23:19-66
+		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:25:19-66
 meta-data#android.support.FILE_PROVIDER_PATHS
-ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:32:7-34:46
+ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:34:7-36:46
 	android:resource
-		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:34:9-43
+		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:36:9-43
 	android:name
-		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:33:9-59
+		ADDED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml:35:9-59
 uses-sdk
 INJECTED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /Users/mdadil/Documents/Playground/android/app/src/main/AndroidManifest.xml
@@ -226,6 +233,8 @@ MERGED from [:core:database] /Users/mdadil/Documents/Playground/android/core/dat
 MERGED from [:core:database] /Users/mdadil/Documents/Playground/android/core/database/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
 MERGED from [:core:preferences] /Users/mdadil/Documents/Playground/android/core/preferences/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
 MERGED from [:core:preferences] /Users/mdadil/Documents/Playground/android/core/preferences/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:core:designsystem] /Users/mdadil/Documents/Playground/android/core/designsystem/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
+MERGED from [:core:designsystem] /Users/mdadil/Documents/Playground/android/core/designsystem/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
 MERGED from [androidx.hilt:hilt-navigation-compose:1.2.0] /Users/mdadil/.gradle/caches/8.12/transforms/1abbccd35527d5a25cc04125a4dc037e/transformed/hilt-navigation-compose-1.2.0/AndroidManifest.xml:5:5-44
 MERGED from [androidx.hilt:hilt-navigation-compose:1.2.0] /Users/mdadil/.gradle/caches/8.12/transforms/1abbccd35527d5a25cc04125a4dc037e/transformed/hilt-navigation-compose-1.2.0/AndroidManifest.xml:5:5-44
 MERGED from [androidx.hilt:hilt-navigation:1.2.0] /Users/mdadil/.gradle/caches/8.12/transforms/0a79c8b2e829e5692685f4b64419161b/transformed/hilt-navigation-1.2.0/AndroidManifest.xml:5:5-44
@@ -274,6 +283,8 @@ MERGED from [androidx.compose.material:material-ripple-android:1.6.8] /Users/mda
 MERGED from [androidx.compose.material:material-ripple-android:1.6.8] /Users/mdadil/.gradle/caches/8.12/transforms/74ea9a0251b2d94423dc45a6fd5126b7/transformed/material-ripple-release/AndroidManifest.xml:5:5-44
 MERGED from [androidx.compose.material:material-icons-core-android:1.6.8] /Users/mdadil/.gradle/caches/8.12/transforms/1c023be1727c1e01579800384831514c/transformed/material-icons-core-release/AndroidManifest.xml:5:5-44
 MERGED from [androidx.compose.material:material-icons-core-android:1.6.8] /Users/mdadil/.gradle/caches/8.12/transforms/1c023be1727c1e01579800384831514c/transformed/material-icons-core-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-extended-android:1.6.8] /Users/mdadil/.gradle/caches/8.12/transforms/eca99b4a5d117563a26312a0d0544cf3/transformed/material-icons-extended-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-extended-android:1.6.8] /Users/mdadil/.gradle/caches/8.12/transforms/eca99b4a5d117563a26312a0d0544cf3/transformed/material-icons-extended-release/AndroidManifest.xml:5:5-44
 MERGED from [androidx.compose.material:material-android:1.6.8] /Users/mdadil/.gradle/caches/8.12/transforms/53906c73b02c80b30765a29ee080c6ab/transformed/material-release/AndroidManifest.xml:5:5-44
 MERGED from [androidx.compose.material:material-android:1.6.8] /Users/mdadil/.gradle/caches/8.12/transforms/53906c73b02c80b30765a29ee080c6ab/transformed/material-release/AndroidManifest.xml:5:5-44
 MERGED from [androidx.compose.animation:animation-core-android:1.6.8] /Users/mdadil/.gradle/caches/8.12/transforms/ed92566db6993bff424f3af366c0d48d/transformed/animation-core-release/AndroidManifest.xml:5:5-44
@@ -362,6 +373,8 @@ MERGED from [androidx.activity:activity-ktx:1.9.0] /Users/mdadil/.gradle/caches/
 MERGED from [androidx.activity:activity-ktx:1.9.0] /Users/mdadil/.gradle/caches/8.12/transforms/6e24f22ed4bff4513e1397b575be64ed/transformed/activity-ktx-1.9.0/AndroidManifest.xml:5:5-44
 MERGED from [androidx.activity:activity-compose:1.9.0] /Users/mdadil/.gradle/caches/8.12/transforms/8b207ab4eb8ed1ac86579a953866fc2e/transformed/activity-compose-1.9.0/AndroidManifest.xml:5:5-44
 MERGED from [androidx.activity:activity-compose:1.9.0] /Users/mdadil/.gradle/caches/8.12/transforms/8b207ab4eb8ed1ac86579a953866fc2e/transformed/activity-compose-1.9.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-splashscreen:1.0.1] /Users/mdadil/.gradle/caches/8.12/transforms/daf06fe8f6c33ad996b89a4ea61dc373/transformed/core-splashscreen-1.0.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.core:core-splashscreen:1.0.1] /Users/mdadil/.gradle/caches/8.12/transforms/daf06fe8f6c33ad996b89a4ea61dc373/transformed/core-splashscreen-1.0.1/AndroidManifest.xml:20:5-22:41
 MERGED from [:core:calculator] /Users/mdadil/Documents/Playground/android/core/calculator/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
 MERGED from [:core:calculator] /Users/mdadil/Documents/Playground/android/core/calculator/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
 MERGED from [:core:model] /Users/mdadil/Documents/Playground/android/core/model/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:5:5-44
