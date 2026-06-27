@@ -1,0 +1,28 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.saudi.salarycalculator.app-mergeDebugResources-70:/values-night-v8/values-night-v8.xml",
+            "map": [
+                {
+                    "source": "/Users/mdadil/Documents/Playground/android/app/src/main/res/values-night/themes.xml",
+                    "from": {
+                        "startLines": "1",
+                        "startColumns": "2",
+                        "startOffsets": "14",
+                        "endLines": "3",
+                        "endColumns": "10",
+                        "endOffsets": "162"
+                    },
+                    "to": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "4",
+                        "endColumns": "10",
+                        "endOffsets": "203"
+                    }
+                }
+            ]
+        }
+    ]
+}
