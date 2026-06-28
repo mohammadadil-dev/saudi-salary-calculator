@@ -1,8 +1,20 @@
+import java.util.Properties
+
 plugins {
   id("com.android.application")
   id("org.jetbrains.kotlin.android")
   id("org.jetbrains.kotlin.kapt")
   id("com.google.dagger.hilt.android")
+}
+
+// Release signing credentials live outside source control — see PLAY_STORE_RELEASE.md.
+// Falls back to null (unsigned release build) if keystore.properties isn't present, so CI/clones
+// without the file can still build a release artifact (just won't be upload-ready).
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties().apply {
+  if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.inputStream().use { load(it) }
+  }
 }
 
 android {
@@ -18,16 +30,40 @@ android {
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     vectorDrawables { useSupportLibrary = true }
+
+    // Google's public sample AdMob App ID/ad unit — safe to ship in debug builds, and the
+    // default for release until replaced below. See PLAY_STORE_RELEASE.md before publishing.
     manifestPlaceholders["admob_app_id"] = "ca-app-pub-3940256099942544~3347511713"
+    buildConfigField("String", "BANNER_AD_UNIT_ID", "\"ca-app-pub-3940256099942544/9214589741\"")
+  }
+
+  signingConfigs {
+    create("release") {
+      if (keystorePropertiesFile.exists()) {
+        storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
+        storePassword = keystoreProperties.getProperty("storePassword")
+        keyAlias = keystoreProperties.getProperty("keyAlias")
+        keyPassword = keystoreProperties.getProperty("keyPassword")
+      }
+    }
   }
 
   buildTypes {
     release {
-      isMinifyEnabled = false
+      isMinifyEnabled = true
+      isShrinkResources = true
       proguardFiles(
         getDefaultProguardFile("proguard-android-optimize.txt"),
         "proguard-rules.pro"
       )
+      if (keystorePropertiesFile.exists()) {
+        signingConfig = signingConfigs.getByName("release")
+      }
+
+      // Real AdMob App ID / banner ad unit ID (set 2026-06-28). Debug builds intentionally keep
+      // Google's sample IDs above — only release ships the real ones.
+      manifestPlaceholders["admob_app_id"] = "ca-app-pub-8890346685665889~3172188319"
+      buildConfigField("String", "BANNER_AD_UNIT_ID", "\"ca-app-pub-8890346685665889/1725199104\"")
     }
   }
 
@@ -38,7 +74,10 @@ android {
 
   kotlinOptions { jvmTarget = "17" }
 
-  buildFeatures { compose = true }
+  buildFeatures {
+    compose = true
+    buildConfig = true
+  }
 
   composeOptions {
     kotlinCompilerExtensionVersion = "1.5.14"

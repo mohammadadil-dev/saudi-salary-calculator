@@ -1,0 +1,26 @@
+# Gradle / build outputs
+build/
+.gradle/
+.kotlin/
+captures/
+.cxx/
+
+# Local config (machine-specific, never commit)
+local.properties
+
+# Signing (never commit — see PLAY_STORE_RELEASE.md)
+*.jks
+*.keystore
+keystore.properties
+
+# IDE
+.DS_Store
+*.iml
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/shelf/
+.idea/caches/build_file_checksums.ser
+
+# OS
+Thumbs.db

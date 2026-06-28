@@ -75,9 +75,13 @@ fun ComparisonScreen(
     }
 
     item {
+      // Disabled until both sides have a real basic salary — otherwise tapping it with empty
+      // fields produced a confusing 0-vs-0 "result" card (see SalaryViewModel.compareOffers).
       InteractiveCTA(
         text = stringResource(R.string.action_compare),
         icon = Icons.Filled.CompareArrows,
+        enabled = (offerCurrent.basicSalary.toDoubleOrNull() ?: 0.0) > 0.0 &&
+          (offerNew.basicSalary.toDoubleOrNull() ?: 0.0) > 0.0,
         onClick = onCompare,
         modifier = Modifier.fillMaxWidth()
       )
@@ -94,6 +98,16 @@ fun ComparisonScreen(
         }
       }
     } else {
+      // A real difference gets a green title + green "Clearly better · +3.7%" line so the
+      // qualifier always agrees with the number next to it (previously a flat 0-30% raise could
+      // land on "Neutral" right beside a green "+3.7%", which read as contradictory).
+      val isMeaningfulGap = kotlin.math.abs(comparisonResult.percentageIncrease) >= 1.0
+      val isPositive = comparisonResult.monthlyDifference >= 0
+      val emphasisColor = when {
+        !isMeaningfulGap -> designSystemContentColor(darkMode).copy(alpha = 0.7f)
+        isPositive -> BrandGreen
+        else -> com.saudi.salarycalculator.core.designsystem.theme.BrandRed
+      }
       item {
         GlassCard(darkMode = darkMode) {
           Text(
@@ -103,16 +117,28 @@ fun ComparisonScreen(
             fontWeight = FontWeight.Bold
           )
           Text(
-            comparisonResult.betterOfferTitle,
+            // Below the 1% gap threshold, show a neutral message instead of betterOfferTitle —
+            // naming an offer here (even tinted gray) read as a real verdict when the two
+            // offers actually net the same take-home pay (e.g. basic/HRA split changes that
+            // don't change the basic+HRA total GOSI is computed on).
+            if (isMeaningfulGap) comparisonResult.betterOfferTitle else stringResource(R.string.comparison_tie_title),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Black,
-            color = BrandGreen
+            color = emphasisColor
           )
-          Text(
-            comparisonResult.scoreLabel,
-            style = MaterialTheme.typography.bodyMedium,
-            color = designSystemContentColor(darkMode).copy(alpha = 0.6f)
-          )
+          Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+            Text(
+              comparisonResult.scoreLabel,
+              style = MaterialTheme.typography.bodyMedium,
+              fontWeight = FontWeight.SemiBold,
+              color = emphasisColor
+            )
+            Text(
+              " · ${if (comparisonResult.percentageIncrease >= 0) "+" else ""}${String.format(Locale.US, "%.1f", comparisonResult.percentageIncrease)}% net pay",
+              style = MaterialTheme.typography.bodyMedium,
+              color = designSystemContentColor(darkMode).copy(alpha = 0.6f)
+            )
+          }
         }
       }
 

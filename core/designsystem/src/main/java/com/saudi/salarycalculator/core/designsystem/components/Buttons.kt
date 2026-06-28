@@ -26,6 +26,8 @@ import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -46,13 +48,16 @@ import com.saudi.salarycalculator.core.designsystem.theme.BrandGreenLight
 import com.saudi.salarycalculator.core.designsystem.theme.designSystemContentColor
 
 /** Full-width filled gradient CTA with a press-scale bounce and haptic tick. Used for the primary
- * action on every screen (Start Calculation, Calculate Net Salary, Export PDF, Compare Offers). */
+ * action on every screen (Start Calculation, Calculate Net Salary, Export PDF, Compare Offers).
+ * [compact] shrinks padding/icon/text for tighter contexts (e.g. a wizard Back/Next row) without
+ * touching the look of every other call site, which all leave it at the default. */
 @Composable
 fun PrimaryButton(
   text: String,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   loading: Boolean = false,
+  compact: Boolean = false,
   icon: ImageVector? = null,
   onClick: () -> Unit
 ) {
@@ -60,7 +65,7 @@ fun PrimaryButton(
   val interactionSource = remember { MutableInteractionSource() }
   val pressed by interactionSource.collectIsPressedAsState()
   val scale by animateFloatAsState(
-    targetValue = if (pressed) 0.97f else 1f,
+    targetValue = if (pressed) (if (compact) 0.94f else 0.97f) else 1f,
     animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
     label = "primary-button-scale"
   )
@@ -68,7 +73,7 @@ fun PrimaryButton(
     modifier = modifier
       .fillMaxWidth()
       .graphicsLayer { scaleX = scale; scaleY = scale }
-      .clip(RoundedCornerShape(16.dp))
+      .clip(RoundedCornerShape(if (compact) 12.dp else 16.dp))
       .background(
         if (enabled) Brush.linearGradient(listOf(BrandGreen, BrandGreenLight))
         else Brush.linearGradient(listOf(Color.Gray, Color.Gray))
@@ -81,24 +86,34 @@ fun PrimaryButton(
         haptics.performHapticFeedback(HapticFeedbackType.LongPress)
         onClick()
       }
-      .padding(vertical = 16.dp),
+      .padding(vertical = if (compact) 10.dp else 16.dp),
     horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically
   ) {
     if (loading) {
       CircularProgressIndicator(
         modifier = Modifier
-          .size(18.dp)
-          .padding(end = 10.dp),
+          .size(if (compact) 14.dp else 18.dp)
+          .padding(end = if (compact) 6.dp else 10.dp),
         color = Color.White,
         strokeWidth = 2.dp
       )
     } else {
       icon?.let {
-        Icon(it, contentDescription = null, tint = Color.White, modifier = Modifier.padding(end = 8.dp))
+        Icon(
+          it,
+          contentDescription = null,
+          tint = Color.White,
+          modifier = Modifier.size(if (compact) 16.dp else 24.dp).padding(end = if (compact) 6.dp else 8.dp)
+        )
       }
     }
-    Text(text, color = Color.White, fontWeight = FontWeight.Black)
+    Text(
+      text,
+      style = if (compact) MaterialTheme.typography.labelLarge else LocalTextStyle.current,
+      color = Color.White,
+      fontWeight = FontWeight.Black
+    )
   }
 }
 
@@ -193,33 +208,60 @@ fun InteractiveCTA(
 }
 
 /** Outlined, lower-emphasis sibling to [PrimaryButton] for secondary actions (Share, Save,
- * Edit/Back) that should not visually compete with the screen's main CTA. */
+ * Edit/Back) that should not visually compete with the screen's main CTA. Carries the same
+ * press-scale bounce + haptic tick as [PrimaryButton]/[InteractiveCTA] so it reads as equally
+ * tappable rather than a flat, static outline. [compact] shrinks it for tighter contexts (e.g. a
+ * wizard Back/Next row) without affecting the other call sites, which all leave it at the default. */
 @Composable
 fun SecondaryButton(
   text: String,
   modifier: Modifier = Modifier,
   darkMode: Boolean = false,
   enabled: Boolean = true,
+  compact: Boolean = false,
   icon: ImageVector? = null,
   onClick: () -> Unit
 ) {
   val haptics = LocalHapticFeedback.current
+  val interactionSource = remember { MutableInteractionSource() }
+  val pressed by interactionSource.collectIsPressedAsState()
+  val scale by animateFloatAsState(
+    targetValue = if (pressed) (if (compact) 0.94f else 0.97f) else 1f,
+    animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+    label = "secondary-button-scale"
+  )
+  val shape = RoundedCornerShape(if (compact) 12.dp else 16.dp)
   Row(
     modifier = modifier
       .fillMaxWidth()
-      .clip(RoundedCornerShape(16.dp))
-      .border(1.5.dp, BrandGreen.copy(alpha = if (enabled) 0.7f else 0.3f), RoundedCornerShape(16.dp))
-      .clickable(enabled = enabled) {
+      .graphicsLayer { scaleX = scale; scaleY = scale }
+      .clip(shape)
+      .border(1.5.dp, BrandGreen.copy(alpha = if (enabled) 0.7f else 0.3f), shape)
+      .clickable(
+        interactionSource = interactionSource,
+        indication = rememberRipple(color = BrandGreen),
+        enabled = enabled
+      ) {
         haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
         onClick()
       }
-      .padding(vertical = 14.dp),
+      .padding(vertical = if (compact) 9.dp else 14.dp),
     horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically
   ) {
     icon?.let {
-      Icon(it, contentDescription = null, tint = BrandGreen, modifier = Modifier.padding(end = 8.dp))
+      Icon(
+        it,
+        contentDescription = null,
+        tint = if (enabled) BrandGreen else designSystemContentColor(darkMode).copy(alpha = 0.4f),
+        modifier = Modifier.size(if (compact) 16.dp else 24.dp).padding(end = if (compact) 6.dp else 8.dp)
+      )
     }
-    Text(text, color = if (enabled) BrandGreen else designSystemContentColor(darkMode).copy(alpha = 0.4f), fontWeight = FontWeight.Bold)
+    Text(
+      text,
+      style = if (compact) MaterialTheme.typography.labelLarge else LocalTextStyle.current,
+      color = if (enabled) BrandGreen else designSystemContentColor(darkMode).copy(alpha = 0.4f),
+      fontWeight = FontWeight.Bold
+    )
   }
 }

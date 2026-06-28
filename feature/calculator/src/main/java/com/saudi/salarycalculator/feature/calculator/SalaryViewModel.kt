@@ -125,8 +125,14 @@ class SalaryViewModel @Inject constructor(
     _state.value = _state.value.copy(offerNew = transform(_state.value.offerNew))
   }
 
+  /** No-ops if either offer is missing a real basic salary, so a stray tap can't produce a
+   * meaningless 0-vs-0 "result" card. The Compare Offers CTA mirrors this same condition via its
+   * `enabled` param (see ComparisonScreen) — this is just defense-in-depth. */
   fun compareOffers() {
     val s = _state.value
+    val offerCurrentValid = (s.offerCurrent.basicSalary.toDoubleOrNull() ?: 0.0) > 0.0
+    val offerNewValid = (s.offerNew.basicSalary.toDoubleOrNull() ?: 0.0) > 0.0
+    if (!offerCurrentValid || !offerNewValid) return
     viewModelScope.launch {
       val result = repository.compareOffers(
         offerA = s.offerCurrent.toOfferInput(),

@@ -110,19 +110,21 @@ fun CalculatorWizardScreen(
 
     if (wizardStep != WizardStep.REVIEW) {
       Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
       ) {
         if (currentIndex > 0) {
           SecondaryButton(
             text = stringResource(R.string.common_back),
             darkMode = darkMode,
+            compact = true,
             modifier = Modifier.weight(1f),
             onClick = { onGoToStep(steps[currentIndex - 1]) }
           )
         }
         PrimaryButton(
           text = stringResource(R.string.common_next),
+          compact = true,
           modifier = Modifier.weight(1f),
           onClick = {
             val nextIndex = currentIndex + 1

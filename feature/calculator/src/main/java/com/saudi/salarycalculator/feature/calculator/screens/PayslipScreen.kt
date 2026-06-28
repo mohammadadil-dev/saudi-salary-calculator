@@ -211,21 +211,26 @@ fun PayslipScreen(
       )
     }
     item {
-      Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        SecondaryButton(
-          text = stringResource(R.string.action_save_calculation),
-          darkMode = darkMode,
-          icon = Icons.Filled.Save,
-          modifier = Modifier.weight(1f),
-          onClick = onSaveCalculation
-        )
-        SecondaryButton(
-          text = stringResource(R.string.common_share),
-          darkMode = darkMode,
-          icon = Icons.Filled.Share,
-          modifier = Modifier.weight(1f),
-          onClick = onShare
-        )
+      // Wrapped in the same GlassCard surface as every other section on this screen — previously
+      // these sat directly on the animated background with nothing but a thin outline, which
+      // picked up the background's color noise and looked smudgy next to the crisp cards above.
+      GlassCard(darkMode = darkMode, contentPadding = androidx.compose.foundation.layout.PaddingValues(14.dp)) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+          SecondaryButton(
+            text = stringResource(R.string.action_save_calculation),
+            darkMode = darkMode,
+            icon = Icons.Filled.Save,
+            modifier = Modifier.weight(1f),
+            onClick = onSaveCalculation
+          )
+          SecondaryButton(
+            text = stringResource(R.string.common_share),
+            darkMode = darkMode,
+            icon = Icons.Filled.Share,
+            modifier = Modifier.weight(1f),
+            onClick = onShare
+          )
+        }
       }
     }
   }

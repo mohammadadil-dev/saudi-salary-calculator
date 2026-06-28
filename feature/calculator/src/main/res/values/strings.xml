@@ -138,7 +138,7 @@
   <string name="result_empty_title">No calculation yet</string>
   <string name="result_empty_body">Run the calculator to see your salary breakdown here</string>
   <string name="action_view_payslip">View Payslip</string>
-  <string name="action_compare_offer">Compare with another offer</string>
+  <string name="action_compare_offer">Compare another offer</string>
 
   <!-- Payslip -->
   <string name="payslip_title">Payslip Preview</string>
@@ -173,6 +173,7 @@
   <string name="comparison_monthly_impact">Monthly impact</string>
   <string name="comparison_yearly_impact">Yearly impact</string>
   <string name="comparison_better_offer">Better offer</string>
+  <string name="comparison_tie_title">Both offers are about the same</string>
   <string name="comparison_empty_title">Add both offers to compare</string>
 
   <!-- Settings -->

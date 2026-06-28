@@ -185,14 +185,33 @@ class DefaultOfferComparisonCalculatorService(
   override fun calculate(offerA: OfferInput, offerB: OfferInput): OfferComparisonResult {
     val scoreA = offerA.toScore(netSalaryCalculatorService, endOfServiceCalculatorService)
     val scoreB = offerB.toScore(netSalaryCalculatorService, endOfServiceCalculatorService)
-    val better = if (scoreB.netMonthlySalary >= scoreA.netMonthlySalary) scoreB else scoreA
+    // Was ">=", which silently named offer B (the "new" offer) the winner on an exact tie —
+    // e.g. basic 15000/HRA 5000 vs basic 14000/HRA 6000 both net to the same take-home pay
+    // (GOSI only depends on basic+HRA combined, not the split), so every tie was misreported
+    // as "new offer is better". ">" resolves ties to A instead; the UI also overrides the
+    // headline to a neutral "about the same" message below the 1% gap threshold (see
+    // ComparisonScreen) so neither offer's name is shown as a false "winner".
+    val better = if (scoreB.netMonthlySalary > scoreA.netMonthlySalary) scoreB else scoreA
     val diffMonthly = (scoreB.netMonthlySalary - scoreA.netMonthlySalary).toCurrency()
     val percentageIncrease = if (scoreA.netMonthlySalary > 0.0) {
       (((scoreB.netMonthlySalary - scoreA.netMonthlySalary) / scoreA.netMonthlySalary) * 100.0).toCurrency()
     } else 0.0
-    val acceptanceScore = ((scoreB.netMonthlySalary / scoreA.netMonthlySalary.coerceAtLeast(1.0)) * 65.0)
-      .coerceIn(0.0, 100.0)
-      .roundToInt()
+
+    // Magnitude of the gap between the two offers, independent of which one wins — this is what
+    // scoreLabel below describes, paired with betterOfferTitle (e.g. "Better offer: New offer —
+    // Clearly better"). The previous version scored offer B's ratio to A directly: any realistic
+    // raise (a few percent) landed at ~65-70, the same band as "no change at all", which is why a
+    // genuine +3.7% increase rendered as "Neutral" — indistinguishable from a 0% difference. Using
+    // the gap's magnitude (already shown on screen as the % increase/decrease) keeps the label
+    // consistent with the number right next to it.
+    val percentageGap = kotlin.math.abs(percentageIncrease)
+    val acceptanceScore = (50.0 + percentageGap * 2.5).coerceIn(0.0, 100.0).roundToInt()
+    val scoreLabel = when {
+      percentageGap < 1.0 -> "About the same"
+      percentageGap < 5.0 -> "Slightly better"
+      percentageGap < 15.0 -> "Clearly better"
+      else -> "Significantly better"
+    }
 
     return OfferComparisonResult(
       offerA = scoreA,
@@ -204,12 +223,7 @@ class DefaultOfferComparisonCalculatorService(
       gosiMonthlyDifference = (scoreB.employeeGosiMonthly - scoreA.employeeGosiMonthly).toCurrency(),
       eosbDifference = (scoreB.estimatedEosb - scoreA.estimatedEosb).toCurrency(),
       acceptanceScore = acceptanceScore,
-      scoreLabel = when {
-        acceptanceScore >= 85 -> "Strong offer"
-        acceptanceScore >= 70 -> "Worth considering"
-        acceptanceScore >= 55 -> "Neutral"
-        else -> "Weak offer"
-      }
+      scoreLabel = scoreLabel
     )
   }
 }

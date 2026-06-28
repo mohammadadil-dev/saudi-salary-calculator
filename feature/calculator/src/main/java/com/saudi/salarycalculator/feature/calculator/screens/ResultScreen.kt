@@ -37,6 +37,7 @@ import com.saudi.salarycalculator.core.designsystem.components.InteractiveCTA
 import com.saudi.salarycalculator.core.designsystem.components.NetSalaryProgressIndicator
 import com.saudi.salarycalculator.core.designsystem.components.RiyalSymbol
 import com.saudi.salarycalculator.core.designsystem.components.ResultCard
+import com.saudi.salarycalculator.core.designsystem.components.SecondaryButton
 import com.saudi.salarycalculator.core.designsystem.components.SectionHeader
 import com.saudi.salarycalculator.core.designsystem.components.SegmentedControl
 import com.saudi.salarycalculator.core.designsystem.theme.BrandGold
@@ -237,9 +238,13 @@ fun ResultScreen(
       )
     }
     item {
-      InteractiveCTA(
+      // Outlined, lower-emphasis than the pill CTA above — keeps this a one-line secondary
+      // action instead of a second equally-heavy gradient pill that wraps "Compare with another
+      // offer" onto two lines.
+      SecondaryButton(
         text = stringResource(R.string.action_compare_offer),
         icon = Icons.Filled.TrendingUp,
+        darkMode = darkMode,
         onClick = onCompareOffer,
         modifier = Modifier.fillMaxWidth()
       )

@@ -138,7 +138,7 @@
   <string name="result_empty_title">لا توجد نتيجة بعد</string>
   <string name="result_empty_body">شغّل الحاسبة لترى تفاصيل راتبك هنا</string>
   <string name="action_view_payslip">عرض قسيمة الراتب</string>
-  <string name="action_compare_offer">قارن مع عرض آخر</string>
+  <string name="action_compare_offer">قارن عرضًا آخر</string>
 
   <!-- Payslip -->
   <string name="payslip_title">معاينة قسيمة الراتب</string>
@@ -173,6 +173,7 @@
   <string name="comparison_monthly_impact">الأثر الشهري</string>
   <string name="comparison_yearly_impact">الأثر السنوي</string>
   <string name="comparison_better_offer">العرض الأفضل</string>
+  <string name="comparison_tie_title">العرضان متقاربان جداً</string>
   <string name="comparison_empty_title">أضف العرضين للمقارنة</string>
 
   <!-- Settings -->

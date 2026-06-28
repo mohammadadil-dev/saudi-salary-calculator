@@ -77,7 +77,9 @@ private fun AdMobBanner() {
       .height(50.dp),
     factory = {
       AdView(context).apply {
-        adUnitId = "ca-app-pub-3940256099942544/9214589741"
+        // Resolved per build type in app/build.gradle.kts: Google's sample unit for debug,
+        // the (to-be-replaced) release value for release. See PLAY_STORE_RELEASE.md.
+        adUnitId = BuildConfig.BANNER_AD_UNIT_ID
         setAdSize(AdSize.BANNER)
         loadAd(AdRequest.Builder().build())
       }
