@@ -52,8 +52,12 @@ android {
     release {
       isMinifyEnabled = true
       isShrinkResources = true
+      // Using the non-optimizing default file (not "-optimize.txt"): still shrinks/obfuscates,
+      // just skips ProGuard/R8's bytecode-level optimization passes. The "-optimize" variant
+      // combined with this app's Compose+Lifecycle version mix was crashing release builds with
+      // "CompositionLocal LocalLifecycleOwner not present" — see proguard-rules.pro for details.
       proguardFiles(
-        getDefaultProguardFile("proguard-android-optimize.txt"),
+        getDefaultProguardFile("proguard-android.txt"),
         "proguard-rules.pro"
       )
       if (keystorePropertiesFile.exists()) {
