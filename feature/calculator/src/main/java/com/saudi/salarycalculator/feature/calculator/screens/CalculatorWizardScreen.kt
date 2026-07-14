@@ -11,6 +11,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -20,6 +22,8 @@ import com.saudi.salarycalculator.core.designsystem.components.AppTopBar
 import com.saudi.salarycalculator.core.designsystem.components.PrimaryButton
 import com.saudi.salarycalculator.core.designsystem.components.SecondaryButton
 import com.saudi.salarycalculator.core.designsystem.components.StepProgressIndicator
+import com.saudi.salarycalculator.core.designsystem.theme.BrandRed
+import com.saudi.salarycalculator.core.designsystem.theme.designSystemContentColor
 import com.saudi.salarycalculator.core.model.GosiRates
 import com.saudi.salarycalculator.feature.calculator.R
 import com.saudi.salarycalculator.feature.calculator.WizardFieldsState
@@ -109,30 +113,49 @@ fun CalculatorWizardScreen(
     }
 
     if (wizardStep != WizardStep.REVIEW) {
-      Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-      ) {
-        if (currentIndex > 0) {
-          SecondaryButton(
-            text = stringResource(R.string.common_back),
-            darkMode = darkMode,
+      // Basic salary is the one field every downstream step (and the Calculate button itself)
+      // depends on — gating "Next" on it here catches a blank/zero entry immediately, on the
+      // step where the user is already looking at that field, instead of letting them fill out
+      // the whole wizard and only discover the problem at the very last step.
+      val nextEnabled = wizardStep != WizardStep.BASIC_SALARY ||
+        (wizard.basicSalary.toDoubleOrNull() ?: 0.0) > 0.0
+
+      Column(modifier = Modifier.padding(vertical = 12.dp)) {
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+          if (currentIndex > 0) {
+            SecondaryButton(
+              text = stringResource(R.string.common_back),
+              darkMode = darkMode,
+              compact = true,
+              modifier = Modifier.weight(1f),
+              onClick = { onGoToStep(steps[currentIndex - 1]) }
+            )
+          }
+          PrimaryButton(
+            text = stringResource(R.string.common_next),
             compact = true,
+            enabled = nextEnabled,
             modifier = Modifier.weight(1f),
-            onClick = { onGoToStep(steps[currentIndex - 1]) }
+            onClick = {
+              val nextIndex = currentIndex + 1
+              if (nextIndex < steps.size) {
+                onGoToStep(steps[nextIndex])
+              }
+            }
           )
         }
-        PrimaryButton(
-          text = stringResource(R.string.common_next),
-          compact = true,
-          modifier = Modifier.weight(1f),
-          onClick = {
-            val nextIndex = currentIndex + 1
-            if (nextIndex < steps.size) {
-              onGoToStep(steps[nextIndex])
-            }
-          }
-        )
+        if (!nextEnabled) {
+          Text(
+            stringResource(R.string.validation_basic_salary_required),
+            style = MaterialTheme.typography.labelSmall,
+            color = BrandRed,
+            modifier = Modifier.fillMaxWidth().padding(top = 6.dp),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+          )
+        }
       }
     }
   }

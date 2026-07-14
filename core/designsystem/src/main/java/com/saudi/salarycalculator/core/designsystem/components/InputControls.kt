@@ -30,6 +30,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.saudi.salarycalculator.core.designsystem.theme.BrandGreen
 import com.saudi.salarycalculator.core.designsystem.theme.designSystemContentColor
@@ -63,15 +65,21 @@ fun SegmentedControl(
             haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
             onSelect(index)
           }
-          .padding(vertical = 10.dp),
+          .padding(horizontal = 6.dp, vertical = 10.dp),
         contentAlignment = Alignment.Center
       ) {
+        // maxLines = 2 (rather than forcing a single line) lets longer options — GOSI system
+        // labels, some Arabic translations that run longer than their English source — wrap
+        // within their own pill instead of visually overflowing into the neighboring option.
+        // TextOverflow.Ellipsis is a last-resort safety net for anything that still doesn't fit.
         Text(
           option,
           style = MaterialTheme.typography.labelLarge,
           fontWeight = if (selected) FontWeight.Black else FontWeight.Medium,
           color = if (selected) Color.White else designSystemContentColor(darkMode).copy(alpha = 0.7f),
-          maxLines = 1
+          textAlign = TextAlign.Center,
+          maxLines = 2,
+          overflow = TextOverflow.Ellipsis
         )
       }
     }

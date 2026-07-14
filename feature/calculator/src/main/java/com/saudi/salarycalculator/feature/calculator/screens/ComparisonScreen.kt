@@ -27,8 +27,10 @@ import com.saudi.salarycalculator.core.designsystem.components.SectionHeader
 import com.saudi.salarycalculator.core.designsystem.components.SegmentedControl
 import com.saudi.salarycalculator.core.designsystem.theme.BrandGreen
 import com.saudi.salarycalculator.core.designsystem.theme.designSystemContentColor
+import com.saudi.salarycalculator.core.model.CityCostOfLiving
 import com.saudi.salarycalculator.core.model.EmployeeType
 import com.saudi.salarycalculator.core.model.OfferComparisonResult
+import com.saudi.salarycalculator.core.model.SaudiCityTier
 import com.saudi.salarycalculator.feature.calculator.OfferFormState
 import com.saudi.salarycalculator.feature.calculator.R
 import java.util.Locale
@@ -251,6 +253,45 @@ private fun OfferFormCard(
       darkMode = darkMode,
       onSelect = { index -> onUpdate { it.copy(employeeType = if (index == 1) EmployeeType.EXPAT else EmployeeType.SAUDI) } }
     )
+    Text(
+      stringResource(R.string.comparison_city_label),
+      style = MaterialTheme.typography.labelMedium,
+      color = designSystemContentColor(darkMode).copy(alpha = 0.7f)
+    )
+    val cityOptions = SaudiCityTier.entries
+    val cityLabels = listOf(
+      stringResource(R.string.comparison_city_riyadh),
+      stringResource(R.string.comparison_city_jeddah),
+      stringResource(R.string.comparison_city_eastern),
+      stringResource(R.string.comparison_city_other)
+    )
+    SegmentedControl(
+      options = cityLabels,
+      selectedIndex = offer.city?.let { cityOptions.indexOf(it) } ?: -1,
+      darkMode = darkMode,
+      onSelect = { index -> onUpdate { it.copy(city = cityOptions[index]) } }
+    )
+    offer.city?.let { city ->
+      val rentRange = CityCostOfLiving.rentRangeSar(city)
+      val tierLabel = stringResource(
+        when (city) {
+          SaudiCityTier.RIYADH, SaudiCityTier.EASTERN_PROVINCE -> R.string.comparison_city_tier_highest
+          SaudiCityTier.JEDDAH -> R.string.comparison_city_tier_high
+          SaudiCityTier.OTHER -> R.string.comparison_city_tier_lower
+        }
+      )
+      Text(
+        stringResource(
+          R.string.comparison_city_reference,
+          tierLabel,
+          rentRange.first,
+          rentRange.last,
+          CityCostOfLiving.LAST_VERIFIED_LABEL
+        ),
+        style = MaterialTheme.typography.bodySmall,
+        color = designSystemContentColor(darkMode).copy(alpha = 0.55f)
+      )
+    }
   }
 }
 

@@ -4,10 +4,15 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
@@ -22,6 +27,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
+import com.google.android.play.core.appupdate.AppUpdateInfo
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.appupdate.AppUpdateOptions
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.saudi.salarycalculator.core.designsystem.theme.SalaryCalculatorTheme
 import com.saudi.salarycalculator.feature.calculator.SalaryViewModel
 import com.saudi.salarycalculator.feature.calculator.navigation.SalaryNavGraph
@@ -29,15 +40,55 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+  // Force-update via Google Play's In-App Update API, IMMEDIATE flow: if Play reports a newer
+  // versionCode is live for this install, Play shows its own full-screen "update required" UI on
+  // top of the app that the user can't dismiss back into the app without updating (or leaving).
+  // No-op for sideloaded/adb-installed APKs (no Play Store install record to check against), and
+  // no-op until a version newer than what's currently live gets published — see the dependency
+  // comment in app/build.gradle.kts.
+  private lateinit var appUpdateManager: AppUpdateManager
+  private lateinit var updateResultLauncher: ActivityResultLauncher<IntentSenderRequest>
+
   override fun onCreate(savedInstanceState: Bundle?) {
     val splashScreen = installSplashScreen()
     super.onCreate(savedInstanceState)
 
+    appUpdateManager = AppUpdateManagerFactory.create(this)
+    updateResultLauncher = registerForActivityResult(
+      ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+      if (result.resultCode != Activity.RESULT_OK) {
+        // Declined, canceled, or failed mid-flow. onResume() re-checks every time the user
+        // returns to the app and re-prompts while the update is still DEVELOPER_TRIGGERED, so no
+        // separate retry logic is needed here.
+        Log.w("AppUpdate", "In-app update flow did not complete, result code: ${result.resultCode}")
+      }
+    }
+    checkForImmediateUpdate()
+
     // Animate the system splash icon out (scale + fade) instead of an abrupt cut, so the
     // hand-off into the in-app Splash destination (see SalaryNavGraph) feels continuous.
     splashScreen.setOnExitAnimationListener { provider ->
-      val scaleX = ObjectAnimator.ofFloat(provider.iconView, View.SCALE_X, 1f, 1.15f, 0f)
-      val scaleY = ObjectAnimator.ofFloat(provider.iconView, View.SCALE_Y, 1f, 1.15f, 0f)
+      // provider.iconView is nullable: some OEM splash-screen implementations (seen on certain
+      // Samsung/Xiaomi/Vivo builds) don't populate it, and ObjectAnimator.ofFloat NPEs if handed
+      // a null target. Fall back to a straight fade-and-remove when that happens.
+      val icon = provider.iconView
+      if (icon == null) {
+        val fade = ObjectAnimator.ofFloat(provider.view, View.ALPHA, 1f, 0f).apply {
+          duration = 260
+        }
+        fade.addListener(object : AnimatorListenerAdapter() {
+          override fun onAnimationEnd(animation: Animator) {
+            provider.remove()
+          }
+        })
+        fade.start()
+        return@setOnExitAnimationListener
+      }
+
+      val scaleX = ObjectAnimator.ofFloat(icon, View.SCALE_X, 1f, 1.15f, 0f)
+      val scaleY = ObjectAnimator.ofFloat(icon, View.SCALE_Y, 1f, 1.15f, 0f)
       val fade = ObjectAnimator.ofFloat(provider.view, View.ALPHA, 1f, 0f)
       scaleX.duration = 420
       scaleY.duration = 420
@@ -65,6 +116,40 @@ class MainActivity : ComponentActivity() {
         SalaryNavGraph(adBanner = { AdMobBanner() })
       }
     }
+  }
+
+  override fun onResume() {
+    super.onResume()
+    // Resumes an IMMEDIATE update that was already in progress (e.g. the user rotated the
+    // screen, or the process was recreated mid-flow) instead of leaving it stalled.
+    appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
+      if (info.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+        startImmediateUpdate(info)
+      }
+    }
+  }
+
+  private fun checkForImmediateUpdate() {
+    appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
+      if (
+        info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
+        info.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+      ) {
+        startImmediateUpdate(info)
+      }
+    }.addOnFailureListener { error ->
+      // No network, Play Store app missing/outdated, sideloaded install, etc. Fails silently —
+      // this is a nice-to-have gate, not something that should ever block app startup.
+      Log.w("AppUpdate", "Could not check for app update", error)
+    }
+  }
+
+  private fun startImmediateUpdate(info: AppUpdateInfo) {
+    appUpdateManager.startUpdateFlowForResult(
+      info,
+      updateResultLauncher,
+      AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
+    )
   }
 }
 

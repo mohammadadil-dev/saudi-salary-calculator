@@ -25,8 +25,8 @@ android {
     applicationId = "com.saudi.salarycalculator"
     minSdk = 24
     targetSdk = 35
-    versionCode = 1
-    versionName = "1.0"
+    versionCode = 5
+    versionName = "1.1.1"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     vectorDrawables { useSupportLibrary = true }
@@ -88,6 +88,17 @@ android {
   }
 
   packaging { resources.excludes += "/META-INF/{AL2.0,LGPL2.1}" }
+
+  // The app has its own in-app language toggle (Settings -> language) instead of following the
+  // device's system locale. Without this, Google Play's App Bundle delivery splits the .aab by
+  // language and only installs resources matching the device's system locale — so on an
+  // English-locale device, the Arabic strings are never even installed and the in-app toggle has
+  // nothing to switch to. Disabling the split ships every locale's resources in every install.
+  bundle {
+    language {
+      enableSplit = false
+    }
+  }
 }
 
 dependencies {
@@ -112,6 +123,11 @@ dependencies {
   kapt("com.google.dagger:hilt-compiler:2.52")
 
   implementation("com.google.android.gms:play-services-ads:23.2.0")
+
+  // Force-update flow (see MainActivity) — Google Play's In-App Update API. Only activates for
+  // Play-Store-installed builds; has no effect on sideloaded/adb-installed APKs since it checks
+  // against the Play Store's own record of what's installed.
+  implementation("com.google.android.play:app-update:2.1.0")
 
   debugImplementation("androidx.compose.ui:ui-tooling")
 }

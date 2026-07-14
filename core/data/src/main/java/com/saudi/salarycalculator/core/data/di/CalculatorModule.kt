@@ -1,12 +1,14 @@
 package com.saudi.salarycalculator.core.data.di
 
 import com.saudi.salarycalculator.core.calculator.DefaultEndOfServiceCalculatorService
+import com.saudi.salarycalculator.core.calculator.DefaultExpatCostCalculatorService
 import com.saudi.salarycalculator.core.calculator.DefaultGosiCalculatorService
 import com.saudi.salarycalculator.core.calculator.DefaultNetSalaryCalculatorService
 import com.saudi.salarycalculator.core.calculator.DefaultOfferComparisonCalculatorService
 import com.saudi.salarycalculator.core.calculator.DefaultOvertimeCalculatorService
 import com.saudi.salarycalculator.core.calculator.DefaultSavingsCalculatorService
 import com.saudi.salarycalculator.core.calculator.EndOfServiceCalculatorService
+import com.saudi.salarycalculator.core.calculator.ExpatCostCalculatorService
 import com.saudi.salarycalculator.core.calculator.GosiCalculatorService
 import com.saudi.salarycalculator.core.calculator.NetSalaryCalculatorService
 import com.saudi.salarycalculator.core.calculator.OfferComparisonCalculatorService
@@ -52,4 +54,9 @@ object CalculatorModule {
   @Singleton
   fun provideSavingsCalculatorService(): SavingsCalculatorService =
     DefaultSavingsCalculatorService()
+
+  @Provides
+  @Singleton
+  fun provideExpatCostCalculatorService(): ExpatCostCalculatorService =
+    DefaultExpatCostCalculatorService()
 }

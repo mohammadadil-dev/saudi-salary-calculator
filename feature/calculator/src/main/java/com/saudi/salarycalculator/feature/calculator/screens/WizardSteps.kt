@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Calculate
+import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -25,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,6 +51,7 @@ import com.saudi.salarycalculator.core.designsystem.components.SalaryInputField
 import com.saudi.salarycalculator.core.designsystem.components.SectionHeader
 import com.saudi.salarycalculator.core.designsystem.components.SegmentedControl
 import com.saudi.salarycalculator.core.designsystem.components.ToggleRow
+import com.saudi.salarycalculator.core.designsystem.theme.BrandGold
 import com.saudi.salarycalculator.core.designsystem.theme.BrandGreen
 import com.saudi.salarycalculator.core.designsystem.theme.BrandRed
 import com.saudi.salarycalculator.core.designsystem.theme.designSystemContentColor
@@ -60,8 +63,10 @@ import com.saudi.salarycalculator.core.model.EmploymentSector
 import com.saudi.salarycalculator.core.model.EndOfServiceInput
 import com.saudi.salarycalculator.core.model.GosiInput
 import com.saudi.salarycalculator.core.model.GosiRates
+import com.saudi.salarycalculator.core.model.WorkingHoursSchedule
 import com.saudi.salarycalculator.feature.calculator.R
 import com.saudi.salarycalculator.feature.calculator.WizardFieldsState
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -158,6 +163,13 @@ fun StepAllowancesContent(
     )
     HorizontalDivider(color = designSystemContentColor(darkMode).copy(alpha = 0.08f))
     SectionHeader(title = stringResource(R.string.section_overtime), darkMode = darkMode)
+    ToggleRow(
+      label = stringResource(R.string.label_ramadan_hours),
+      checked = wizard.ramadanReducedHours,
+      darkMode = darkMode,
+      description = stringResource(R.string.helper_ramadan_hours, WorkingHoursSchedule.RAMADAN_HINT_LABEL),
+      onCheckedChange = { checked -> onUpdate { it.copy(ramadanReducedHours = checked) } }
+    )
     SalaryInputField(
       label = stringResource(R.string.label_overtime_hours),
       value = wizard.overtimeHours,
@@ -166,7 +178,8 @@ fun StepAllowancesContent(
       keyboardType = androidx.compose.ui.text.input.KeyboardType.Decimal,
       placeholder = "0"
     )
-    val rateOverrideHelp = stringResource(R.string.helper_overtime_rate_override)
+    val monthlyHoursBase = WorkingHoursSchedule.monthlyHoursFor(wizard.ramadanReducedHours)
+    val rateOverrideHelp = stringResource(R.string.helper_overtime_rate_override, monthlyHoursBase.toInt())
     SalaryInputField(
       label = stringResource(R.string.label_overtime_rate_override),
       value = wizard.overtimeHourlyRateOverride,
@@ -380,7 +393,16 @@ private fun DatePickerSheet(
 ) {
   val sheetState: SheetState = rememberModalBottomSheetState()
   val isArabic = LocalLayoutDirection.current == LayoutDirection.Rtl
-  var selectedMillis by remember { mutableStateOf(initialMillis) }
+  val scope = rememberCoroutineScope()
+
+  // Tapping a day (or the "Today" shortcut) commits immediately and closes the sheet — no
+  // separate Confirm step. The sheet is hidden first so the close animation plays, then the
+  // selection is handed back to the caller once it's fully off-screen.
+  fun selectAndClose(millis: Long) {
+    scope.launch { sheetState.hide() }.invokeOnCompletion {
+      if (!sheetState.isVisible) onConfirm(millis)
+    }
+  }
 
   ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
     Column(
@@ -393,7 +415,7 @@ private fun DatePickerSheet(
         useHijri = isArabic,
         todayLabel = stringResource(R.string.common_today),
         modifier = Modifier.fillMaxWidth(),
-        onDateSelected = { selectedMillis = it }
+        onDateSelected = { selectAndClose(it) }
       )
       Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 8.dp),
@@ -404,16 +426,6 @@ private fun DatePickerSheet(
           color = designSystemContentColor(darkMode).copy(alpha = 0.6f),
           fontWeight = FontWeight.Bold,
           modifier = Modifier.clickable(onClick = onDismiss).padding(12.dp)
-        )
-        Text(
-          stringResource(R.string.common_confirm),
-          color = BrandGreen,
-          fontWeight = FontWeight.Black,
-          modifier = Modifier
-            .clickable {
-              selectedMillis?.let(onConfirm)
-            }
-            .padding(12.dp)
         )
       }
     }
@@ -550,7 +562,8 @@ fun StepReviewContent(
         ReviewRow(stringResource(R.string.label_other_allowance), wizard.otherAllowances.ifBlank { "0" }, isCurrency = true),
         ReviewRow(stringResource(R.string.label_bonus), wizard.bonus.ifBlank { "0" }, isCurrency = true),
         ReviewRow(stringResource(R.string.label_commission), wizard.commission.ifBlank { "0" }, isCurrency = true),
-        ReviewRow(stringResource(R.string.label_overtime_hours), wizard.overtimeHours.ifBlank { "0" })
+        ReviewRow(stringResource(R.string.label_overtime_hours), wizard.overtimeHours.ifBlank { "0" }),
+        ReviewRow(stringResource(R.string.label_ramadan_hours), stringResource(if (wizard.ramadanReducedHours) R.string.common_yes else R.string.common_no))
       )
     )
     ReviewSection(
@@ -583,14 +596,90 @@ fun StepReviewContent(
       )
     )
 
-    InteractiveCTA(
-      text = stringResource(R.string.action_calculate_net_salary),
-      icon = Icons.Filled.Calculate,
-      enabled = (wizard.basicSalary.toDoubleOrNull() ?: 0.0) > 0.0,
-      loading = isCalculating,
-      onClick = onCalculate,
-      modifier = Modifier.fillMaxWidth()
+    // Non-blocking data-entry sanity checks — none of these prevent calculating (a negative net
+    // salary or a zero years-of-service can occasionally be genuine), but each one is easy to
+    // mistype and silently produces a confusing result if it goes unnoticed, so they're
+    // surfaced here rather than left for the user to puzzle out on the Result screen.
+    val basicSalaryValue = wizard.basicSalary.toDoubleOrNull() ?: 0.0
+    val grossEstimate = basicSalaryValue +
+      (wizard.housingAllowance.toDoubleOrNull() ?: 0.0) +
+      (wizard.transportAllowance.toDoubleOrNull() ?: 0.0) +
+      (wizard.foodAllowance.toDoubleOrNull() ?: 0.0) +
+      (wizard.mobileAllowance.toDoubleOrNull() ?: 0.0) +
+      (wizard.otherAllowances.toDoubleOrNull() ?: 0.0) +
+      (wizard.bonus.toDoubleOrNull() ?: 0.0) +
+      (wizard.commission.toDoubleOrNull() ?: 0.0)
+    val unpaidLeaveAmount = (basicSalaryValue / 30.0) * (wizard.unpaidLeaveDays.toDoubleOrNull() ?: 0.0)
+    val deductionsEstimate = (wizard.loanDeduction.toDoubleOrNull() ?: 0.0) +
+      (wizard.absenceDeduction.toDoubleOrNull() ?: 0.0) +
+      unpaidLeaveAmount +
+      (wizard.otherDeductions.toDoubleOrNull() ?: 0.0)
+    val deductionsExceedGross = basicSalaryValue > 0.0 && deductionsEstimate > grossEstimate
+    val joiningAfterCalculationMonth = wizard.joiningDateMillis != null && wizard.calculationMonthMillis != null &&
+      wizard.joiningDateMillis > wizard.calculationMonthMillis
+    val overtimeHoursValue = wizard.overtimeHours.toDoubleOrNull() ?: 0.0
+    val overtimeUnusuallyHigh = overtimeHoursValue > 200.0
+
+    val warnings = listOfNotNull(
+      if (deductionsExceedGross) {
+        stringResource(
+          R.string.validation_deductions_exceed_gross,
+          "${String.format(Locale.US, "%,.2f", deductionsEstimate)} $currencySymbol",
+          "${String.format(Locale.US, "%,.2f", grossEstimate)} $currencySymbol"
+        )
+      } else null,
+      if (joiningAfterCalculationMonth) stringResource(R.string.validation_dates_out_of_order) else null,
+      if (overtimeUnusuallyHigh) {
+        stringResource(R.string.validation_overtime_high, String.format(Locale.US, "%,.0f", overtimeHoursValue))
+      } else null
     )
+
+    if (warnings.isNotEmpty()) {
+      GlassCard(darkMode = darkMode) {
+        Text(
+          stringResource(R.string.validation_section_title),
+          style = MaterialTheme.typography.titleSmall,
+          fontWeight = FontWeight.Black,
+          color = designSystemContentColor(darkMode)
+        )
+        warnings.forEach { warning ->
+          Row(verticalAlignment = Alignment.Top) {
+            Icon(
+              Icons.Filled.WarningAmber,
+              contentDescription = null,
+              tint = BrandGold,
+              modifier = Modifier.width(18.dp).padding(top = 2.dp)
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+              warning,
+              style = MaterialTheme.typography.bodySmall,
+              color = designSystemContentColor(darkMode).copy(alpha = 0.75f)
+            )
+          }
+        }
+      }
+    }
+
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+      InteractiveCTA(
+        text = stringResource(R.string.action_calculate_net_salary),
+        icon = Icons.Filled.Calculate,
+        enabled = basicSalaryValue > 0.0,
+        loading = isCalculating,
+        onClick = onCalculate,
+        modifier = Modifier.fillMaxWidth()
+      )
+      if (basicSalaryValue <= 0.0) {
+        Text(
+          stringResource(R.string.validation_basic_salary_required),
+          style = MaterialTheme.typography.labelSmall,
+          color = BrandRed,
+          modifier = Modifier.fillMaxWidth(),
+          textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        )
+      }
+    }
   }
 }
 

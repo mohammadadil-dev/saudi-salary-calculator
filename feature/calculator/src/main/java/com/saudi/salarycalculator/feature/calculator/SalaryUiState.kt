@@ -1,14 +1,20 @@
 package com.saudi.salarycalculator.feature.calculator
 
 import com.saudi.salarycalculator.core.model.CalculationRecord
+import com.saudi.salarycalculator.core.model.CityCostOfLiving
 import com.saudi.salarycalculator.core.model.ContractType
 import com.saudi.salarycalculator.core.model.EmployeeType
 import com.saudi.salarycalculator.core.model.EmploymentSector
+import com.saudi.salarycalculator.core.model.ExpatCostInput
+import com.saudi.salarycalculator.core.model.ExpatCostResult
+import com.saudi.salarycalculator.core.model.ExpatCostSchedule
 import com.saudi.salarycalculator.core.model.GosiRates
+import com.saudi.salarycalculator.core.model.GosiSystem
 import com.saudi.salarycalculator.core.model.NetSalaryInput
 import com.saudi.salarycalculator.core.model.NetSalaryResult
 import com.saudi.salarycalculator.core.model.OfferComparisonResult
 import com.saudi.salarycalculator.core.model.OfferInput
+import com.saudi.salarycalculator.core.model.SaudiCityTier
 
 /** Six steps of the calculator wizard, in display order. The Review step doubles as the
  * "Calculate" trigger; the Result screen itself is a separate nav destination. */
@@ -47,7 +53,8 @@ data class WizardFieldsState(
   val joiningDateMillis: Long? = null,
   val calculationMonthMillis: Long? = null,
   val gosiIncluded: Boolean = true,
-  val resigned: Boolean = false
+  val resigned: Boolean = false,
+  val ramadanReducedHours: Boolean = false
 ) {
   fun toNetSalaryInput(): NetSalaryInput = NetSalaryInput(
     employeeName = employeeName,
@@ -72,7 +79,8 @@ data class WizardFieldsState(
     gosiIncluded = gosiIncluded,
     resigned = resigned,
     joiningDateMillis = joiningDateMillis,
-    calculationMonthMillis = calculationMonthMillis
+    calculationMonthMillis = calculationMonthMillis,
+    ramadanReducedHours = ramadanReducedHours
   )
 }
 
@@ -108,12 +116,16 @@ fun NetSalaryInput.toWizardFieldsState(): WizardFieldsState {
     joiningDateMillis = joiningDateMillis,
     calculationMonthMillis = calculationMonthMillis,
     gosiIncluded = gosiIncluded,
-    resigned = resigned
+    resigned = resigned,
+    ramadanReducedHours = ramadanReducedHours
   )
 }
 
 /** One side of the Offer Comparison screen. [title] defaults differ for the two sides so the
- * UI can pre-fill "Current offer" / "New offer" without extra plumbing. */
+ * UI can pre-fill "Current offer" / "New offer" without extra plumbing. [city] is purely
+ * informational context (see [CityCostOfLiving]) — it's never sent through [toOfferInput] since
+ * it doesn't affect the actual GOSI/net-salary calculation, only what reference info is shown
+ * alongside this offer. */
 data class OfferFormState(
   val title: String = "",
   val basicSalary: String = "",
@@ -123,7 +135,8 @@ data class OfferFormState(
   val mobileAllowance: String = "",
   val otherAllowances: String = "",
   val deductions: String = "",
-  val employeeType: EmployeeType = EmployeeType.SAUDI
+  val employeeType: EmployeeType = EmployeeType.SAUDI,
+  val city: SaudiCityTier? = null
 ) {
   fun toOfferInput(): OfferInput = OfferInput(
     title = title,
@@ -138,10 +151,42 @@ data class OfferFormState(
   )
 }
 
+/** Form state for the expat residency-cost estimator (see [ExpatCostSchedule] for the sourced
+ * defaults). String-backed money/rate fields follow the same convention as [WizardFieldsState]
+ * so text entry can hold partial input without losing the user's place. */
+data class ExpatCostFormState(
+  val dependentCount: Int = 0,
+  val dependentMonthlyLevy: String = ExpatCostSchedule.DEPENDENT_MONTHLY_LEVY_SAR.toLong().toString(),
+  val includeOwnIqamaRenewal: Boolean = false,
+  val ownIqamaRenewalFee: String = ExpatCostSchedule.OWN_IQAMA_RENEWAL_FEE_SAR.toLong().toString(),
+  val exitReentryTripsPerYear: Int = 0,
+  /** false = single-trip visa (SAR 200), true = multiple-trip visa (SAR 500). */
+  val exitReentryMultipleTrip: Boolean = false,
+  val monthlyHealthInsurancePremium: String = ""
+) {
+  val exitReentryFeePerTrip: Double
+    get() = if (exitReentryMultipleTrip) {
+      ExpatCostSchedule.EXIT_REENTRY_MULTIPLE_FEE_SAR
+    } else {
+      ExpatCostSchedule.EXIT_REENTRY_SINGLE_FEE_SAR
+    }
+
+  fun toExpatCostInput(): ExpatCostInput = ExpatCostInput(
+    dependentCount = dependentCount,
+    dependentMonthlyLevySar = dependentMonthlyLevy.toDoubleOrNull() ?: ExpatCostSchedule.DEPENDENT_MONTHLY_LEVY_SAR,
+    includeOwnIqamaRenewal = includeOwnIqamaRenewal,
+    ownIqamaRenewalFeeSar = ownIqamaRenewalFee.toDoubleOrNull() ?: ExpatCostSchedule.OWN_IQAMA_RENEWAL_FEE_SAR,
+    exitReentryTripsPerYear = exitReentryTripsPerYear,
+    exitReentryFeePerTripSar = exitReentryFeePerTrip,
+    monthlyHealthInsurancePremiumSar = monthlyHealthInsurancePremium.toDoubleOrNull() ?: 0.0
+  )
+}
+
 data class SalaryUiState(
   val darkMode: Boolean = false,
   val language: String = "en",
   val gosiRates: GosiRates = GosiRates(),
+  val gosiSystem: GosiSystem = GosiSystem.NEW,
   val wizard: WizardFieldsState = WizardFieldsState(),
   val wizardStep: WizardStep = WizardStep.BASIC_SALARY,
   val isCalculating: Boolean = false,
@@ -150,6 +195,8 @@ data class SalaryUiState(
   val offerCurrent: OfferFormState = OfferFormState(title = "Current offer"),
   val offerNew: OfferFormState = OfferFormState(title = "New offer"),
   val offerComparisonResult: OfferComparisonResult? = null,
+  val expatCostForm: ExpatCostFormState = ExpatCostFormState(),
+  val expatCostResult: ExpatCostResult? = null,
   val history: List<CalculationRecord> = emptyList(),
   val toastMessage: String? = null
 ) {

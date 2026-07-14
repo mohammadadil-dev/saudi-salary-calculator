@@ -3,6 +3,8 @@ package com.saudi.salarycalculator.core.calculator
 import com.saudi.salarycalculator.core.model.EmployeeType
 import com.saudi.salarycalculator.core.model.EndOfServiceInput
 import com.saudi.salarycalculator.core.model.EndOfServiceResult
+import com.saudi.salarycalculator.core.model.ExpatCostInput
+import com.saudi.salarycalculator.core.model.ExpatCostResult
 import com.saudi.salarycalculator.core.model.GosiInput
 import com.saudi.salarycalculator.core.model.GosiResult
 import com.saudi.salarycalculator.core.model.NetSalaryInput
@@ -15,6 +17,7 @@ import com.saudi.salarycalculator.core.model.OvertimeResult
 import com.saudi.salarycalculator.core.model.SalaryBreakdownItem
 import com.saudi.salarycalculator.core.model.SavingsInput
 import com.saudi.salarycalculator.core.model.SavingsResult
+import com.saudi.salarycalculator.core.model.WorkingHoursSchedule
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
@@ -56,7 +59,8 @@ class DefaultNetSalaryCalculatorService(
     val allowances = input.housingAllowance + input.transportAllowance +
       input.foodAllowance + input.mobileAllowance + input.otherAllowances
 
-    val hourlyRate = input.overtimeHourlyRateOverride ?: (input.basicSalary / 240.0)
+    val monthlyWorkingHours = WorkingHoursSchedule.monthlyHoursFor(input.ramadanReducedHours)
+    val hourlyRate = input.overtimeHourlyRateOverride ?: (input.basicSalary / monthlyWorkingHours)
     val overtimePay = (hourlyRate * 1.5 * input.overtimeHours).toCurrency()
     val earningsAddOns = (input.bonus + input.commission + overtimePay).toCurrency()
 
@@ -132,8 +136,13 @@ class DefaultGosiCalculatorService : GosiCalculatorService {
       EmployeeType.SAUDI -> input.rates.saudiEmployerRate
       EmployeeType.EXPAT -> input.rates.expatEmployerHazardRate
     }
-    val employee = (input.baseAmount * employeeRate).toCurrency()
-    val employer = (input.baseAmount * employerRate).toCurrency()
+    // GOSI only assesses contributions on wages up to the monthly contribution cap (SAR 45,000 as
+    // of mid-2026 — see GosiRateSchedule); anything above it is excluded from the base, not just
+    // taxed at a different rate.
+    val cap = input.rates.contributionCapSar
+    val contributionBase = if (cap > 0.0) minOf(input.baseAmount, cap) else input.baseAmount
+    val employee = (contributionBase * employeeRate).toCurrency()
+    val employer = (contributionBase * employerRate).toCurrency()
     return GosiResult(
       employeeContribution = employee,
       employerContribution = employer,
@@ -237,6 +246,38 @@ class DefaultSavingsCalculatorService : SavingsCalculatorService {
       monthlySavings = savings.toCurrency(),
       yearlySavings = (savings * 12.0).toCurrency(),
       savingsRate = if (input.netSalary <= 0.0) 0.0 else ((savings / input.netSalary) * 100.0).toCurrency()
+    )
+  }
+}
+
+interface ExpatCostCalculatorService {
+  fun calculate(input: ExpatCostInput): ExpatCostResult
+}
+
+class DefaultExpatCostCalculatorService : ExpatCostCalculatorService {
+  override fun calculate(input: ExpatCostInput): ExpatCostResult {
+    val monthlyDependentLevy = (input.dependentCount.coerceAtLeast(0) * input.dependentMonthlyLevySar).toCurrency()
+    val monthlyOwnIqamaRenewal = if (input.includeOwnIqamaRenewal) {
+      (input.ownIqamaRenewalFeeSar / 12.0).toCurrency()
+    } else {
+      0.0
+    }
+    val monthlyExitReentry = (
+      (input.exitReentryTripsPerYear.coerceAtLeast(0) * input.exitReentryFeePerTripSar) / 12.0
+      ).toCurrency()
+    val monthlyHealthInsurance = input.monthlyHealthInsurancePremiumSar.coerceAtLeast(0.0).toCurrency()
+
+    val totalMonthly = (
+      monthlyDependentLevy + monthlyOwnIqamaRenewal + monthlyExitReentry + monthlyHealthInsurance
+      ).toCurrency()
+
+    return ExpatCostResult(
+      monthlyDependentLevy = monthlyDependentLevy,
+      monthlyOwnIqamaRenewal = monthlyOwnIqamaRenewal,
+      monthlyExitReentry = monthlyExitReentry,
+      monthlyHealthInsurance = monthlyHealthInsurance,
+      totalMonthlyCost = totalMonthly,
+      totalYearlyCost = (totalMonthly * 12.0).toCurrency()
     )
   }
 }
