@@ -1,6 +1,7 @@
 package com.saudi.salarycalculator.core.data.repository
 
 import com.saudi.salarycalculator.core.calculator.EndOfServiceCalculatorService
+import com.saudi.salarycalculator.core.calculator.ExpatCostCalculatorService
 import com.saudi.salarycalculator.core.calculator.GosiCalculatorService
 import com.saudi.salarycalculator.core.calculator.NetSalaryCalculatorService
 import com.saudi.salarycalculator.core.calculator.OfferComparisonCalculatorService
@@ -16,9 +17,12 @@ import com.saudi.salarycalculator.core.model.EmployeeType
 import com.saudi.salarycalculator.core.model.EmploymentSector
 import com.saudi.salarycalculator.core.model.EndOfServiceInput
 import com.saudi.salarycalculator.core.model.EndOfServiceResult
+import com.saudi.salarycalculator.core.model.ExpatCostInput
+import com.saudi.salarycalculator.core.model.ExpatCostResult
 import com.saudi.salarycalculator.core.model.GosiInput
 import com.saudi.salarycalculator.core.model.GosiRates
 import com.saudi.salarycalculator.core.model.GosiResult
+import com.saudi.salarycalculator.core.model.GosiSystem
 import com.saudi.salarycalculator.core.model.NetSalaryInput
 import com.saudi.salarycalculator.core.model.NetSalaryResult
 import com.saudi.salarycalculator.core.model.OfferComparisonResult
@@ -39,6 +43,7 @@ class OfflineFirstSalaryRepository @Inject constructor(
   private val endOfServiceCalculatorService: EndOfServiceCalculatorService,
   private val offerComparisonCalculatorService: OfferComparisonCalculatorService,
   private val savingsCalculatorService: SavingsCalculatorService,
+  private val expatCostCalculatorService: ExpatCostCalculatorService,
   private val calculationRecordDao: CalculationRecordDao,
   private val preferencesStore: UserPreferencesStore
 ) : SalaryRepository {
@@ -59,6 +64,9 @@ class OfflineFirstSalaryRepository @Inject constructor(
 
   override suspend fun calculateSavings(input: SavingsInput): SavingsResult =
     savingsCalculatorService.calculate(input)
+
+  override suspend fun calculateExpatCosts(input: ExpatCostInput): ExpatCostResult =
+    expatCostCalculatorService.calculate(input)
 
   override fun observeHistory(): Flow<List<CalculationRecord>> =
     calculationRecordDao.observeAll().map { records -> records.map { it.toModel() } }
@@ -92,6 +100,14 @@ class OfflineFirstSalaryRepository @Inject constructor(
   override suspend fun setDarkMode(enabled: Boolean) {
     preferencesStore.setDarkMode(enabled)
   }
+
+  override fun observeGosiSystem(): Flow<GosiSystem> = preferencesStore.gosiSystem.map { raw ->
+    runCatching { GosiSystem.valueOf(raw) }.getOrDefault(GosiSystem.NEW)
+  }
+
+  override suspend fun setGosiSystem(system: GosiSystem) {
+    preferencesStore.setGosiSystem(system.name)
+  }
 }
 
 private fun CalculationRecordEntity.toModel(): CalculationRecord =
@@ -123,7 +139,12 @@ private fun CalculationRecord.toEntity(): CalculationRecordEntity =
 // neutralized by stripping it out at encode time, so the field count never shifts on decode.
 private const val SNAPSHOT_DELIMITER = "<<#>>"
 private const val SNAPSHOT_NULL = "<<NULL>>"
-private const val SNAPSHOT_FIELD_COUNT = 27
+// Records written before the GOSI contribution cap / Ramadan hours fields were added only have 27
+// fields; decode treats the 28th (contributionCapSar) and 29th (ramadanReducedHours) as optional
+// so those old snapshots still decode instead of being silently dropped. New snapshots always
+// write all 29.
+private const val SNAPSHOT_FIELD_COUNT_LEGACY = 27
+private const val SNAPSHOT_FIELD_COUNT = 29
 
 private fun NetSalaryInput.encodeAsSnapshot(): String {
   fun Double?.encoded() = this?.toString() ?: SNAPSHOT_NULL
@@ -156,13 +177,15 @@ private fun NetSalaryInput.encodeAsSnapshot(): String {
     gosiRates.saudiEmployeeRate.toString(),
     gosiRates.saudiEmployerRate.toString(),
     gosiRates.expatEmployeeRate.toString(),
-    gosiRates.expatEmployerHazardRate.toString()
+    gosiRates.expatEmployerHazardRate.toString(),
+    gosiRates.contributionCapSar.toString(),
+    ramadanReducedHours.toString()
   ).joinToString(SNAPSHOT_DELIMITER)
 }
 
 private fun String.decodeNetSalaryInputSnapshot(): NetSalaryInput? {
   val parts = split(SNAPSHOT_DELIMITER)
-  if (parts.size < SNAPSHOT_FIELD_COUNT) return null
+  if (parts.size < SNAPSHOT_FIELD_COUNT_LEGACY) return null
 
   fun String.nullableDouble() = if (this == SNAPSHOT_NULL) null else toDoubleOrNull()
   fun String.nullableLong() = if (this == SNAPSHOT_NULL) null else toLongOrNull()
@@ -196,8 +219,10 @@ private fun String.decodeNetSalaryInputSnapshot(): NetSalaryInput? {
         saudiEmployeeRate = parts[23].toDoubleOrNull() ?: 0.0975,
         saudiEmployerRate = parts[24].toDoubleOrNull() ?: 0.1175,
         expatEmployeeRate = parts[25].toDoubleOrNull() ?: 0.0,
-        expatEmployerHazardRate = parts[26].toDoubleOrNull() ?: 0.02
-      )
+        expatEmployerHazardRate = parts[26].toDoubleOrNull() ?: 0.02,
+        contributionCapSar = parts.getOrNull(27)?.toDoubleOrNull() ?: 45000.0
+      ),
+      ramadanReducedHours = parts.getOrNull(28)?.toBooleanStrictOrNull() ?: false
     )
   }.getOrNull()
 }

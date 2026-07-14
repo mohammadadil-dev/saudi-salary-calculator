@@ -8,7 +8,7 @@ Read the whole **Before you publish** checklist at the bottom before uploading a
 A release keystore has already been generated:
 
 - Keystore file: `release-keystore.jks` (project root)
-- Key alias: `saudisalarycalculator`
+- Key alias: `key0`
 - Credentials: `keystore.properties` (project root)
 
 Both files are listed in `.gitignore` and must **never** be committed. `app/build.gradle.kts`
@@ -20,6 +20,24 @@ storage) — both `release-keystore.jks` and `keystore.properties`. If you lose 
 does not have a recovery path: you would never be able to publish an update to this app listing
 again, only a brand-new listing under a new package name. The passwords were also shared in chat
 when they were generated — save them now if you haven't.
+
+**Incident, 2026-06-29 — keystore mismatch:** a second `release-keystore.jks` had been generated
+(alias `saudisalarycalculator`) at some point after the app's first-ever upload, silently
+replacing the original file. Play Console rejected a re-upload with "Your Android App Bundle is
+signed with the wrong key," since it had already permanently registered the certificate from that
+very first upload (alias `key0`, fingerprint
+`9F:9A:90:0A:51:D8:83:67:18:4F:CB:0E:84:DC:0F:B2:7D:C8:F4:C4`). Recovered by locating the original
+file — saved separately during the initial "Generate Signed Bundle" wizard run, at
+`~/Documents/android-release-key/saudi-salary-calculator` — and restoring it as
+`release-keystore.jks`, with `keystore.properties`'s `keyAlias` updated to `key0` to match. The
+incorrect keystore is kept as `release-keystore-WRONG-do-not-use.jks` for reference only (still
+covered by `.gitignore`'s `*.jks` wildcard) — never use it.
+
+**Never run `keytool -genkeypair` again for this app, for any reason.** Regenerating
+`release-keystore.jks` under the same filename/alias — even by accident — creates an entirely new,
+incompatible key and silently breaks every future upload, exactly what happened here. If the file
+is ever genuinely missing, the only recovery paths are finding the original backup or Play
+Console's Setup → App integrity → "Request upload key reset."
 
 To verify the keystore at any point:
 
@@ -39,10 +57,22 @@ looks blank right after a release build, that's expected, not a bug.
 
 ## 3. Versioning
 
-Currently `versionCode = 1`, `versionName = "1.0"` (`app/build.gradle.kts`) — correct for a first
-release, no change needed. For every future release: bump `versionCode` by at least 1 (it must
-strictly increase, Play Console rejects re-using or lowering it) and update `versionName` to
-whatever you want users to see (e.g. `"1.1"`).
+`versionCode = 4`, `versionName = "1.1.0"` (`app/build.gradle.kts`) as of 2026-07-14 — bumped from
+3/"1.0.1" for a real feature release: phased GOSI rate schedule (New System now tracks the actual
+2024-2028 step-up, corrected against Oracle/ZenHR payroll-legislation sources), Ramadan reduced
+working hours, expat residency cost estimator, city cost-of-living reference, unofficial payroll
+CSV export, watermarked salary certificate PDF export, rate/share options in Settings, plus a
+handful of UI fixes (a date picker that used to require a separate Confirm tap, a segmented
+control that could visually overlap on long labels, an unresolved icon reference caught by a real
+build). Also new: wizard-level input validation — the "Next" button on the Basic Salary step and
+the Calculate button on Review are disabled with an explanatory message until basic salary is
+entered, and the Review step now surfaces non-blocking warnings for likely data-entry mistakes
+(deductions exceeding gross salary, a joining date after the calculation month, implausibly high
+overtime hours). **Before re-uploading**, verify on a real device via `./gradlew clean installRelease` (or
+Android Studio's Generate Signed Bundle/APK) — don't re-upload on faith, a buggy upload burns a
+review cycle. For every future release: bump `versionCode` by at least 1 (it must strictly
+increase, Play Console rejects re-using or lowering it) and update `versionName` to
+whatever you want users to see.
 
 ## 4. Target API level — heads-up for later in 2026
 
@@ -69,7 +99,7 @@ To sanity-check the signed build installs and runs before uploading:
 adb install app/build/outputs/apk/release/app-release.apk
 ```
 
-## 6. Store listing copy (draft)
+## 6. Store listing copy
 
 **App name:** Saudi Salary Calculator
 
@@ -87,25 +117,114 @@ salary, including GOSI contributions (Saudi and non-Saudi rates) and an estimate
 benefit (EOSB).
 
 FEATURES
-• Guided net salary calculator with GOSI and EOSB built in
+• Guided net salary calculator with GOSI (Existing and New System) and EOSB built in
 • Compare two job offers side by side — net salary, GOSI, EOSB, percentage difference
 • Generate a formatted payslip, export it as a PDF, and share it
+• Export a watermarked salary certificate (PDF) — a personal, self-generated record
+• Export your saved calculations as a payroll summary (CSV)
+• Expat residency cost estimator — dependent fees, exit/re-entry visas, insurance
+• City cost-of-living reference for comparing offers across Saudi cities
+• Ramadan reduced working-hours support
 • Save your calculation history — reopen, edit, or delete any past calculation
 • Fully bilingual: English and Arabic, with right-to-left layout support
 • Light and dark themes
 
 Whether you're evaluating a new offer, negotiating a raise, or just want to understand your
 payslip, Saudi Salary Calculator gives you the numbers in seconds — no spreadsheet required.
+
+SOURCES
+GOSI contribution rates: https://www.gosi.gov.sa
+End-of-service benefit rules (Saudi Labor Law): https://www.hrsd.gov.sa/en/knowledge-centre/articles/317
+
+DISCLAIMER
+This app is an independent, unofficial calculator. It is not affiliated with, endorsed by, or
+operated by GOSI, the Ministry of Human Resources and Social Development, or any Saudi
+government entity. All results are estimates for informational purposes only — always confirm
+exact figures with your employer or the official sources above.
 ```
 
-**What's new (v1.0):**
-> First release: net salary calculator, offer comparison, payslip with PDF export, calculation
-> history, English/Arabic support, light/dark themes.
+### Arabic (`ar`) store listing
+
+Play Console lets you add a full translated listing per locale (Store presence → Main store
+listing → Manage translations → add Arabic). Adding one is worth doing here specifically — the
+app itself is fully bilingual with RTL support, and most of the target audience for a Saudi
+payroll calculator searches Play Store in Arabic. App name matches the in-app Arabic name
+(`app_name` / `splash_app_name` in `values-ar/strings.xml`) for consistency.
+
+**اسم التطبيق:** حاسبة الراتب السعودية
+
+**الوصف المختصر** (80 حرفًا كحد أقصى، 77 حرفًا):
+> احسب صافي راتبك والتأمينات الاجتماعية ومكافأة نهاية الخدمة في السعودية بسرعة.
+
+**الوصف الكامل:**
+
+```
+اعرف صافي راتبك الحقيقي قبل قبول أي عرض عمل في المملكة العربية السعودية.
+
+يرشدك تطبيق حاسبة الراتب السعودية عبر خطوات بسيطة — الراتب الأساسي، بدلات السكن والنقل وغيرها،
+المكافآت، العمولات، الوقت الإضافي، وأي استقطاعات — ليحسب لك صافي راتبك بدقة، متضمنًا اشتراكات
+التأمينات الاجتماعية (جوسي) للسعوديين وغير السعوديين، وتقدير مكافأة نهاية الخدمة.
+
+المميزات
+• حاسبة صافي راتب موجّهة تتضمن التأمينات الاجتماعية (النظامين الحالي والجديد) ومكافأة نهاية الخدمة
+• قارن بين عرضي عمل جنبًا إلى جنب — صافي الراتب، التأمينات، مكافأة نهاية الخدمة، ونسبة الفرق
+• أنشئ قسيمة راتب منسقة، صدّرها كملف PDF، وشاركها
+• صدّر شهادة راتب بعلامة مائية (PDF) — سجل شخصي ذاتي الإنشاء
+• صدّر حساباتك المحفوظة كملخص رواتب (CSV)
+• حاسبة تكاليف الإقامة للمقيمين — رسوم التابعين، تأشيرات الخروج والعودة، التأمين الصحي
+• مرجع تكلفة المعيشة حسب المدينة لمقارنة العروض بين مدن السعودية
+• دعم ساعات العمل المخفضة في رمضان
+• احفظ سجل حساباتك — أعد فتحه أو عدّله أو احذفه في أي وقت
+• دعم كامل للغتين العربية والإنجليزية، مع دعم الاتجاه من اليمين لليسار
+• الوضعان الفاتح والداكن
+
+سواء كنت تقيّم عرض عمل جديد، تتفاوض على زيادة راتب، أو ببساطة تريد فهم قسيمة راتبك، يمنحك تطبيق
+حاسبة الراتب السعودية الأرقام في ثوانٍ — دون الحاجة لأي جدول بيانات.
+
+المصادر
+نسب التأمينات الاجتماعية (جوسي): https://www.gosi.gov.sa
+قواعد مكافأة نهاية الخدمة (نظام العمل السعودي): https://www.hrsd.gov.sa/en/knowledge-centre/articles/317
+
+إخلاء مسؤولية
+هذا التطبيق حاسبة مستقلة وغير رسمية، وهو غير تابع لمؤسسة التأمينات الاجتماعية (جوسي) أو وزارة
+الموارد البشرية والتنمية الاجتماعية أو أي جهة حكومية سعودية، ولا يحظى بدعم أو تشغيل من أي منها.
+جميع النتائج تقديرية ولأغراض إعلامية فقط — يُرجى دائمًا التحقق من الأرقام الدقيقة مع صاحب العمل أو
+المصادر الرسمية أعلاه.
+```
+
+**ما الجديد (v1.1.0):** — see the Arabic release-notes blockquote just below the English one
+directly under this section; same copy applies here.
+
+**What's new (v1.1.0):**
+> New: expat residency cost estimator, city cost-of-living reference, Ramadan reduced-hours
+> support, payroll summary export (CSV), and watermarked salary certificate export (PDF).
+> Updated GOSI New System contribution rates through 2028. Smarter validation now catches
+> likely data-entry mistakes (like deductions bigger than salary) before you calculate. Plus a
+> smoother date picker and other UI fixes.
+
+(279 characters — well under Play Console's ~500-char release-notes limit. Arabic translation
+below if you want to fill in the `ar` locale release notes in Play Console; the store listing
+itself is currently English-only, see Section 6.)
+
+> جديد: حاسبة تكاليف الإقامة للمقيمين، مرجع تكلفة المعيشة حسب المدينة، دعم ساعات العمل المخفضة في
+> رمضان، تصدير ملخص الرواتب (CSV)، وتصدير شهادة الراتب بعلامة مائية (PDF). تحديث نسب التأمينات
+> الاجتماعية (جوسي) للنظام الجديد حتى عام 2028. تحقق أذكى يكتشف الآن أخطاء الإدخال المحتملة (مثل
+> استقطاعات أكبر من الراتب) قبل الحساب. بالإضافة إلى منتقي تاريخ أكثر سلاسة وتحسينات أخرى في الواجهة.
+
+(Previous "what's new" entries, for reference:
+v1.0.1 — Bug fix: resolved a crash on launch affecting some devices.
+v1.0 — First release: net salary calculator, offer comparison, payslip with PDF export,
+calculation history, English/Arabic support, light/dark themes.)
 
 **Category:** Finance (or Tools — Finance is the closer fit for a salary/GOSI calculator).
 
-Treat all of the above as a draft — Mohammad should read it over and adjust tone/wording before
-submitting; this wasn't run past anyone else for legal or marketing review.
+**Rejected 2026-06-28, fixed same day:** Play Console rejected the first submission for
+"Violation of Misleading Claims policy — Missing Source Link for Government Information." The
+app references GOSI contribution rates and EOSB, both governed by Saudi government
+bodies/legislation, and the original description neither sourced that info nor disclaimed
+non-affiliation. Fixed by adding the SOURCES and DISCLAIMER blocks above (official GOSI and
+MHRSD links, explicit non-affiliation statement). After pasting the updated description into
+Play Console, resubmit via Publishing overview → "Send changes for review."
 
 ## 7. Graphics
 
@@ -132,6 +251,27 @@ To publish it:
    needed; framework preset "Other" is fine).
 2. Copy the resulting URL (e.g. `https://your-project.vercel.app`).
 3. Paste that URL into Play Console → App content → Privacy policy.
+
+### app-ads.txt (AdMob "Verify app" step)
+
+`app-ads.txt` now sits at the repo root next to `index.html`, so the same Vercel deploy serves it
+automatically at `https://<your-domain>/app-ads.txt`:
+
+```
+google.com, pub-8890346685665889, DIRECT, f08c47fec0942fa0
+```
+
+AdMob's "Verify app" flagged "We didn't find a developer website in your app listing on Google
+Play" — that's a separate field from the privacy policy URL. Fix:
+
+1. Play Console → your app → Store presence → Store listing → **Contact details** → set
+   **Website** to the same deployed domain (e.g. `https://your-project.vercel.app`).
+2. Save and publish the store listing change.
+3. Back in AdMob → Apps → this app → App ads.txt, click **Check for updates** (crawling can take
+   anywhere from a few minutes to ~24 hours after both the site and Play listing are live).
+
+Both the Play Console Website field and the live `app-ads.txt` file need to be in place before
+AdMob's crawler will verify — one without the other won't clear the warning.
 
 ## 9. Data Safety form (Play Console)
 

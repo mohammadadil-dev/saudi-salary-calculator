@@ -1,7 +1,9 @@
 package com.saudi.salarycalculator.feature.calculator.navigation
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -33,19 +35,26 @@ import com.saudi.salarycalculator.core.designsystem.components.BottomNavItem
 import com.saudi.salarycalculator.core.designsystem.components.BottomNavigationBar
 import com.saudi.salarycalculator.core.designsystem.components.AnimatedAppBackground
 import com.saudi.salarycalculator.core.designsystem.util.LocalizedContent
+import com.saudi.salarycalculator.core.model.CalculationRecord
+import com.saudi.salarycalculator.core.model.EmployeeType
+import com.saudi.salarycalculator.core.model.EmploymentSector
 import com.saudi.salarycalculator.core.model.NetSalaryResult
+import com.saudi.salarycalculator.feature.calculator.PayrollSummaryExporter
 import com.saudi.salarycalculator.feature.calculator.PdfReportExporter
 import com.saudi.salarycalculator.feature.calculator.R
 import com.saudi.salarycalculator.feature.calculator.SalaryViewModel
 import com.saudi.salarycalculator.feature.calculator.WizardFieldsState
 import com.saudi.salarycalculator.feature.calculator.screens.CalculatorWizardScreen
 import com.saudi.salarycalculator.feature.calculator.screens.ComparisonScreen
+import com.saudi.salarycalculator.feature.calculator.screens.ExpatCostScreen
 import com.saudi.salarycalculator.feature.calculator.screens.HomeScreen
 import com.saudi.salarycalculator.feature.calculator.screens.PayslipScreen
 import com.saudi.salarycalculator.feature.calculator.screens.ResultScreen
 import com.saudi.salarycalculator.feature.calculator.screens.SettingsScreen
 import com.saudi.salarycalculator.feature.calculator.screens.SplashScreen
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 /** Single shared-ViewModel NavHost for the whole app. [SalaryViewModel] is obtained once here
@@ -100,6 +109,13 @@ fun SalaryNavGraph(
           onBack = { navController.popBackStack() }
         )
       }
+      if (currentRoute == Screen.ExpatCosts.route) {
+        AppTopBar(
+          title = stringResource(R.string.expat_costs_title),
+          darkMode = state.darkMode,
+          onBack = { navController.popBackStack() }
+        )
+      }
     },
     bottomBar = {
       if (currentRoute in bottomNavRoutes) {
@@ -147,7 +163,20 @@ fun SalaryNavGraph(
             viewModel.editRecord(record)
             navController.navigateToTab(Screen.Calculator.route)
           },
-          onDeleteRecord = viewModel::deleteRecord
+          onDeleteRecord = viewModel::deleteRecord,
+          onOpenExpatCosts = { navController.navigate(Screen.ExpatCosts.route) }
+        )
+      }
+
+      composable(Screen.ExpatCosts.route) {
+        ExpatCostScreen(
+          darkMode = state.darkMode,
+          currencySymbol = currencySymbol,
+          form = state.expatCostForm,
+          result = state.expatCostResult,
+          lastNetSalary = state.netSalaryResult?.netSalary,
+          onUpdateForm = viewModel::updateExpatCostForm,
+          onCalculate = viewModel::calculateExpatCosts
         )
       }
 
@@ -182,6 +211,8 @@ fun SalaryNavGraph(
         val savedConfirmation = stringResource(R.string.payslip_saved_confirmation)
         val exportedConfirmation = stringResource(R.string.payslip_exported_confirmation)
         val exportLabel = stringResource(R.string.action_export_pdf)
+        val certificateExportedConfirmation = stringResource(R.string.certificate_exported_confirmation)
+        val certificateShareTitle = stringResource(R.string.action_export_certificate)
         PayslipScreen(
           darkMode = state.darkMode,
           currencySymbol = currencySymbol,
@@ -197,7 +228,14 @@ fun SalaryNavGraph(
           onShare = {
             state.netSalaryResult?.let { result ->
               val file = writePayslipPdf(context, state.wizard, result, currencySymbol)
-              sharePdfFile(context, file, exportLabel)
+              shareFile(context, file, mimeType = "application/pdf", chooserTitle = exportLabel)
+            }
+          },
+          onExportSalaryCertificate = {
+            state.netSalaryResult?.let { result ->
+              val file = writeSalaryCertificatePdf(context, state.wizard, result, currencySymbol)
+              shareFile(context, file, mimeType = "application/pdf", chooserTitle = certificateShareTitle)
+              viewModel.showToast(certificateExportedConfirmation)
             }
           }
         )
@@ -217,20 +255,33 @@ fun SalaryNavGraph(
       }
 
       composable(Screen.Settings.route) {
+        val payrollExportedConfirmation = stringResource(R.string.settings_payroll_export_confirmation)
+        val payrollExportShareTitle = stringResource(R.string.settings_export_payroll_summary)
+        val shareAppTitle = stringResource(R.string.settings_share_app)
+        val shareAppMessage = stringResource(R.string.settings_share_app_message)
         SettingsScreen(
           darkMode = state.darkMode,
           language = state.language,
           gosiRates = state.gosiRates,
+          gosiSystem = state.gosiSystem,
           history = state.history,
           onToggleDarkMode = viewModel::toggleDarkMode,
           onSetLanguage = viewModel::setLanguage,
           onUpdateGosiRates = viewModel::updateGosiRates,
+          onSetGosiSystem = viewModel::setGosiSystem,
           onClearHistory = viewModel::clearHistory,
           onEditRecord = { record ->
             viewModel.editRecord(record)
             navController.navigateToTab(Screen.Calculator.route)
           },
-          onDeleteRecord = viewModel::deleteRecord
+          onDeleteRecord = viewModel::deleteRecord,
+          onExportPayrollSummary = {
+            val file = writePayrollSummaryCsv(context, state.history)
+            shareFile(context, file, mimeType = "text/csv", chooserTitle = payrollExportShareTitle)
+            viewModel.showToast(payrollExportedConfirmation)
+          },
+          onRateApp = { openPlayStoreListing(context) },
+          onShareApp = { shareAppLink(context, shareAppMessage, shareAppTitle) }
         )
       }
     }
@@ -255,12 +306,49 @@ private fun writePayslipPdf(
   return file
 }
 
-private fun sharePdfFile(context: Context, file: File, chooserTitle: String) {
+private fun writePayrollSummaryCsv(context: Context, history: List<CalculationRecord>): File {
+  val file = File(context.cacheDir, "saudi_salary_payroll_summary.csv")
+  PayrollSummaryExporter.write(file, history)
+  return file
+}
+
+private fun shareFile(context: Context, file: File, mimeType: String, chooserTitle: String) {
   val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
   val intent = Intent(Intent.ACTION_SEND).apply {
-    type = "application/pdf"
+    type = mimeType
     putExtra(Intent.EXTRA_STREAM, uri)
     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+  }
+  context.startActivity(Intent.createChooser(intent, chooserTitle))
+}
+
+/** Opens this app's own Play Store listing for "Rate this app". Prefers the Play Store app
+ * itself (nicer in-app review UI) and falls back to a browser if Play Store isn't installed —
+ * e.g. an emulator without Play services, or a sideloaded install. */
+private fun openPlayStoreListing(context: Context) {
+  val playStoreIntent = Intent(
+    Intent.ACTION_VIEW,
+    Uri.parse("market://details?id=${context.packageName}")
+  ).apply { setPackage("com.android.vending") }
+  try {
+    context.startActivity(playStoreIntent)
+  } catch (e: ActivityNotFoundException) {
+    val webIntent = Intent(
+      Intent.ACTION_VIEW,
+      Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}")
+    )
+    context.startActivity(webIntent)
+  }
+}
+
+/** Plain-text share sheet for "Share this app" — [message] already has the marketing blurb;
+ * this just appends the Play Store link and hands it to whatever app the user picks
+ * (WhatsApp, SMS, email, etc.), same chooser pattern as [shareFile]. */
+private fun shareAppLink(context: Context, message: String, chooserTitle: String) {
+  val playStoreUrl = "https://play.google.com/store/apps/details?id=${context.packageName}"
+  val intent = Intent(Intent.ACTION_SEND).apply {
+    type = "text/plain"
+    putExtra(Intent.EXTRA_TEXT, "$message\n\n$playStoreUrl")
   }
   context.startActivity(Intent.createChooser(intent, chooserTitle))
 }
@@ -287,4 +375,73 @@ private fun buildPayslipReportText(
   appendLine()
   appendLine("Yearly net salary: ${money(result.yearlyNetSalary)}")
   appendLine("Estimated end-of-service benefit: ${money(result.estimatedEosb)}")
+}
+
+/** Watermark tiled diagonally across the certificate PDF, in addition to the plain-text
+ * disclaimer baked into the report body itself (see [buildSalaryCertificateReportText]) — see
+ * [PdfReportExporter.write] for why both layers exist. */
+private const val SALARY_CERTIFICATE_WATERMARK = "UNOFFICIAL - NOT EMPLOYER-CERTIFIED"
+
+private fun writeSalaryCertificatePdf(
+  context: Context,
+  wizard: WizardFieldsState,
+  result: NetSalaryResult,
+  currencySymbol: String
+): File {
+  val file = File(context.cacheDir, "saudi_salary_certificate.pdf")
+  PdfReportExporter.write(
+    file,
+    buildSalaryCertificateReportText(wizard, result, currencySymbol),
+    watermarkText = SALARY_CERTIFICATE_WATERMARK
+  )
+  return file
+}
+
+/** Deliberately avoids certifying language like "this is to certify that..." — that phrasing
+ * mimics an employer-issued document, which this explicitly is not. It's framed instead as a
+ * personal record the user compiled themselves from self-entered figures, with the disclaimer
+ * repeated as plain, unmissable text (not just the faint diagonal watermark) since that's the
+ * part someone skimming the PDF is most likely to actually read. */
+private fun buildSalaryCertificateReportText(
+  wizard: WizardFieldsState,
+  result: NetSalaryResult,
+  currencySymbol: String
+): String = buildString {
+  fun money(value: Double) = "${String.format(Locale.US, "%,.2f", value)} $currencySymbol"
+  val generatedOn = SimpleDateFormat("d MMM yyyy", Locale.US).format(Date())
+
+  appendLine("=== UNOFFICIAL - SELF-GENERATED ESTIMATE ===")
+  appendLine("NOT EMPLOYER-CERTIFIED. NOT AN OFFICIAL DOCUMENT.")
+  appendLine()
+  appendLine("Personal Salary Summary")
+  appendLine("Generated on: $generatedOn")
+  appendLine()
+  appendLine("This summary was self-generated by the individual named below from figures they")
+  appendLine("entered into the Saudi Salary Calculator app. It has NOT been reviewed, verified,")
+  appendLine("or issued by any employer, and carries no employer signature or stamp. Do not")
+  appendLine("submit this as if it were an official HR-issued salary certificate.")
+  appendLine()
+  appendLine("Employee name: ${wizard.employeeName.ifBlank { "-" }}")
+  appendLine("Job title: ${wizard.jobTitle.ifBlank { "-" }}")
+  appendLine(
+    "Nationality: ${if (wizard.employeeType == EmployeeType.SAUDI) "Saudi" else "Non-Saudi"}"
+  )
+  appendLine(
+    "Employment sector: " +
+      if (wizard.employmentSector == EmploymentSector.PRIVATE) "Private" else "Government"
+  )
+  wizard.joiningDateMillis?.let {
+    appendLine("Joining date: ${SimpleDateFormat("d MMM yyyy", Locale.US).format(Date(it))}")
+  }
+  appendLine()
+  appendLine("Monthly basic salary: ${money(wizard.basicSalary.toDoubleOrNull() ?: 0.0)}")
+  appendLine("Monthly housing allowance: ${money(wizard.housingAllowance.toDoubleOrNull() ?: 0.0)}")
+  appendLine("Monthly transport allowance: ${money(wizard.transportAllowance.toDoubleOrNull() ?: 0.0)}")
+  appendLine("Monthly gross salary: ${money(result.grossSalary)}")
+  appendLine("Monthly GOSI (employee): ${money(result.employeeGosiAmount)}")
+  appendLine("Monthly net salary: ${money(result.netSalary)}")
+  appendLine("Annual net salary: ${money(result.yearlyNetSalary)}")
+  appendLine()
+  appendLine("Figures reflect data entered by the user in this app and are not independently")
+  appendLine("verified against payroll records.")
 }

@@ -5,7 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.saudi.salarycalculator.core.data.SalaryRepository
 import com.saudi.salarycalculator.core.model.CalculationRecord
 import com.saudi.salarycalculator.core.model.CalculationType
+import com.saudi.salarycalculator.core.model.GosiRateSchedule
 import com.saudi.salarycalculator.core.model.GosiRates
+import com.saudi.salarycalculator.core.model.GosiSystem
 import com.saudi.salarycalculator.core.model.NetSalaryInput
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -38,6 +40,18 @@ class SalaryViewModel @Inject constructor(
 
     repository.observeHistory().onEach { history ->
       _state.value = _state.value.copy(history = history)
+    }.launchIn(viewModelScope)
+
+    // Seeds gosiRates from the persisted GOSI system's current sourced default (see
+    // GosiRateSchedule) on every launch. Any manual rate tweaks made in Settings are not
+    // separately persisted (same as before this field existed) — only which system the employee
+    // is on survives restarts, so the seeded default is always correct even if a stale manual
+    // edit isn't.
+    repository.observeGosiSystem().onEach { system ->
+      _state.value = _state.value.copy(
+        gosiSystem = system,
+        gosiRates = GosiRateSchedule.defaultRatesFor(system)
+      )
     }.launchIn(viewModelScope)
   }
 
@@ -134,9 +148,14 @@ class SalaryViewModel @Inject constructor(
     val offerNewValid = (s.offerNew.basicSalary.toDoubleOrNull() ?: 0.0) > 0.0
     if (!offerCurrentValid || !offerNewValid) return
     viewModelScope.launch {
+      // toOfferInput() leaves gosiRates at its bare default; without this override, Offer
+      // Comparison would silently ignore whatever GOSI system/rates are configured in Settings
+      // (both offers would score against the OfferInput default instead) — copy the current
+      // configured rates onto both sides so the comparison stays consistent with the rest of the
+      // app's GOSI handling.
       val result = repository.compareOffers(
-        offerA = s.offerCurrent.toOfferInput(),
-        offerB = s.offerNew.toOfferInput()
+        offerA = s.offerCurrent.toOfferInput().copy(gosiRates = s.gosiRates),
+        offerB = s.offerNew.toOfferInput().copy(gosiRates = s.gosiRates)
       )
       _state.value = _state.value.copy(offerComparisonResult = result)
       saveRecord(
@@ -144,6 +163,26 @@ class SalaryViewModel @Inject constructor(
         title = "${result.offerA.title} vs ${result.offerB.title}",
         inputSummary = "${s.offerCurrent.title} / ${s.offerNew.title}",
         resultSummary = "Score=${result.acceptanceScore}"
+      )
+    }
+  }
+
+  // ---- Expat residency cost estimator ------------------------------------
+
+  fun updateExpatCostForm(transform: (ExpatCostFormState) -> ExpatCostFormState) {
+    _state.value = _state.value.copy(expatCostForm = transform(_state.value.expatCostForm))
+  }
+
+  fun calculateExpatCosts() {
+    val s = _state.value
+    viewModelScope.launch {
+      val result = repository.calculateExpatCosts(s.expatCostForm.toExpatCostInput())
+      _state.value = _state.value.copy(expatCostResult = result)
+      saveRecord(
+        type = CalculationType.EXPAT_COSTS,
+        title = "Expat residency costs",
+        inputSummary = "${s.expatCostForm.dependentCount} dependent(s)",
+        resultSummary = "Monthly=${result.totalMonthlyCost}"
       )
     }
   }
@@ -163,6 +202,18 @@ class SalaryViewModel @Inject constructor(
 
   fun updateGosiRates(transform: (GosiRates) -> GosiRates) {
     _state.value = _state.value.copy(gosiRates = transform(_state.value.gosiRates))
+  }
+
+  /** Switches which GOSI contribution track applies (see [GosiSystem]) and re-seeds [gosiRates]
+   * from [GosiRateSchedule]'s current sourced default for that track. Persisted so the choice
+   * survives app restarts; the resulting rates remain editable afterward like any other GOSI
+   * rate. */
+  fun setGosiSystem(system: GosiSystem) {
+    _state.value = _state.value.copy(
+      gosiSystem = system,
+      gosiRates = GosiRateSchedule.defaultRatesFor(system)
+    )
+    viewModelScope.launch { repository.setGosiSystem(system) }
   }
 
   fun clearHistory() {

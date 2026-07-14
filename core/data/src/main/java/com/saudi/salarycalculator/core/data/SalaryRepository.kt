@@ -3,8 +3,11 @@ package com.saudi.salarycalculator.core.data
 import com.saudi.salarycalculator.core.model.CalculationRecord
 import com.saudi.salarycalculator.core.model.EndOfServiceInput
 import com.saudi.salarycalculator.core.model.EndOfServiceResult
+import com.saudi.salarycalculator.core.model.ExpatCostInput
+import com.saudi.salarycalculator.core.model.ExpatCostResult
 import com.saudi.salarycalculator.core.model.GosiInput
 import com.saudi.salarycalculator.core.model.GosiResult
+import com.saudi.salarycalculator.core.model.GosiSystem
 import com.saudi.salarycalculator.core.model.NetSalaryInput
 import com.saudi.salarycalculator.core.model.NetSalaryResult
 import com.saudi.salarycalculator.core.model.OfferComparisonResult
@@ -22,6 +25,7 @@ interface SalaryRepository {
   suspend fun calculateEndOfService(input: EndOfServiceInput): EndOfServiceResult
   suspend fun compareOffers(offerA: OfferInput, offerB: OfferInput): OfferComparisonResult
   suspend fun calculateSavings(input: SavingsInput): SavingsResult
+  suspend fun calculateExpatCosts(input: ExpatCostInput): ExpatCostResult
 
   fun observeHistory(): Flow<List<CalculationRecord>>
   suspend fun saveRecord(record: CalculationRecord)
@@ -34,4 +38,7 @@ interface SalaryRepository {
   suspend fun setSelectedTab(index: Int)
   fun observeDarkMode(): Flow<Boolean>
   suspend fun setDarkMode(enabled: Boolean)
+
+  fun observeGosiSystem(): Flow<GosiSystem>
+  suspend fun setGosiSystem(system: GosiSystem)
 }

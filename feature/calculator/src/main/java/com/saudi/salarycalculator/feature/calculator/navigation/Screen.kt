@@ -1,7 +1,7 @@
 package com.saudi.salarycalculator.feature.calculator.navigation
 
-/** All top-level destinations in the app. [Splash] and [Payslip] are not part of the bottom
- * navigation bar; the other five map 1:1 to [bottomNavScreens] in display order. */
+/** All top-level destinations in the app. [Splash], [Payslip], and [ExpatCosts] are not part of
+ * the bottom navigation bar; the other five map 1:1 to [bottomNavScreens] in display order. */
 sealed class Screen(val route: String) {
   object Splash : Screen("splash")
   object Home : Screen("home")
@@ -10,6 +10,7 @@ sealed class Screen(val route: String) {
   object Payslip : Screen("payslip")
   object Comparison : Screen("comparison")
   object Settings : Screen("settings")
+  object ExpatCosts : Screen("expat_costs")
 
   companion object {
     val bottomNavScreens = listOf(Home, Calculator, Result, Comparison, Settings)
@@ -21,6 +22,7 @@ sealed class Screen(val route: String) {
       Payslip.route -> Payslip
       Comparison.route -> Comparison
       Settings.route -> Settings
+      ExpatCosts.route -> ExpatCosts
       else -> Splash
     }
   }

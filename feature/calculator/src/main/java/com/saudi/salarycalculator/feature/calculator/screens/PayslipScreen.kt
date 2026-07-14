@@ -14,6 +14,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.WarningAmber
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +33,7 @@ import com.saudi.salarycalculator.core.designsystem.components.PayslipPreviewCar
 import com.saudi.salarycalculator.core.designsystem.components.RiyalSymbol
 import com.saudi.salarycalculator.core.designsystem.components.SecondaryButton
 import com.saudi.salarycalculator.core.designsystem.components.SectionHeader
+import com.saudi.salarycalculator.core.designsystem.theme.BrandGold
 import com.saudi.salarycalculator.core.designsystem.theme.BrandGreen
 import com.saudi.salarycalculator.core.designsystem.theme.designSystemContentColor
 import com.saudi.salarycalculator.core.model.ContractType
@@ -57,6 +60,7 @@ fun PayslipScreen(
   onExportPdf: () -> Unit,
   onSaveCalculation: () -> Unit,
   onShare: () -> Unit,
+  onExportSalaryCertificate: () -> Unit,
   modifier: Modifier = Modifier
 ) {
   if (result == null) {
@@ -231,6 +235,37 @@ fun PayslipScreen(
             onClick = onShare
           )
         }
+      }
+    }
+
+    item {
+      GlassCard(darkMode = darkMode) {
+        Text(
+          stringResource(R.string.certificate_section_title),
+          style = MaterialTheme.typography.titleSmall,
+          fontWeight = FontWeight.Black,
+          color = designSystemContentColor(darkMode)
+        )
+        Row(verticalAlignment = Alignment.Top) {
+          Icon(
+            Icons.Filled.WarningAmber,
+            contentDescription = null,
+            tint = BrandGold,
+            modifier = Modifier.width(18.dp).padding(top = 2.dp)
+          )
+          Spacer(Modifier.width(8.dp))
+          Text(
+            stringResource(R.string.certificate_disclaimer),
+            style = MaterialTheme.typography.bodySmall,
+            color = designSystemContentColor(darkMode).copy(alpha = 0.65f)
+          )
+        }
+        SecondaryButton(
+          text = stringResource(R.string.action_export_certificate),
+          darkMode = darkMode,
+          icon = Icons.Filled.Download,
+          onClick = onExportSalaryCertificate
+        )
       }
     }
   }

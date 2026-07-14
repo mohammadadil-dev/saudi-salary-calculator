@@ -43,9 +43,12 @@
   <string name="home_start_calculation">Start Calculation</string>
   <string name="home_recent_calculations">Recent calculations</string>
   <string name="home_no_recent_calculations">No calculations yet. They\'ll show up here once you run one.</string>
+  <string name="home_tools_title">Tools</string>
+  <string name="home_tool_expat_costs_title">Expat residency costs</string>
+  <string name="home_tool_expat_costs_subtitle">Estimate dependent fees, visas &amp; more against your salary</string>
   <string name="home_insights_title">Salary insights</string>
   <string name="home_insight_gosi_title">GOSI contribution</string>
-  <string name="home_insight_gosi_body">Saudi employees contribute 9.75% of basic + housing salary to GOSI every month.</string>
+  <string name="home_insight_gosi_body">Saudi employees contribute a percentage of basic + housing salary to GOSI every month — the exact rate depends on your GOSI system (see Settings).</string>
   <string name="home_insight_eosb_title">End of service grows over time</string>
   <string name="home_insight_eosb_body">EOSB pays half a month per year for your first 5 years, then a full month per year after that.</string>
   <string name="home_insight_tax_title">No personal income tax</string>
@@ -75,9 +78,11 @@
   <string name="label_bonus">Bonus</string>
   <string name="label_commission">Commission</string>
   <string name="section_overtime">Overtime</string>
+  <string name="label_ramadan_hours">Ramadan reduced hours</string>
+  <string name="helper_ramadan_hours">Saudi Labor Law (Article 98) caps actual hours at 6/day (36/week) for Muslim employees during Ramadan, instead of the standard 8/day. Affects the hourly rate used below. Estimated 2026 dates: %1$s — confirm the official start via moon sighting, this isn\'t auto-detected.</string>
   <string name="label_overtime_hours">Overtime hours</string>
   <string name="label_overtime_rate_override">Custom hourly rate</string>
-  <string name="helper_overtime_rate_override">Leave empty to auto-calculate from basic salary ÷ 240 hours × 1.5</string>
+  <string name="helper_overtime_rate_override">Leave empty to auto-calculate from basic salary ÷ %1$d hours × 1.5</string>
 
   <!-- Step 3: Deductions -->
   <string name="label_loan_deduction">Loan deduction</string>
@@ -119,6 +124,11 @@
   <string name="review_section_employment">Employment details</string>
   <string name="review_section_gosi_eosb">GOSI &amp; EOSB</string>
   <string name="action_calculate_net_salary">Calculate Net Salary</string>
+  <string name="validation_basic_salary_required">Enter a basic salary above 0 to continue.</string>
+  <string name="validation_section_title">Double check before calculating</string>
+  <string name="validation_deductions_exceed_gross">Your deductions (%1$s) are more than your gross salary (%2$s) — net salary will show as negative. Double check these figures if that wasn\'t intended.</string>
+  <string name="validation_dates_out_of_order">Your joining date is after your calculation month, so years of service and the end-of-service estimate will show as 0. Double check these dates.</string>
+  <string name="validation_overtime_high">%1$s overtime hours is unusually high for one month — double check this figure.</string>
 
   <!-- Result screen -->
   <string name="result_title">Result Dashboard</string>
@@ -160,6 +170,10 @@
   <string name="action_save_calculation">Save calculation</string>
   <string name="payslip_saved_confirmation">Calculation saved to history</string>
   <string name="payslip_exported_confirmation">PDF exported</string>
+  <string name="certificate_section_title">Salary certificate (unofficial)</string>
+  <string name="certificate_disclaimer">Watermarked \"Unofficial – Not Employer-Certified\" on every page. This is a personal record generated from figures you entered — it is not issued, reviewed, or signed by any employer and should not be submitted as an official HR salary certificate.</string>
+  <string name="action_export_certificate">Export salary certificate</string>
+  <string name="certificate_exported_confirmation">Salary certificate exported</string>
 
   <!-- Comparison -->
   <string name="comparison_title">Offer Comparison</string>
@@ -175,18 +189,75 @@
   <string name="comparison_better_offer">Better offer</string>
   <string name="comparison_tie_title">Both offers are about the same</string>
   <string name="comparison_empty_title">Add both offers to compare</string>
+  <string name="comparison_city_label">City (optional, for reference only)</string>
+  <string name="comparison_city_riyadh">Riyadh</string>
+  <string name="comparison_city_jeddah">Jeddah</string>
+  <string name="comparison_city_eastern">Eastern Prov.</string>
+  <string name="comparison_city_other">Other</string>
+  <string name="comparison_city_tier_highest">Among the highest of Saudi Arabia\'s major cities</string>
+  <string name="comparison_city_tier_high">High, but commonly reported 10–15% below Riyadh</string>
+  <string name="comparison_city_tier_lower">Generally lower than the major metro areas</string>
+  <string name="comparison_city_reference">%1$s. Typical 1-bedroom rent: SAR %2$d–%3$d/month. Market data, not government-set — varies a lot by neighborhood; verified as of %4$s. Not financial advice.</string>
 
   <!-- Settings -->
   <string name="settings_title">Settings</string>
   <string name="settings_language">Language</string>
   <string name="settings_dark_mode">Dark mode</string>
   <string name="settings_gosi_rates">GOSI rates</string>
+  <string name="settings_gosi_system">GOSI system</string>
+  <string name="settings_gosi_system_existing">Existing</string>
+  <string name="settings_gosi_system_new">New</string>
+  <string name="settings_gosi_system_existing_caption">For employees registered with GOSI before 3 Jul 2024. Rate stays flat.</string>
+  <string name="settings_gosi_system_new_caption">For employees registered with GOSI on or after 3 Jul 2024. Rate rises in steps each July until 2028.</string>
   <string name="settings_saudi_employee_rate">Saudi employee rate</string>
   <string name="settings_saudi_employer_rate">Saudi employer rate</string>
   <string name="settings_expat_employee_rate">Non-Saudi employee rate</string>
   <string name="settings_expat_employer_rate">Non-Saudi employer hazard rate</string>
+  <string name="settings_gosi_cap">Monthly contribution cap</string>
+  <string name="settings_gosi_disclaimer">Rates verified as of %1$s and editable above. GOSI rates change periodically — confirm the current rate at gosi.gov.sa before relying on this for real payroll or compliance decisions.</string>
   <string name="settings_history">History</string>
+  <string name="settings_export_payroll_summary">Export payroll summary</string>
+  <string name="settings_export_payroll_summary_helper">Exports your saved calculations as a CSV sheet (opens in Excel/Sheets). This is an unofficial reference sheet only — it is NOT a WPS/SIF file. Submit actual payroll through Mudad or your bank\'s official WPS portal.</string>
+  <string name="settings_payroll_export_confirmation">Payroll summary exported</string>
   <string name="settings_clear_history">Clear history</string>
+
+  <string name="settings_support_title">Support the app</string>
+  <string name="settings_rate_app">Rate this app</string>
+  <string name="settings_rate_app_helper">Enjoying Saudi Salary Calculator? A quick rating on the Play Store helps other people find it.</string>
+  <string name="settings_share_app">Share this app</string>
+  <string name="settings_share_app_helper">Know someone who\'d find this useful? Send them the app.</string>
+  <string name="settings_share_app_message">Check out Saudi Salary Calculator — a free app for calculating net salary, GOSI contributions, and end-of-service benefits in Saudi Arabia.</string>
+
+  <!-- Expat residency cost estimator -->
+  <string name="expat_costs_title">Expat residency costs</string>
+  <string name="expat_costs_subtitle">Estimate the recurring residency costs you personally carry — dependent fees, exit/re-entry visas, and (if applicable) insurance — against your salary.</string>
+  <string name="expat_costs_section_dependents">Dependents</string>
+  <string name="expat_costs_dependent_count">Sponsored dependents</string>
+  <string name="expat_costs_dependent_levy">Monthly levy per dependent</string>
+  <string name="expat_costs_dependent_levy_helper">Government levy for each sponsored family member (spouse, children, etc.)</string>
+  <string name="expat_costs_section_exit_reentry">Exit / re-entry visas</string>
+  <string name="expat_costs_exit_reentry_single">Single trip</string>
+  <string name="expat_costs_exit_reentry_multiple">Multiple trip</string>
+  <string name="expat_costs_trips_per_year">Trips per year</string>
+  <string name="expat_costs_exit_reentry_dependents_note">Each traveling dependent needs their own visa at the same fee — increase trips per year to account for family travel.</string>
+  <string name="expat_costs_section_iqama">Your iqama renewal</string>
+  <string name="expat_costs_include_own_iqama">Include in my costs</string>
+  <string name="expat_costs_include_own_iqama_helper">Under Labor Law Article 40, your own iqama and work-permit fees are legally your employer\'s responsibility, not yours. Only enable this if your employer actually deducts it from you.</string>
+  <string name="expat_costs_own_iqama_fee">Annual renewal fee</string>
+  <string name="expat_costs_section_health">Health insurance</string>
+  <string name="expat_costs_health_insurance">Monthly premium (dependents)</string>
+  <string name="expat_costs_health_insurance_helper">Insurer-priced, not government-fixed — enter your own policy\'s premium. Leave blank if covered separately.</string>
+  <string name="expat_costs_action_estimate">Estimate costs</string>
+  <string name="expat_costs_section_results">Your estimate</string>
+  <string name="expat_costs_result_dependent_levy">Dependent levy</string>
+  <string name="expat_costs_result_iqama">Iqama renewal</string>
+  <string name="expat_costs_result_exit_reentry">Exit / re-entry visas</string>
+  <string name="expat_costs_result_health">Health insurance</string>
+  <string name="expat_costs_result_total_monthly">Total (monthly)</string>
+  <string name="expat_costs_result_total_yearly">Total (yearly)</string>
+  <string name="expat_costs_percent_of_income">That\'s about %1$d%% of your last calculated net salary.</string>
+  <string name="expat_costs_disclaimer">Fee amounts verified as of %1$s and editable above. Government fees change periodically — confirm current amounts at absher.sa or qiwa.sa before relying on this for real budgeting.</string>
+  <string name="expat_costs_article_40_note">Note: the employer-paid work-permit levy is not included here since, per Labor Law Article 40, that cost is legally the employer\'s responsibility, not yours.</string>
 
   <!-- Generic empty / error / loading states -->
   <string name="state_error_title">Something went wrong</string>

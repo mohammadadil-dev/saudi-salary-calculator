@@ -43,9 +43,12 @@
   <string name="home_start_calculation">ابدأ الحساب</string>
   <string name="home_recent_calculations">الحسابات الأخيرة</string>
   <string name="home_no_recent_calculations">لا توجد حسابات بعد. ستظهر هنا بعد أول عملية حساب.</string>
+  <string name="home_tools_title">أدوات</string>
+  <string name="home_tool_expat_costs_title">تكاليف الإقامة للمقيمين</string>
+  <string name="home_tool_expat_costs_subtitle">قدّر رسوم المرافقين والتأشيرات وغيرها مقارنة براتبك</string>
   <string name="home_insights_title">نصائح حول الراتب</string>
   <string name="home_insight_gosi_title">مساهمة التأمينات الاجتماعية</string>
-  <string name="home_insight_gosi_body">يساهم الموظف السعودي بنسبة 9.75% من الراتب الأساسي وبدل السكن شهرياً في التأمينات الاجتماعية.</string>
+  <string name="home_insight_gosi_body">يساهم الموظف السعودي بنسبة من الراتب الأساسي وبدل السكن شهرياً في التأمينات الاجتماعية — تعتمد النسبة الدقيقة على نظام التأمينات الخاص بك (راجع الإعدادات).</string>
   <string name="home_insight_eosb_title">مكافأة نهاية الخدمة تزداد مع الوقت</string>
   <string name="home_insight_eosb_body">تُحتسب نصف شهر عن كل سنة من أول خمس سنوات، ثم شهر كامل عن كل سنة بعد ذلك.</string>
   <string name="home_insight_tax_title">بدون ضريبة دخل شخصي</string>
@@ -75,9 +78,11 @@
   <string name="label_bonus">مكافأة</string>
   <string name="label_commission">عمولة</string>
   <string name="section_overtime">العمل الإضافي</string>
+  <string name="label_ramadan_hours">ساعات رمضان المخفضة</string>
+  <string name="helper_ramadan_hours">يحدد نظام العمل السعودي (المادة 98) ساعات العمل الفعلية بـ 6 ساعات يومياً (36 ساعة أسبوعياً) للموظفين المسلمين خلال رمضان، بدلاً من 8 ساعات المعتادة. يؤثر هذا على سعر الساعة المستخدم أدناه. التاريخ التقديري لعام 2026: %1$s — يرجى التأكد من التاريخ الرسمي عبر ترائي الهلال، فهذا غير مكتشف تلقائياً.</string>
   <string name="label_overtime_hours">ساعات العمل الإضافي</string>
   <string name="label_overtime_rate_override">سعر الساعة المخصص</string>
-  <string name="helper_overtime_rate_override">اتركه فارغاً للحساب التلقائي من الراتب الأساسي ÷ 240 ساعة × 1.5</string>
+  <string name="helper_overtime_rate_override">اتركه فارغاً للحساب التلقائي من الراتب الأساسي ÷ %1$d ساعة × 1.5</string>
 
   <!-- Step 3: Deductions -->
   <string name="label_loan_deduction">استقطاع القرض</string>
@@ -119,6 +124,11 @@
   <string name="review_section_employment">تفاصيل الوظيفة</string>
   <string name="review_section_gosi_eosb">التأمينات ونهاية الخدمة</string>
   <string name="action_calculate_net_salary">احسب صافي الراتب</string>
+  <string name="validation_basic_salary_required">أدخل راتبًا أساسيًا أكبر من 0 للمتابعة.</string>
+  <string name="validation_section_title">تحقق قبل الحساب</string>
+  <string name="validation_deductions_exceed_gross">استقطاعاتك (%1$s) أكبر من راتبك الإجمالي (%2$s) — سيظهر صافي الراتب كرقم سالب. تحقق من هذه الأرقام إذا لم يكن ذلك مقصودًا.</string>
+  <string name="validation_dates_out_of_order">تاريخ التحاقك بالعمل بعد شهر الحساب، لذا ستظهر سنوات الخدمة وتقدير مكافأة نهاية الخدمة كصفر. تحقق من هذين التاريخين.</string>
+  <string name="validation_overtime_high">%1$s ساعة عمل إضافي مرتفعة بشكل غير معتاد لشهر واحد — تحقق من هذا الرقم.</string>
 
   <!-- Result screen -->
   <string name="result_title">لوحة النتائج</string>
@@ -160,6 +170,10 @@
   <string name="action_save_calculation">حفظ الحساب</string>
   <string name="payslip_saved_confirmation">تم حفظ الحساب في السجل</string>
   <string name="payslip_exported_confirmation">تم تصدير PDF</string>
+  <string name="certificate_section_title">شهادة راتب (غير رسمية)</string>
+  <string name="certificate_disclaimer">تحمل علامة مائية \"غير رسمية – غير معتمدة من صاحب العمل\" على كل صفحة. هذا سجل شخصي تم إنشاؤه من البيانات التي أدخلتها — لم يصدره أو يراجعه أو يوقّعه أي صاحب عمل، ولا ينبغي تقديمه كشهادة راتب رسمية صادرة من الموارد البشرية.</string>
+  <string name="action_export_certificate">تصدير شهادة الراتب</string>
+  <string name="certificate_exported_confirmation">تم تصدير شهادة الراتب</string>
 
   <!-- Comparison -->
   <string name="comparison_title">مقارنة العروض</string>
@@ -175,18 +189,75 @@
   <string name="comparison_better_offer">العرض الأفضل</string>
   <string name="comparison_tie_title">العرضان متقاربان جداً</string>
   <string name="comparison_empty_title">أضف العرضين للمقارنة</string>
+  <string name="comparison_city_label">المدينة (اختياري، للاطلاع فقط)</string>
+  <string name="comparison_city_riyadh">الرياض</string>
+  <string name="comparison_city_jeddah">جدة</string>
+  <string name="comparison_city_eastern">المنطقة الشرقية</string>
+  <string name="comparison_city_other">أخرى</string>
+  <string name="comparison_city_tier_highest">من بين الأعلى تكلفة بين المدن السعودية الكبرى</string>
+  <string name="comparison_city_tier_high">مرتفعة، لكنها غالباً أقل من الرياض بنسبة 10–15%</string>
+  <string name="comparison_city_tier_lower">أقل بشكل عام من المدن الكبرى المذكورة أعلاه</string>
+  <string name="comparison_city_reference">%1$s. متوسط إيجار شقة غرفة نوم واحدة: %2$d–%3$d ريال شهرياً. بيانات سوقية وليست رسمية — تتفاوت كثيراً حسب الحي؛ تم التحقق منها حتى %4$s. هذه ليست نصيحة مالية.</string>
 
   <!-- Settings -->
   <string name="settings_title">الإعدادات</string>
   <string name="settings_language">اللغة</string>
   <string name="settings_dark_mode">الوضع الداكن</string>
   <string name="settings_gosi_rates">نسب التأمينات الاجتماعية</string>
+  <string name="settings_gosi_system">نظام التأمينات الاجتماعية</string>
+  <string name="settings_gosi_system_existing">الحالي</string>
+  <string name="settings_gosi_system_new">الجديد</string>
+  <string name="settings_gosi_system_existing_caption">للموظفين المسجلين في التأمينات الاجتماعية قبل 3 يوليو 2024. تبقى النسبة ثابتة.</string>
+  <string name="settings_gosi_system_new_caption">للموظفين المسجلين في التأمينات الاجتماعية في 3 يوليو 2024 أو بعده. ترتفع النسبة تدريجيًا كل يوليو حتى عام 2028.</string>
   <string name="settings_saudi_employee_rate">نسبة الموظف السعودي</string>
   <string name="settings_saudi_employer_rate">نسبة صاحب العمل للسعودي</string>
   <string name="settings_expat_employee_rate">نسبة الموظف غير السعودي</string>
   <string name="settings_expat_employer_rate">نسبة مخاطر صاحب العمل لغير السعودي</string>
+  <string name="settings_gosi_cap">الحد الأقصى الشهري للاشتراك</string>
+  <string name="settings_gosi_disclaimer">تم التحقق من هذه النسب حتى %1$s، وهي قابلة للتعديل أعلاه. نسب التأمينات الاجتماعية (جوسي) تتغير بشكل دوري — يرجى التأكد من النسبة الحالية عبر gosi.gov.sa قبل الاعتماد عليها في قرارات الرواتب أو الامتثال الفعلية.</string>
   <string name="settings_history">السجل</string>
+  <string name="settings_export_payroll_summary">تصدير ملخص الرواتب</string>
+  <string name="settings_export_payroll_summary_helper">يصدّر الحسابات المحفوظة كملف CSV (يفتح في Excel أو Sheets). هذا ملف مرجعي غير رسمي فقط — وليس ملف WPS/SIF. يجب تقديم الرواتب الفعلية عبر مدد أو بوابة WPS الرسمية الخاصة بالبنك.</string>
+  <string name="settings_payroll_export_confirmation">تم تصدير ملخص الرواتب</string>
   <string name="settings_clear_history">مسح السجل</string>
+
+  <string name="settings_support_title">ادعم التطبيق</string>
+  <string name="settings_rate_app">قيّم التطبيق</string>
+  <string name="settings_rate_app_helper">هل يعجبك تطبيق حاسبة الراتب السعودي؟ تقييم سريع في متجر Play يساعد الآخرين على إيجاده.</string>
+  <string name="settings_share_app">شارك التطبيق</string>
+  <string name="settings_share_app_helper">هل تعرف شخصًا قد يستفيد من هذا التطبيق؟ شاركه معه.</string>
+  <string name="settings_share_app_message">جرّب تطبيق حاسبة الراتب السعودي — تطبيق مجاني لحساب صافي الراتب واشتراكات التأمينات الاجتماعية ومكافأة نهاية الخدمة في السعودية.</string>
+
+  <!-- Expat residency cost estimator -->
+  <string name="expat_costs_title">تكاليف الإقامة للمقيمين</string>
+  <string name="expat_costs_subtitle">قدّر التكاليف المتكررة للإقامة التي تتحملها بنفسك — رسوم المرافقين، تأشيرات الخروج والعودة، والتأمين إن وجد — مقارنة براتبك.</string>
+  <string name="expat_costs_section_dependents">المرافقون</string>
+  <string name="expat_costs_dependent_count">عدد المرافقين المكفولين</string>
+  <string name="expat_costs_dependent_levy">الرسم الشهري لكل مرافق</string>
+  <string name="expat_costs_dependent_levy_helper">الرسم الحكومي عن كل فرد من العائلة المكفولة (الزوجة، الأبناء، إلخ)</string>
+  <string name="expat_costs_section_exit_reentry">تأشيرات الخروج والعودة</string>
+  <string name="expat_costs_exit_reentry_single">مرة واحدة</string>
+  <string name="expat_costs_exit_reentry_multiple">متعددة المرات</string>
+  <string name="expat_costs_trips_per_year">عدد الرحلات سنوياً</string>
+  <string name="expat_costs_exit_reentry_dependents_note">يحتاج كل مرافق مسافر إلى تأشيرة خاصة بنفس الرسم — قم بزيادة عدد الرحلات لتشمل سفر العائلة.</string>
+  <string name="expat_costs_section_iqama">تجديد إقامتك</string>
+  <string name="expat_costs_include_own_iqama">إضافة إلى تكاليفي</string>
+  <string name="expat_costs_include_own_iqama_helper">بموجب المادة 40 من نظام العمل، تُعد رسوم الإقامة ورخصة العمل الخاصة بك مسؤولية صاحب العمل قانونياً، وليست مسؤوليتك. فعّل هذا الخيار فقط إذا كان صاحب العمل يخصمها منك فعلياً.</string>
+  <string name="expat_costs_own_iqama_fee">رسم التجديد السنوي</string>
+  <string name="expat_costs_section_health">التأمين الصحي</string>
+  <string name="expat_costs_health_insurance">القسط الشهري (للمرافقين)</string>
+  <string name="expat_costs_health_insurance_helper">يحدد شركات التأمين هذا القسط وليس الحكومة — أدخل قسط بوليصتك الخاصة. اتركه فارغاً إذا كان مغطى بشكل منفصل.</string>
+  <string name="expat_costs_action_estimate">احسب التكاليف</string>
+  <string name="expat_costs_section_results">تقديرك</string>
+  <string name="expat_costs_result_dependent_levy">رسوم المرافقين</string>
+  <string name="expat_costs_result_iqama">تجديد الإقامة</string>
+  <string name="expat_costs_result_exit_reentry">تأشيرات الخروج والعودة</string>
+  <string name="expat_costs_result_health">التأمين الصحي</string>
+  <string name="expat_costs_result_total_monthly">الإجمالي (شهرياً)</string>
+  <string name="expat_costs_result_total_yearly">الإجمالي (سنوياً)</string>
+  <string name="expat_costs_percent_of_income">يمثل هذا تقريباً %1$d%% من آخر صافي راتب محسوب لك.</string>
+  <string name="expat_costs_disclaimer">تم التحقق من هذه الرسوم حتى %1$s، وهي قابلة للتعديل أعلاه. الرسوم الحكومية تتغير بشكل دوري — يرجى التأكد من المبالغ الحالية عبر absher.sa أو qiwa.sa قبل الاعتماد عليها في التخطيط المالي الفعلي.</string>
+  <string name="expat_costs_article_40_note">ملاحظة: لا تشمل هذه الأداة رسوم رخصة العمل التي يدفعها صاحب العمل، لأنها، بموجب المادة 40 من نظام العمل، مسؤوليته القانونية وليست مسؤوليتك.</string>
 
   <!-- Generic empty / error / loading states -->
   <string name="state_error_title">حدث خطأ ما</string>

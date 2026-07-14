@@ -1,24 +1,34 @@
 package com.saudi.salarycalculator.feature.calculator.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.FlightTakeoff
 import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -50,6 +60,7 @@ fun HomeScreen(
   onViewAllHistory: () -> Unit,
   onEditRecord: (CalculationRecord) -> Unit,
   onDeleteRecord: (String) -> Unit,
+  onOpenExpatCosts: () -> Unit,
   modifier: Modifier = Modifier
 ) {
   val greeting = when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
@@ -144,6 +155,19 @@ fun HomeScreen(
       }
     }
 
+    item { SectionHeader(title = stringResource(R.string.home_tools_title), darkMode = darkMode) }
+    item {
+      ToolLinkCard(
+        title = stringResource(R.string.home_tool_expat_costs_title),
+        subtitle = stringResource(R.string.home_tool_expat_costs_subtitle),
+        icon = Icons.Filled.FlightTakeoff,
+        accent = BrandTeal,
+        darkMode = darkMode,
+        onClick = onOpenExpatCosts,
+        modifier = Modifier.fillMaxWidth()
+      )
+    }
+
     item { SectionHeader(title = stringResource(R.string.home_insights_title), darkMode = darkMode) }
 
     item {
@@ -174,6 +198,54 @@ fun HomeScreen(
         darkMode = darkMode,
         accent = BrandGold,
         modifier = Modifier.fillMaxWidth()
+      )
+    }
+  }
+}
+
+/** Clickable entry point into a standalone tool screen pushed from Home (currently just the
+ * expat residency-cost estimator). Visually similar to [InsightCard] but adds a trailing chevron
+ * to signal it's navigable rather than purely informational. */
+@Composable
+private fun ToolLinkCard(
+  title: String,
+  subtitle: String,
+  icon: androidx.compose.ui.graphics.vector.ImageVector,
+  accent: androidx.compose.ui.graphics.Color,
+  darkMode: Boolean,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier
+) {
+  GlassCard(darkMode = darkMode, modifier = modifier.clickable(onClick = onClick)) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+      Box(
+        modifier = Modifier
+          .size(36.dp)
+          .clip(CircleShape)
+          .background(accent.copy(alpha = 0.16f)),
+        contentAlignment = Alignment.Center
+      ) {
+        Icon(icon, contentDescription = null, tint = accent, modifier = Modifier.size(18.dp))
+      }
+      Spacer(Modifier.width(10.dp))
+      Column(modifier = Modifier.weight(1f)) {
+        Text(
+          title,
+          style = MaterialTheme.typography.titleSmall,
+          fontWeight = FontWeight.Bold,
+          color = designSystemContentColor(darkMode)
+        )
+        Text(
+          subtitle,
+          style = MaterialTheme.typography.bodySmall,
+          color = designSystemContentColor(darkMode).copy(alpha = 0.6f)
+        )
+      }
+      Icon(
+        Icons.Filled.ArrowForwardIos,
+        contentDescription = null,
+        tint = designSystemContentColor(darkMode).copy(alpha = 0.35f),
+        modifier = Modifier.size(14.dp)
       )
     }
   }
