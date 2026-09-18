@@ -57,7 +57,16 @@ looks blank right after a release build, that's expected, not a bug.
 
 ## 3. Versioning
 
-**Current: `versionCode = 7`, `versionName = "1.2.0"`** — a real feature release bumped from
+**Current: `versionCode = 8`, `versionName = "1.2.1"`** — build-config-only bump from 7/"1.2.0",
+no user-facing changes. Adds `ndk { debugSymbolLevel = "SYMBOL_TABLE" }` to the release build type
+to clear Play Console's "App Bundle contains native code, and you've not uploaded debug symbols"
+warning seen on the versionCode 7 upload (the native code is from a dependency — almost certainly
+AdMob — not from this app, which has no NDK/JNI code of its own; the warning was informational,
+not a rejection, and versionCode 7 was still published).
+
+---
+
+**Previous — `versionCode = 7`, `versionName = "1.2.0"`** — a real feature release bumped from
 6/"1.1.2". New tools: a home-screen payday countdown widget, an EOSB accrual tracker, a leave
 balance tracker, an offer red-flag checker, a reverse salary calculator ("what salary do I need to
 hit X take-home"), and a city cost-of-living estimator. Also new: in-app review prompts (Google
@@ -437,7 +446,7 @@ violence/gambling/UGC):
       are still local-only, no new data collection or third-party sharing)
 - [ ] Content rating questionnaire completed in Play Console
 - [x] `targetSdk` bumped to 36 (Section 4) — unchanged since 1.1.2
-- [x] `versionCode` bumped to 7 / `versionName` 1.2.0 — Play rejects a reused `versionCode`
+- [x] `versionCode` bumped to 8 / `versionName` 1.2.1 — Play rejects a reused `versionCode`
 - [ ] Upload keystore verified against the certificate Play has registered: alias `key0`,
       SHA1 `9F:9A:90:0A:51:D8:83:67:18:4F:CB:0E:84:DC:0F:B2:7D:C8:F4:C4` — re-verify before
       uploading (last checked 2026-09-05, for versionCode 6)

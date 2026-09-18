@@ -25,8 +25,8 @@ android {
     applicationId = "com.saudi.salarycalculator"
     minSdk = 24
     targetSdk = 36
-    versionCode = 7
-    versionName = "1.2.0"
+    versionCode = 8
+    versionName = "1.2.1"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     vectorDrawables { useSupportLibrary = true }
@@ -52,6 +52,14 @@ android {
     release {
       isMinifyEnabled = true
       isShrinkResources = true
+      // Silences Play Console's "not uploaded debug symbols" warning on the App Bundle — the
+      // native code it's referring to isn't ours (no NDK/JNI in this app), it comes from a
+      // dependency (almost certainly AdMob). SYMBOL_TABLE keeps the upload small (just function
+      // names for readable stack traces) rather than FULL (adds local variables/line numbers,
+      // much larger, not needed for a dependency we don't debug ourselves).
+      ndk {
+        debugSymbolLevel = "SYMBOL_TABLE"
+      }
       // Using the non-optimizing default file (not "-optimize.txt"): still shrinks/obfuscates,
       // just skips ProGuard/R8's bytecode-level optimization passes. The "-optimize" variant
       // combined with this app's Compose+Lifecycle version mix was crashing release builds with
