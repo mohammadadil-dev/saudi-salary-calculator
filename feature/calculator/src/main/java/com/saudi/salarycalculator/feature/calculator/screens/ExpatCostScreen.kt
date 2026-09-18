@@ -35,6 +35,7 @@ import com.saudi.salarycalculator.core.model.ExpatCostSchedule
 import com.saudi.salarycalculator.feature.calculator.ExpatCostFormState
 import com.saudi.salarycalculator.feature.calculator.R
 import kotlin.math.roundToInt
+import java.util.Locale
 
 /** Standalone tool (pushed from Home, not a bottom-nav tab) that estimates the recurring
  * residency costs a non-Saudi employee personally carries — dependent levy, exit/re-entry
@@ -82,6 +83,8 @@ fun ExpatCostScreen(
           NumberStepper(
             value = form.dependentCount,
             darkMode = darkMode,
+            increaseContentDescription = stringResource(R.string.common_increase),
+            decreaseContentDescription = stringResource(R.string.common_decrease),
             max = 20,
             onValueChange = { count -> onUpdateForm { it.copy(dependentCount = count) } }
           )
@@ -123,6 +126,8 @@ fun ExpatCostScreen(
           NumberStepper(
             value = form.exitReentryTripsPerYear,
             darkMode = darkMode,
+            increaseContentDescription = stringResource(R.string.common_increase),
+            decreaseContentDescription = stringResource(R.string.common_decrease),
             max = 12,
             onValueChange = { count -> onUpdateForm { it.copy(exitReentryTripsPerYear = count) } }
           )
@@ -203,6 +208,19 @@ fun ExpatCostScreen(
             isDeduction = true
           )
         }
+        // Same "why is this a small number when the fee is way bigger" confusion as
+        // exit/re-entry below — the iqama fee is a once-a-year renewal, shown here as a
+        // monthly average, so it needs the same spelled-out math.
+        item {
+          Text(
+            stringResource(
+              R.string.expat_costs_iqama_helper,
+              String.format(Locale.US, "%,.0f", form.ownIqamaRenewalFee.toDoubleOrNull() ?: 0.0)
+            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = designSystemContentColor(darkMode).copy(alpha = 0.55f)
+          )
+        }
       }
       item {
         ResultCard(
@@ -213,6 +231,20 @@ fun ExpatCostScreen(
           accent = BrandTeal,
           isDeduction = true
         )
+      }
+      if (form.exitReentryTripsPerYear > 0) {
+        item {
+          Text(
+            stringResource(
+              R.string.expat_costs_exit_reentry_helper,
+              form.exitReentryTripsPerYear,
+              String.format(Locale.US, "%,.0f", form.exitReentryFeePerTrip),
+              String.format(Locale.US, "%,.0f", form.exitReentryFeePerTrip * form.exitReentryTripsPerYear)
+            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = designSystemContentColor(darkMode).copy(alpha = 0.55f)
+          )
+        }
       }
       if (result.monthlyHealthInsurance > 0.0) {
         item {

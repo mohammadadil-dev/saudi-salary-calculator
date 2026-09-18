@@ -11,6 +11,8 @@
   <string name="common_done">Done</string>
   <string name="common_edit">Edit</string>
   <string name="common_delete">Delete</string>
+  <string name="common_decrease">Decrease</string>
+  <string name="common_increase">Increase</string>
   <string name="common_save">Save</string>
   <string name="common_share">Share</string>
   <string name="common_retry">Try again</string>
@@ -23,7 +25,7 @@
   <string name="common_step_of">Step %1$d of %2$d</string>
 
   <!-- Splash -->
-  <string name="splash_app_name">Saudi Salary Calculator</string>
+  <string name="splash_app_name">Saudi Salary Calculator: EOSB</string>
   <string name="splash_tagline">No income tax. SAR-ready reports.</string>
 
   <!-- Bottom navigation -->
@@ -46,6 +48,16 @@
   <string name="home_tools_title">Tools</string>
   <string name="home_tool_expat_costs_title">Expat residency costs</string>
   <string name="home_tool_expat_costs_subtitle">Estimate dependent fees, visas &amp; more against your salary</string>
+  <string name="home_tool_eosb_tracker_title">My end-of-service tracker</string>
+  <string name="home_tool_eosb_tracker_subtitle">Track your gratuity as it grows, and see your next milestone</string>
+  <string name="home_tool_leave_tracker_title">My leave balance</string>
+  <string name="home_tool_leave_tracker_subtitle">Track your annual leave accrual and balance</string>
+  <string name="home_tool_offer_scan_title">Offer red-flag checker</string>
+  <string name="home_tool_offer_scan_subtitle">Check a job offer\'s terms against Saudi Labor Law norms</string>
+  <string name="home_tool_reverse_salary_title">What salary do I need?</string>
+  <string name="home_tool_reverse_salary_subtitle">Work backward from your target take-home pay</string>
+  <string name="home_tool_cost_of_living_title">What will it cost to live here?</string>
+  <string name="home_tool_cost_of_living_subtitle">Estimate rent, daily costs, and school fees by city</string>
   <string name="home_insights_title">Salary insights</string>
   <string name="home_insight_gosi_title">GOSI contribution</string>
   <string name="home_insight_gosi_body">Saudi employees contribute a percentage of basic + housing salary to GOSI every month — the exact rate depends on your GOSI system (see Settings).</string>
@@ -89,6 +101,7 @@
   <string name="label_absence_deduction">Absence deduction</string>
   <string name="label_unpaid_leave_days">Unpaid leave days</string>
   <string name="helper_unpaid_leave_days">Deducted at basic salary ÷ 30 per day</string>
+  <string name="label_other_deduction">Other deduction</string>
 
   <!-- Step 4: Employment details -->
   <string name="label_nationality">Nationality</string>
@@ -139,6 +152,8 @@
   <string name="result_gosi_employer">GOSI (employer)</string>
   <string name="result_overtime_amount">Overtime amount</string>
   <string name="result_eosb_estimate">EOSB / gratuity estimate</string>
+  <string name="result_gosi_employer_helper">Paid by your employer on top of your salary — not deducted from your net pay.</string>
+  <string name="result_eosb_helper">A one-time payout owed when your employment ends, not a recurring amount — it doesn\'t change with the Monthly/Yearly toggle above.</string>
   <string name="result_net_salary">Net salary</string>
   <string name="result_breakdown_title">Salary breakdown</string>
   <string name="result_bar_chart_title">Earnings vs deductions</string>
@@ -181,18 +196,20 @@
   <string name="comparison_new_offer">Expected salary</string>
   <string name="action_compare">Compare Offers</string>
   <string name="comparison_net_increase">Net increase</string>
+  <string name="comparison_net_decrease">Net decrease</string>
   <string name="comparison_percentage_increase">Percentage increase</string>
   <string name="comparison_gosi_difference">GOSI difference</string>
-  <string name="comparison_eosb_difference">EOSB difference</string>
+  <string name="comparison_eosb_difference">EOSB difference (at 5 yrs)</string>
   <string name="comparison_monthly_impact">Monthly impact</string>
   <string name="comparison_yearly_impact">Yearly impact</string>
+  <string name="comparison_color_legend_helper">Green always means the change favors you — for GOSI that\'s a smaller deduction, so a negative number there is the good outcome.</string>
   <string name="comparison_better_offer">Better offer</string>
   <string name="comparison_tie_title">Both offers are about the same</string>
   <string name="comparison_empty_title">Add both offers to compare</string>
   <string name="comparison_city_label">City (optional, for reference only)</string>
   <string name="comparison_city_riyadh">Riyadh</string>
   <string name="comparison_city_jeddah">Jeddah</string>
-  <string name="comparison_city_eastern">Eastern Prov.</string>
+  <string name="comparison_city_eastern">Eastern</string>
   <string name="comparison_city_other">Other</string>
   <string name="comparison_city_tier_highest">Among the highest of Saudi Arabia\'s major cities</string>
   <string name="comparison_city_tier_high">High, but commonly reported 10–15% below Riyadh</string>
@@ -214,8 +231,16 @@
   <string name="settings_expat_employee_rate">Non-Saudi employee rate</string>
   <string name="settings_expat_employer_rate">Non-Saudi employer hazard rate</string>
   <string name="settings_gosi_cap">Monthly contribution cap</string>
+  <string name="settings_gosi_cap_helper">Wages above this amount are not counted for GOSI — the contribution is calculated on income up to the cap only.</string>
   <string name="settings_gosi_disclaimer">Rates verified as of %1$s and editable above. GOSI rates change periodically — confirm the current rate at gosi.gov.sa before relying on this for real payroll or compliance decisions.</string>
   <string name="settings_history">History</string>
+  <string name="settings_payday_title">Payday</string>
+  <string name="settings_payday_description">Set the day of the month you get paid to see a countdown here, and add the Payday widget to your home screen.</string>
+  <string name="settings_payday_day_label">Payday: day %1$d of the month</string>
+  <string name="settings_payday_countdown">%1$d days until payday</string>
+  <string name="settings_payday_countdown_today">Today is payday</string>
+  <string name="settings_payday_clear">Clear payday</string>
+  <string name="settings_payday_widget_hint">Long-press your home screen, choose Widgets, and add \"Payday\" to see this countdown without opening the app.</string>
   <string name="settings_export_payroll_summary">Export payroll summary</string>
   <string name="settings_export_payroll_summary_helper">Exports your saved calculations as a CSV sheet (opens in Excel/Sheets). This is an unofficial reference sheet only — it is NOT a WPS/SIF file. Submit actual payroll through Mudad or your bank\'s official WPS portal.</string>
   <string name="settings_payroll_export_confirmation">Payroll summary exported</string>
@@ -223,10 +248,17 @@
 
   <string name="settings_support_title">Support the app</string>
   <string name="settings_rate_app">Rate this app</string>
-  <string name="settings_rate_app_helper">Enjoying Saudi Salary Calculator? A quick rating on the Play Store helps other people find it.</string>
+  <string name="settings_rate_app_helper">Enjoying Saudi Salary Calculator: EOSB? A quick rating on the Play Store helps other people find it.</string>
   <string name="settings_share_app">Share this app</string>
   <string name="settings_share_app_helper">Know someone who\'d find this useful? Send them the app.</string>
-  <string name="settings_share_app_message">Check out Saudi Salary Calculator — a free app for calculating net salary, GOSI contributions, and end-of-service benefits in Saudi Arabia.</string>
+  <string name="settings_share_app_message">Check out Saudi Salary Calculator: EOSB — a free app for calculating net salary, GOSI contributions, and end-of-service benefits in Saudi Arabia.</string>
+
+  <!-- Sentiment gate shown before the Play in-app review flow — see review/ReviewPrompter.kt -->
+  <string name="review_sentiment_title">Enjoying the app?</string>
+  <string name="review_sentiment_body">We\'d love to hear what you think.</string>
+  <string name="review_sentiment_yes">Yes, I love it!</string>
+  <string name="review_sentiment_no">Not really</string>
+  <string name="review_sentiment_thanks">Thanks for letting us know — we\'re always working to improve.</string>
 
   <!-- Expat residency cost estimator -->
   <string name="expat_costs_title">Expat residency costs</string>
@@ -252,12 +284,142 @@
   <string name="expat_costs_result_dependent_levy">Dependent levy</string>
   <string name="expat_costs_result_iqama">Iqama renewal</string>
   <string name="expat_costs_result_exit_reentry">Exit / re-entry visas</string>
+  <string name="expat_costs_iqama_helper">Shown as a monthly average: SAR %1$s once a year, spread across 12 months.</string>
+  <string name="expat_costs_exit_reentry_helper">Shown as a monthly average: SAR %2$s per trip \u00d7 %1$d trip(s)/year = SAR %3$s/year, spread across 12 months.</string>
   <string name="expat_costs_result_health">Health insurance</string>
   <string name="expat_costs_result_total_monthly">Total (monthly)</string>
   <string name="expat_costs_result_total_yearly">Total (yearly)</string>
   <string name="expat_costs_percent_of_income">That\'s about %1$d%% of your last calculated net salary.</string>
   <string name="expat_costs_disclaimer">Fee amounts verified as of %1$s and editable above. Government fees change periodically — confirm current amounts at absher.sa or qiwa.sa before relying on this for real budgeting.</string>
   <string name="expat_costs_article_40_note">Note: the employer-paid work-permit levy is not included here since, per Labor Law Article 40, that cost is legally the employer\'s responsibility, not yours.</string>
+
+  <!-- EOSB accrual tracker -->
+  <string name="eosb_tracker_title">End-of-service tracker</string>
+  <string name="eosb_tracker_setup_intro">Enter your joining date and current basic salary once — the tracker keeps your estimated end-of-service reward up to date every time you open it.</string>
+  <string name="eosb_tracker_label_basic_salary">Current monthly basic salary</string>
+  <string name="eosb_tracker_action_start">Start tracking</string>
+  <string name="eosb_tracker_years_months_format">%1$d years, %2$d months of service</string>
+  <string name="eosb_tracker_months_only_format">%1$d months of service</string>
+  <string name="eosb_tracker_section_estimate">Your estimate today</string>
+  <string name="eosb_tracker_result_resigned_today">If you resign today</string>
+  <string name="eosb_tracker_result_terminated_today">If your employer ends your contract today</string>
+  <string name="eosb_tracker_eligibility_none">Under 2 years of service — resigning pays nothing under Article 85. Termination still pays the full reward.</string>
+  <string name="eosb_tracker_eligibility_one_third">2–5 years of service — resigning pays 1/3 of the full reward.</string>
+  <string name="eosb_tracker_eligibility_two_thirds">5–10 years of service — resigning pays 2/3 of the full reward.</string>
+  <string name="eosb_tracker_eligibility_full">10+ years of service — resigning pays the full reward, same as termination.</string>
+  <string name="eosb_tracker_milestone_title">Next milestone</string>
+  <string name="eosb_tracker_milestone_days_remaining">%1$d days away (%2$s)</string>
+  <string name="eosb_tracker_milestone_2_year_label">2-year mark</string>
+  <string name="eosb_tracker_milestone_5_year_label">5-year mark</string>
+  <string name="eosb_tracker_milestone_10_year_label">10-year mark</string>
+  <string name="eosb_tracker_milestone_2_year_description">Resigning becomes eligible for 1/3 of the reward (currently nothing).</string>
+  <string name="eosb_tracker_milestone_5_year_description">Your accrual rate doubles going forward, and resigning jumps to 2/3 of the reward.</string>
+  <string name="eosb_tracker_milestone_10_year_description">Resigning becomes eligible for the full reward, the same as termination.</string>
+  <string name="eosb_tracker_edit_details">Update joining date or salary</string>
+  <string name="eosb_tracker_clear_action">Reset tracker</string>
+  <string name="eosb_tracker_disclaimer">Estimate only, based on the basic salary you entered and Saudi Labor Law Articles 84–85. If your contract\'s end-of-service base also includes fixed allowances (e.g. housing), your actual entitlement may be higher — confirm with your employer or a legal adviser before relying on this figure.</string>
+  <string name="leave_tracker_title">Leave balance tracker</string>
+  <string name="leave_tracker_setup_intro">Enter your joining date and how many leave days you\'ve already taken this leave year — the tracker keeps your balance up to date every time you open it.</string>
+  <string name="leave_tracker_label_days_taken">Leave days taken this year</string>
+  <string name="leave_tracker_action_start">Start tracking</string>
+  <string name="leave_tracker_years_months_format">%1$d years, %2$d months of service</string>
+  <string name="leave_tracker_months_only_format">%1$d months of service</string>
+  <string name="leave_tracker_section_balance">Your balance today</string>
+  <string name="leave_tracker_entitlement_label">Annual entitlement: %1$d days/year</string>
+  <string name="leave_tracker_accrued_label">Accrued so far this leave year</string>
+  <string name="leave_tracker_taken_label">Taken this leave year</string>
+  <string name="leave_tracker_balance_label">Balance</string>
+  <string name="leave_tracker_days_suffix">\u0020days</string>
+  <string name="leave_tracker_balance_negative_note">You\'ve taken more leave than has accrued so far this year.</string>
+  <string name="leave_tracker_balance_formula_helper">Balance = leave accrued so far this year − leave already taken. Leave builds up gradually through the year rather than all at once, so \"accrued so far\" is normally lower than the full annual entitlement until the year is over.</string>
+  <string name="leave_tracker_next_reset_title">Next leave-year reset</string>
+  <string name="leave_tracker_next_reset_days">%1$d days away (%2$s)</string>
+  <string name="leave_tracker_edit_details">Update joining date or days taken</string>
+  <string name="leave_tracker_clear_action">Reset tracker</string>
+  <string name="leave_tracker_disclaimer">Estimate only, based on Saudi Labor Law Article 109 (21 days/year for the first 5 years, 30 days/year after). Actual carry-over, encashment, and company-specific leave policies vary — confirm with your employer or HR before relying on this figure.</string>
+  <string name="offer_scan_title">Offer red-flag checker</string>
+  <string name="offer_scan_intro">This isn\'t a document scanner — enter a few terms from your offer letter by hand, and it checks them against Saudi Labor Law norms and common red flags for expat hires. Nothing you enter here leaves your device.</string>
+  <string name="offer_scan_label_total_salary">Total monthly salary (all-in)</string>
+  <string name="offer_scan_label_probation">Probation period (months)</string>
+  <string name="offer_scan_label_probation_extension">Extension beyond 90 days was agreed in writing</string>
+  <string name="offer_scan_label_probation_extension_desc">Only matters if your probation is longer than 3 months</string>
+  <string name="offer_scan_label_employee_notice">Notice you must give to resign (days)</string>
+  <string name="offer_scan_label_employer_notice">Notice your employer must give (days)</string>
+  <string name="offer_scan_label_gosi">Employer confirms GOSI registration</string>
+  <string name="offer_scan_label_gosi_desc">Mandatory for all private-sector employees, Saudi or not</string>
+  <string name="offer_scan_label_contract">You\'ll get a signed, written contract</string>
+  <string name="offer_scan_label_contract_desc">Ideally authenticated on Qiwa</string>
+  <string name="offer_scan_label_fees">Employer is charging you recruitment or visa fees</string>
+  <string name="offer_scan_label_fees_desc">These costs are ordinarily the employer\'s responsibility</string>
+  <string name="action_scan_offer">Check Offer</string>
+  <string name="offer_scan_empty_title">Enter your offer\'s terms above and tap Check Offer</string>
+  <string name="offer_scan_summary_clear">No red flags found</string>
+  <string name="offer_scan_summary_issues">%1$d violation(s), %2$d caution(s) found</string>
+  <string name="offer_scan_severity_violation">Possible violation</string>
+  <string name="offer_scan_severity_caution">Worth clarifying</string>
+  <string name="offer_scan_severity_info">Good to know</string>
+  <string name="offer_scan_flag_probation_exceeds_title">Probation exceeds the legal maximum</string>
+  <string name="offer_scan_flag_probation_exceeds_desc">Saudi Labor Law Article 53 caps probation at 90 days, extendable once to 180 days only by a separate written agreement. What you entered is longer than that.</string>
+  <string name="offer_scan_flag_probation_extension_title">Long probation without a written extension</string>
+  <string name="offer_scan_flag_probation_extension_desc">Probation beyond 90 days is only valid with a distinct written agreement. Ask your employer to confirm this in writing, or expect the standard 90-day cap to apply.</string>
+  <string name="offer_scan_flag_gosi_title">GOSI registration not confirmed</string>
+  <string name="offer_scan_flag_gosi_desc">GOSI registration (at minimum the occupational-hazards branch) is mandatory for private-sector employees, Saudi or expat. Ask for written confirmation before signing.</string>
+  <string name="offer_scan_flag_contract_title">No written contract confirmed</string>
+  <string name="offer_scan_flag_contract_desc">Without a signed, ideally Qiwa-authenticated contract, you have little to fall back on if the employer later disputes the agreed terms.</string>
+  <string name="offer_scan_flag_fees_title">You\'re being asked to pay recruitment or visa fees</string>
+  <string name="offer_scan_flag_fees_desc">Recruitment, visa, and hiring costs are ordinarily the employer\'s responsibility, not the worker\'s. Confirm this is really expected of you.</string>
+  <string name="offer_scan_flag_notice_title">Notice period is one-sided</string>
+  <string name="offer_scan_flag_notice_desc">You\'d owe substantially more notice than your employer would — worth negotiating a more even split before signing.</string>
+  <string name="offer_scan_flag_basic_ratio_title">Basic salary is a small share of total pay</string>
+  <string name="offer_scan_flag_basic_ratio_desc">End-of-service and GOSI are commonly calculated on basic salary (plus housing), not gross pay. A low basic can shrink those benefits even if your take-home pay looks competitive.</string>
+  <string name="offer_scan_flag_all_clear_title">No red flags found</string>
+  <string name="offer_scan_flag_all_clear_desc">Nothing in what you entered matches a known red flag. This is a screening tool, not a guarantee — still worth a careful read of the full contract.</string>
+  <string name="offer_scan_disclaimer">This is an automated screening tool, not legal advice. It checks the terms you enter against a small set of well-documented Saudi Labor Law provisions and common risk patterns — it can\'t see your actual contract and may miss things. For anything that matters, confirm with the Ministry of Human Resources and Social Development (Qiwa) or a licensed legal adviser.</string>
+  <string name="reverse_salary_title">Salary needed calculator</string>
+  <string name="reverse_salary_intro">Enter the monthly take-home pay you\'re aiming for — this works backward through the same GOSI and salary rules used elsewhere in the app to estimate the basic salary and package you\'d need to ask for.</string>
+  <string name="reverse_salary_label_target">Target net monthly salary</string>
+  <string name="reverse_salary_label_housing_percent">Housing allowance (% of basic)</string>
+  <string name="reverse_salary_label_transport_percent">Transport allowance (% of basic)</string>
+  <string name="reverse_salary_allowance_percent_helper">25% housing / 10% transport (the defaults above) is a common private-sector allowance split in the Saudi job market, and applies the same way whether you selected Saudi or Non-Saudi above — it\'s a package-structuring convention, not a GOSI rule (GOSI is what the Saudi/Non-Saudi toggle actually changes here). Employers vary it — some offer housing directly instead of an allowance, or use a flat transport amount. Adjust these once you have an actual offer to match it, or leave the defaults for a general first estimate.</string>
+  <string name="action_calculate_salary_needed">Calculate Salary Needed</string>
+  <string name="reverse_salary_empty_title">Enter your target take-home pay above and tap Calculate</string>
+  <string name="reverse_salary_section_result">What you\'d need to ask for</string>
+  <string name="reverse_salary_basic_label">Required basic salary</string>
+  <string name="reverse_salary_package_label">Total monthly package</string>
+  <string name="reverse_salary_package_breakdown">Basic %1$s + Housing %2$s + Transport %3$s</string>
+  <string name="reverse_salary_achieved_label">This produces a net take-home of</string>
+  <string name="reverse_salary_gosi_gap_note">The SAR %1$s gap between your package and net take-home is the employee\'s GOSI contribution — assessed on basic + housing only (not transport), at whichever GOSI system and rate is currently set in Settings.</string>
+  <string name="reverse_salary_not_achievable_title">Target may not be realistic</string>
+  <string name="reverse_salary_not_achievable_body">Even a very high basic salary doesn\'t reach this target net pay under the current GOSI settings — double check the target amount.</string>
+  <string name="reverse_salary_disclaimer">Estimate only. Assumes housing and transport allowances scale with basic salary at the percentages set above — real compensation structures vary by employer, and other allowances, bonuses, or deductions aren\'t modeled here. Use this as a starting point for negotiation, not a guarantee.</string>
+  <string name="cost_of_living_title">Cost-of-living estimator</string>
+  <string name="cost_of_living_intro">A rough monthly budget check for expatriates: pick a city, home size, and household, and see the typical range of rent, daily costs, and school fees — so you can judge whether an offer actually covers your life here.</string>
+  <string name="cost_of_living_section_home">Where you\'ll live</string>
+  <string name="cost_of_living_city_label">City</string>
+  <string name="cost_of_living_apartment_label">Apartment size</string>
+  <string name="cost_of_living_apartment_studio">Studio / 1BR</string>
+  <string name="cost_of_living_apartment_two_br">2BR</string>
+  <string name="cost_of_living_apartment_three_br">3BR+</string>
+  <string name="cost_of_living_section_household">Household</string>
+  <string name="cost_of_living_additional_adults">Family member</string>
+  <string name="cost_of_living_additional_adults_helper">Spouse, parents, or other adults sharing your household — not including yourself or children (counted separately below).</string>
+  <string name="cost_of_living_children_count">Children</string>
+  <string name="cost_of_living_children_in_school">Children in private/international school</string>
+  <string name="cost_of_living_school_fee_tier_label">School fee tier</string>
+  <string name="cost_of_living_school_fee_budget">Budget</string>
+  <string name="cost_of_living_school_fee_mid">Mid-range</string>
+  <string name="cost_of_living_school_fee_premium">Premium</string>
+  <string name="cost_of_living_action_estimate">Estimate Cost of Living</string>
+  <string name="cost_of_living_empty_title">Set up your city and household above, then tap Estimate</string>
+  <string name="cost_of_living_section_results">Typical monthly range</string>
+  <string name="cost_of_living_result_rent">Rent</string>
+  <string name="cost_of_living_result_non_rent">Groceries, utilities, transport, daily costs</string>
+  <string name="cost_of_living_result_school_fees">School fees (monthly share of annual tuition)</string>
+  <string name="cost_of_living_result_total">Estimated total monthly cost</string>
+  <string name="cost_of_living_range_format">SAR %1$s\u2013%2$s</string>
+  <string name="cost_of_living_target_hint">This suggests aiming for at least the top of this range in net take-home pay, to comfortably cover a typical month rather than just a lucky one.</string>
+  <string name="cost_of_living_action_use_as_target">Use this as my target salary</string>
+  <string name="cost_of_living_disclaimer">Market data, not government-set — sourced from cost-of-living and school-fee surveys (Numbeo, Expatica, Edarabia), verified as of %1$s. Actual costs vary a lot by neighborhood, lifestyle, and school choice. This is a planning ballpark, not financial advice.</string>
 
   <!-- Generic empty / error / loading states -->
   <string name="state_error_title">Something went wrong</string>

@@ -57,7 +57,73 @@ looks blank right after a release build, that's expected, not a bug.
 
 ## 3. Versioning
 
-`versionCode = 4`, `versionName = "1.1.0"` (`app/build.gradle.kts`) as of 2026-07-14 — bumped from
+**Current: `versionCode = 7`, `versionName = "1.2.0"`** — a real feature release bumped from
+6/"1.1.2". New tools: a home-screen payday countdown widget, an EOSB accrual tracker, a leave
+balance tracker, an offer red-flag checker, a reverse salary calculator ("what salary do I need to
+hit X take-home"), and a city cost-of-living estimator. Also new: in-app review prompts (Google
+Play's In-App Review API) with a sentiment-gate check in front of it — an "Enjoying the app?"
+Yes/No shown before the native review dialog, so an unhappy moment gets routed to a quiet
+thank-you instead of a public bad rating; plus a loyalty-based trigger so calculator-only users
+who never export/compare still get a fair shot at being asked — and explicit "Rate this app" /
+"Share this app" rows in Settings.
+
+Alongside the new tools, a large batch of correctness and clarity fixes accumulated across two
+review passes (a QA pass and a UX/UI pass) before this release:
+
+- EOSB comparison on the Comparison screen always showed a 0 difference regardless of the two
+  offers' actual years of service — `OfferInput.yearsOfService` was never populated by any UI, so
+  it silently defaulted to 0 for both sides. Fixed by comparing at a fixed 5-year reference point.
+- The Result screen kept showing a stale net-salary figure after resetting or editing the wizard,
+  because `netSalaryResult` wasn't cleared alongside the wizard state.
+- Reverse Salary displayed its internal binary-search ceiling as if it were a real recommended
+  basic salary whenever a target was mathematically unreachable — now hidden behind an
+  `isAchievable` check with an explanatory "not realistic" message instead.
+- `otherDeductions` was a wired-up input field that silently never reached the actual calculation
+  — fixed end-to-end (wizard input, review step, payslip line item, calculator input).
+- The RTL arrow icon on the primary CTA button used a non-mirroring icon asset and an animation
+  offset that wasn't direction-aware, so the "nudge" animation visually pointed the wrong way in
+  Arabic. Fixed with `Icons.AutoMirrored` and a layout-direction-aware offset sign.
+- Bottom navigation icons had a redundant `contentDescription` that duplicated the adjacent visible
+  label in the same merged semantics node, so TalkBack announced every tab name twice.
+- The +/- stepper control (used on 9 fields across 5 screens) went through several rounds of
+  fixes: missing screen-reader labels on the +/- buttons, a sub-minimum 36dp touch target, a
+  disabled-state color that looked like a different button than the enabled state, zero spacing
+  between the buttons and the number, and finally a size/prominence pass (48dp → 32dp visible
+  circle via `minimumInteractiveComponentSize()`, so the tap target stays accessible while the
+  button reads smaller and cleaner).
+- Added short, low-emphasis explanatory captions anywhere a number could plausibly be
+  misread — the employer GOSI contribution row, the EOSB helper text, the Comparison screen's
+  color legend, the Leave Balance Tracker's balance/accrued/entitlement relationship, and the
+  Reverse Salary allowance-split note (which used to imply, confusingly, that the 25%/10% split
+  only applied to Saudi nationals rather than the whole Saudi job market regardless of the
+  Saudi/Non-Saudi toggle).
+- Renamed "Scan Offer" / "Offer red-flag scanner" to "Check Offer" / "Offer red-flag checker" (EN
+  only — the Arabic copy was already correctly worded) and added an explicit "this isn't a
+  document scanner" line, since "scan" was read as camera/OCR document scanning rather than the
+  manual checklist it actually is.
+- Renamed "Additional adults" to "Family member" on the Cost of Living screen, with a caption
+  clarifying it means adult family members specifically (not the user, not children — children
+  keep their own separate counter so the school-fee estimate still works).
+
+---
+
+**Previous — `versionCode = 6`, `versionName = "1.1.2"` (2026-09-05)** — a stability + compliance
+release bumped from 5/"1.1.1". Two changes, no new features:
+
+1. **Splash crash fix.** `SplashScreenViewProvider.iconView` is implemented as
+   `platformView.iconView!!` in core-splashscreen 1.0.1 on API 31+, so on devices whose platform
+   `SplashScreenView` carries no icon the *getter itself* throws NPE — the existing `if (icon ==
+   null)` fallback in `MainActivity` was unreachable. Now read via
+   `runCatching { provider.iconView }.getOrNull()`. This was 98.5% of all crash events on 1.1.1
+   (43 affected users), a hard launch-path crash: affected users could not open the app at all.
+   First seen on Infinix SMART 9 HD / Android 14.
+2. **`compileSdk`/`targetSdk` 35 → 36** (see Section 4 — the deadline passed).
+
+AGP was also pinned back from 8.13.2 to **8.10.0**: 8.13.2 exceeds what the installed Android
+Studio supports ("Latest supported version is AGP 8.10.0"), while 8.10.0 still supports
+`compileSdk 36`. Gradle wrapper stays at 8.13 (AGP 8.10 requires >= 8.11.1).
+
+Previous release — `versionCode = 4`, `versionName = "1.1.0"` as of 2026-07-14, bumped from
 3/"1.0.1" for a real feature release: phased GOSI rate schedule (New System now tracks the actual
 2024-2028 step-up, corrected against Oracle/ZenHR payroll-legislation sources), Ramadan reduced
 working hours, expat residency cost estimator, city cost-of-living reference, unofficial payroll
@@ -74,14 +140,25 @@ review cycle. For every future release: bump `versionCode` by at least 1 (it mus
 increase, Play Console rejects re-using or lowering it) and update `versionName` to
 whatever you want users to see.
 
-## 4. Target API level — heads-up for later in 2026
+## 4. Target API level — DONE (2026-09-05)
 
-Play Store requires new apps/updates to target a recent Android API level. As of today
-(2026-06-27) `compileSdk`/`targetSdk = 35` (Android 15) is compliant. **From August 31, 2026**,
-Google requires new app submissions and updates to target **API 36 (Android 16)**. If you submit
-this release before that date you're fine as-is; if you're still iterating past it, bump both
-`compileSdk` and `targetSdk` to 36 (and re-test — a major SDK bump can shift Compose/Material3
-behavior) before your next upload.
+`compileSdk`/`targetSdk` are now **36** (Android 16).
+
+Play Console flagged this on the live build: *"Your highest non-compliant target API level is
+Android 15 (API level 35)"* — that is `versionCode 5`, which shipped targetSdk 35. Publishing
+`versionCode 6` clears it. Hard deadline for continuing to push updates: **Nov 1, 2026**.
+
+If the warning persists in Play Console after this upload, check for stale targetSdk-35 artifacts
+still active on the internal / closed / open testing tracks — Play counts every active artifact
+across all tracks, not just production.
+
+**Untested risk from this bump — verify before uploading.** Android 16 *enforces* edge-to-edge for
+apps targeting API 36; `windowOptOutEdgeToEdgeEnforcement` is ignored. This codebase contains no
+insets handling at all — no `enableEdgeToEdge()`, no `WindowCompat`, no `statusBarsPadding`. The
+`SalaryNavGraph` Scaffold does apply its `innerPadding` and M3 Scaffold defaults to system-bar
+insets, so it will most likely render correctly, but that is an inference, not a test. Run on an
+**Android 16 emulator** and check: content under the status bar, clipped bottom nav/ad banner,
+and status-bar icon contrast in dark theme. Play will not catch this; users will.
 
 ## 5. Building the release bundle
 
@@ -91,6 +168,20 @@ behavior) before your next upload.
 
 Output: `app/build/outputs/bundle/release/app-release.aab` — this `.aab` is what you upload to
 Play Console (App bundles, not the `.apk`, are required for new apps).
+
+**Upload the file from `app/build/outputs/bundle/release/`, not `app/release/`.** Android Studio's
+"Generate Signed Bundle / APK" wizard writes its output to `app/release/` instead, so a stale
+bundle from an earlier wizard run sits there indefinitely and does *not* get refreshed by
+`./gradlew bundleRelease`. Uploading it fails with "Version code N has already been used" — which
+looks like a versioning mistake but is actually the wrong file. This happened on the 1.1.2 upload
+(2026-09-05): a July 14 bundle at `app/release/app-release.aab` still carried versionCode 5. It has
+been renamed `app-release-v1.1.1-OLD-do-not-upload.aab`.
+
+Quick check on any bundle before uploading:
+
+```bash
+unzip -p <path>.aab base/manifest/AndroidManifest.xml | strings | grep -oE '1\.[0-9]+\.[0-9]+' | head -1
+```
 
 To sanity-check the signed build installs and runs before uploading:
 
@@ -119,11 +210,15 @@ benefit (EOSB).
 FEATURES
 • Guided net salary calculator with GOSI (Existing and New System) and EOSB built in
 • Compare two job offers side by side — net salary, GOSI, EOSB, percentage difference
+• Reverse salary calculator — find the basic salary you need to hit a target take-home pay
+• Offer red-flag checker — screens offer terms against Saudi Labor Law norms and common red flags
+• EOSB accrual tracker and leave balance tracker — live running totals for your current job
+• Home-screen widget — payday countdown at a glance
 • Generate a formatted payslip, export it as a PDF, and share it
 • Export a watermarked salary certificate (PDF) — a personal, self-generated record
 • Export your saved calculations as a payroll summary (CSV)
 • Expat residency cost estimator — dependent fees, exit/re-entry visas, insurance
-• City cost-of-living reference for comparing offers across Saudi cities
+• Cost-of-living estimator — rent, household, and school-fee ranges by Saudi city
 • Ramadan reduced working-hours support
 • Save your calculation history — reopen, edit, or delete any past calculation
 • Fully bilingual: English and Arabic, with right-to-left layout support
@@ -168,11 +263,15 @@ payroll calculator searches Play Store in Arabic. App name matches the in-app Ar
 المميزات
 • حاسبة صافي راتب موجّهة تتضمن التأمينات الاجتماعية (النظامين الحالي والجديد) ومكافأة نهاية الخدمة
 • قارن بين عرضي عمل جنبًا إلى جنب — صافي الراتب، التأمينات، مكافأة نهاية الخدمة، ونسبة الفرق
+• حاسبة الراتب العكسي — اعرف الراتب الأساسي المطلوب للوصول إلى صافي راتب مستهدف
+• فاحص عروض العمل — يفحص بنود العرض مقابل أنظمة العمل السعودي وأبرز العلامات التحذيرية الشائعة
+• متتبع مكافأة نهاية الخدمة ومتتبع رصيد الإجازات — أرصدة مباشرة مرتبطة بوظيفتك الحالية
+• أداة الشاشة الرئيسية — عداد تنازلي ليوم الراتب
 • أنشئ قسيمة راتب منسقة، صدّرها كملف PDF، وشاركها
 • صدّر شهادة راتب بعلامة مائية (PDF) — سجل شخصي ذاتي الإنشاء
 • صدّر حساباتك المحفوظة كملخص رواتب (CSV)
 • حاسبة تكاليف الإقامة للمقيمين — رسوم التابعين، تأشيرات الخروج والعودة، التأمين الصحي
-• مرجع تكلفة المعيشة حسب المدينة لمقارنة العروض بين مدن السعودية
+• حاسبة تكلفة المعيشة — نطاقات الإيجار وتكاليف المنزل والرسوم الدراسية حسب المدينة السعودية
 • دعم ساعات العمل المخفضة في رمضان
 • احفظ سجل حساباتك — أعد فتحه أو عدّله أو احذفه في أي وقت
 • دعم كامل للغتين العربية والإنجليزية، مع دعم الاتجاه من اليمين لليسار
@@ -194,6 +293,25 @@ payroll calculator searches Play Store in Arabic. App name matches the in-app Ar
 
 **ما الجديد (v1.1.0):** — see the Arabic release-notes blockquote just below the English one
 directly under this section; same copy applies here.
+
+**What's new (v1.2.0):**
+> New: home-screen payday widget, EOSB accrual tracker, leave balance tracker, offer red-flag
+> checker, reverse salary calculator, and a cost-of-living estimator. Plus a big pass of clarity
+> and accuracy fixes across GOSI/EOSB comparisons, the salary wizard, and every calculator screen,
+> and better accessibility (larger tap targets, screen-reader labels) throughout.
+
+(363 characters — under Play Console's ~500-char release-notes limit.)
+
+> جديد: أداة راتب الشاشة الرئيسية (تعد أيام الراتب)، متتبع مكافأة نهاية الخدمة، متتبع رصيد
+> الإجازات، فاحص عروض العمل، حاسبة الراتب العكسي، وحاسبة تكلفة المعيشة. بالإضافة إلى مجموعة كبيرة
+> من إصلاحات الدقة والوضوح في مقارنات التأمينات الاجتماعية ومكافأة نهاية الخدمة، ومعالج الراتب،
+> وجميع شاشات الحاسبة، وتحسينات في إمكانية الوصول (أهداف لمس أكبر، تسميات لقارئ الشاشة).
+
+**What's new (v1.1.2):**
+> Bug fix: resolved a crash on launch that prevented some devices from opening the app. Updated
+> for Android 16.
+
+> إصلاح خلل: تم حل مشكلة توقف التطبيق عند بدء التشغيل والتي كانت تمنع فتحه على بعض الأجهزة. وتحديث التطبيق ليتوافق مع نظام Android 16.
 
 **What's new (v1.1.0):**
 > New: expat residency cost estimator, city cost-of-living reference, Ramadan reduced-hours
@@ -304,10 +422,28 @@ violence/gambling/UGC):
 
 - [x] Real AdMob App ID and banner ad unit ID swapped into `app/build.gradle.kts` (`release` block)
 - [ ] `release-keystore.jks` + `keystore.properties` backed up off this machine
-- [ ] `./gradlew bundleRelease` runs clean and produces a signed `.aab`
+- [ ] `./gradlew bundleRelease` runs clean and produces a signed `.aab` — **not yet run for this
+      release**; everything below was verified statically (brace/paren balance, XML
+      well-formedness, EN/AR string parity, every `R.string.*` reference resolves) since no real
+      Gradle build is available in this environment. Run a real build before uploading.
 - [ ] Privacy policy filled in, hosted, and the URL added to Play Console
-- [ ] Phone screenshots captured (min 2)
-- [ ] Store listing copy reviewed/edited (Section 6 is a draft, not final copy)
-- [ ] Data Safety form completed in Play Console
+- [ ] Phone screenshots captured (min 2) — worth recapturing for this release: the new tools
+      (Reverse Salary, Offer Checker, EOSB/Leave trackers, Cost of Living, the home widget) aren't
+      represented in any screenshot yet
+- [ ] Store listing copy reviewed/edited — FEATURES list in Section 6 updated for 1.2.0's new
+      tools, but the rest of the description/short description wasn't rewritten around them; give
+      it a read before pasting into Play Console
+- [ ] Data Safety form completed in Play Console (no changes expected — the new widget/trackers
+      are still local-only, no new data collection or third-party sharing)
 - [ ] Content rating questionnaire completed in Play Console
-- [ ] If submitting after 2026-08-31, `targetSdk` bumped to 36 first (Section 4)
+- [x] `targetSdk` bumped to 36 (Section 4) — unchanged since 1.1.2
+- [x] `versionCode` bumped to 7 / `versionName` 1.2.0 — Play rejects a reused `versionCode`
+- [ ] Upload keystore verified against the certificate Play has registered: alias `key0`,
+      SHA1 `9F:9A:90:0A:51:D8:83:67:18:4F:CB:0E:84:DC:0F:B2:7D:C8:F4:C4` — re-verify before
+      uploading (last checked 2026-09-05, for versionCode 6)
+- [ ] Smoke-tested on an **Android 16** device/emulator for edge-to-edge regressions (Section 4) —
+      still open from the 1.1.2 checklist, carried forward
+- [ ] New-since-1.1.2 features smoke-tested on a real device: home-screen widget actually renders
+      and updates, EOSB/Leave tracker setup flows save and persist correctly, in-app review
+      sentiment dialog appears and both Yes/No paths behave as expected — none of this can be
+      verified without a device/emulator, which this environment doesn't have

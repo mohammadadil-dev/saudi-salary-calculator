@@ -7,7 +7,7 @@ plugins {
 
 android {
   namespace = "com.saudi.salarycalculator.feature.calculator"
-  compileSdk = 35
+  compileSdk = 36
 
   defaultConfig {
     minSdk = 24
@@ -48,6 +48,12 @@ dependencies {
   implementation("com.google.dagger:hilt-android:2.52")
   implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
   kapt("com.google.dagger:hilt-compiler:2.52")
+
+  // In-app review prompt (see review/ReviewPrompter.kt) — feature:calculator is where the
+  // export/save success moments actually happen, so the prompter lives here rather than in
+  // :app (which this module cannot depend on without a dependency cycle).
+  implementation("com.google.android.play:review-ktx:2.0.2")
+  implementation("androidx.datastore:datastore-preferences:1.1.1")
 
   debugImplementation("androidx.compose.ui:ui-tooling")
 }

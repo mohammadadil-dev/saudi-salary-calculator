@@ -1,3 +1,10 @@
 <resources>
-  <string name="app_name">حاسبة الراتب السعودية</string>
+  <string name="app_name">حاسبة الراتب السعودية: مكافأة</string>
+
+  <!-- ودجت العد التنازلي ليوم الصرف -->
+  <string name="widget_payday_label">يوم الراتب</string>
+  <string name="widget_payday_description">عد تنازلي حتى يوم صرف راتبك القادم، يُحدَّد من إعدادات التطبيق.</string>
+  <string name="widget_payday_setup_prompt">اضغط لتحديد يوم صرف راتبك</string>
+  <string name="widget_payday_today">اليوم!</string>
+  <string name="widget_payday_days_remaining">باقي %1$d يومًا</string>
 </resources>

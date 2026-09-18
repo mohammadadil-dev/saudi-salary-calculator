@@ -161,6 +161,17 @@ fun ResultScreen(
         )
       }
     }
+    if (gosiEmployer > 0.0) {
+      item {
+        // Without this, a user could see two "GOSI" cards side by side and assume the employer
+        // figure is also coming out of their pay — it isn't, and doesn't touch net salary at all.
+        Text(
+          stringResource(R.string.result_gosi_employer_helper),
+          style = MaterialTheme.typography.bodySmall,
+          color = designSystemContentColor(darkMode).copy(alpha = 0.55f)
+        )
+      }
+    }
 
     if (overtime > 0.0 || result.estimatedEosb > 0.0) {
       item {
@@ -186,6 +197,17 @@ fun ResultScreen(
               modifier = Modifier.weight(1f)
             )
           }
+        }
+      }
+      if (result.estimatedEosb > 0.0) {
+        item {
+          // Without this, toggling Monthly/Yearly and watching every other card rescale except
+          // this one reads as a bug rather than the one-time, non-recurring payout it actually is.
+          Text(
+            stringResource(R.string.result_eosb_helper),
+            style = MaterialTheme.typography.bodySmall,
+            color = designSystemContentColor(darkMode).copy(alpha = 0.55f)
+          )
         }
       }
     }

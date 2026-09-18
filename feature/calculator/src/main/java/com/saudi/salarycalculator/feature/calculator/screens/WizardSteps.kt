@@ -219,6 +219,11 @@ fun StepDeductionsContent(
       optionalLabel = optional
     )
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+      // Stacked (label above, stepper below), same as Reverse Salary's housing/transport %
+      // fields — kept this way rather than a side-by-side row, since a row risks pushing the
+      // stepper past the card edge on narrower screens or longer translations (this is exactly
+      // what happened when "Probation period (months)" on the Offer Checker screen was briefly
+      // switched to a side-by-side row; reverted there too).
       Text(
         stringResource(R.string.label_unpaid_leave_days),
         style = MaterialTheme.typography.labelLarge,
@@ -228,6 +233,8 @@ fun StepDeductionsContent(
       NumberStepper(
         value = wizard.unpaidLeaveDays.toIntOrNull() ?: 0,
         darkMode = darkMode,
+        increaseContentDescription = stringResource(R.string.common_increase),
+        decreaseContentDescription = stringResource(R.string.common_decrease),
         max = 30,
         onValueChange = { v -> onUpdate { it.copy(unpaidLeaveDays = v.toString()) } }
       )
@@ -237,6 +244,14 @@ fun StepDeductionsContent(
         color = designSystemContentColor(darkMode).copy(alpha = 0.55f)
       )
     }
+    CurrencyInputField(
+      label = stringResource(R.string.label_other_deduction),
+      value = wizard.otherDeductions,
+      onValueChange = { v -> onUpdate { it.copy(otherDeductions = v) } },
+      darkMode = darkMode,
+      currencySymbol = currencySymbol,
+      optionalLabel = optional
+    )
   }
 }
 
@@ -339,7 +354,7 @@ fun StepEmploymentDetailsContent(
 private enum class DateTarget { JOINING, CALCULATION_MONTH }
 
 @Composable
-private fun DateField(
+internal fun DateField(
   label: String,
   actionLabel: String,
   millis: Long?,
@@ -385,7 +400,7 @@ private fun DateField(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DatePickerSheet(
+internal fun DatePickerSheet(
   initialMillis: Long?,
   darkMode: Boolean,
   onDismiss: () -> Unit,
@@ -508,6 +523,14 @@ fun StepGosiEosbContent(
       darkMode = darkMode,
       accent = BrandGreen
     )
+    // Same fact as ResultScreen/PayslipScreen: shown as a green, non-deduction card right next to
+    // the employee's own (red) GOSI deduction, which invites the same "is this coming out of my
+    // pay too?" question this early in the flow.
+    Text(
+      stringResource(R.string.result_gosi_employer_helper),
+      style = MaterialTheme.typography.bodySmall,
+      color = designSystemContentColor(darkMode).copy(alpha = 0.55f)
+    )
     ResultCard(
       label = stringResource(R.string.preview_eosb_estimate),
       value = eosbPreview.rewardAmount,
@@ -573,7 +596,8 @@ fun StepReviewContent(
       rows = listOf(
         ReviewRow(stringResource(R.string.label_loan_deduction), wizard.loanDeduction.ifBlank { "0" }, isCurrency = true),
         ReviewRow(stringResource(R.string.label_absence_deduction), wizard.absenceDeduction.ifBlank { "0" }, isCurrency = true),
-        ReviewRow(stringResource(R.string.label_unpaid_leave_days), wizard.unpaidLeaveDays.ifBlank { "0" })
+        ReviewRow(stringResource(R.string.label_unpaid_leave_days), wizard.unpaidLeaveDays.ifBlank { "0" }),
+        ReviewRow(stringResource(R.string.label_other_deduction), wizard.otherDeductions.ifBlank { "0" }, isCurrency = true)
       )
     )
     ReviewSection(

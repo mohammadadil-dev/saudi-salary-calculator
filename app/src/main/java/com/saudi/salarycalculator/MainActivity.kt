@@ -70,10 +70,11 @@ class MainActivity : ComponentActivity() {
     // Animate the system splash icon out (scale + fade) instead of an abrupt cut, so the
     // hand-off into the in-app Splash destination (see SalaryNavGraph) feels continuous.
     splashScreen.setOnExitAnimationListener { provider ->
-      // provider.iconView is nullable: some OEM splash-screen implementations (seen on certain
-      // Samsung/Xiaomi/Vivo builds) don't populate it, and ObjectAnimator.ofFloat NPEs if handed
-      // a null target. Fall back to a straight fade-and-remove when that happens.
-      val icon = provider.iconView
+      // provider.iconView must be read defensively: core-splashscreen 1.0.1 implements it as
+      // `platformView.iconView!!` on API 31+, so when the platform SplashScreenView carries no
+      // icon (seen on a number of Android 12+ OEM builds) the *getter itself* throws NPE — a
+      // null check on the result is never reached. Fall back to a straight fade-and-remove.
+      val icon = runCatching { provider.iconView }.getOrNull()
       if (icon == null) {
         val fade = ObjectAnimator.ofFloat(provider.view, View.ALPHA, 1f, 0f).apply {
           duration = 260

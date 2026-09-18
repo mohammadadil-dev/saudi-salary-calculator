@@ -7,7 +7,7 @@ plugins {
 
 android {
   namespace = "com.saudi.salarycalculator.core.data"
-  compileSdk = 35
+  compileSdk = 36
 
   defaultConfig {
     minSdk = 24

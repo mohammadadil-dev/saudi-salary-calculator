@@ -41,7 +41,10 @@ fun BottomNavigationBar(
         selected = isSelected,
         onClick = { onSelect(item.key) },
         icon = {
-          Icon(if (isSelected) item.selectedIcon else item.icon, contentDescription = item.label)
+          // contentDescription is null, not item.label: NavigationBarItem merges the icon and
+          // the label slot below into one semantics node, so setting it here made TalkBack
+          // announce each tab's name twice back to back.
+          Icon(if (isSelected) item.selectedIcon else item.icon, contentDescription = null)
         },
         label = { Text(item.label, maxLines = 1) },
         colors = NavigationBarItemDefaults.colors(

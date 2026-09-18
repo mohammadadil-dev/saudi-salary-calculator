@@ -80,6 +80,7 @@ fun PayslipScreen(
   val absence = wizard.absenceDeduction.toDoubleOrNull() ?: 0.0
   val unpaidLeaveDays = wizard.unpaidLeaveDays.toDoubleOrNull() ?: 0.0
   val unpaidLeaveDeduction = (basic / 30.0) * unpaidLeaveDays
+  val otherDeduction = wizard.otherDeductions.toDoubleOrNull() ?: 0.0
 
   LazyColumn(
     modifier = modifier.fillMaxSize().padding(horizontal = 20.dp),
@@ -161,7 +162,8 @@ fun PayslipScreen(
         lines = listOf(
           PayslipLine(stringResource(R.string.label_loan_deduction), loan, isDeduction = true),
           PayslipLine(stringResource(R.string.label_absence_deduction), absence, isDeduction = true),
-          PayslipLine(stringResource(R.string.label_unpaid_leave_days), unpaidLeaveDeduction, isDeduction = true)
+          PayslipLine(stringResource(R.string.label_unpaid_leave_days), unpaidLeaveDeduction, isDeduction = true),
+          PayslipLine(stringResource(R.string.label_other_deduction), otherDeduction, isDeduction = true)
         ),
         currencySymbol = currencySymbol,
         darkMode = darkMode
@@ -177,6 +179,16 @@ fun PayslipScreen(
         ),
         currencySymbol = currencySymbol,
         darkMode = darkMode
+      )
+    }
+    item {
+      // Same reasoning as ResultScreen: the employer contribution line sits right under the
+      // employee's GOSI deduction with no minus sign, so without this a reader could think it's
+      // also coming out of their pay (it isn't — it never touches net salary).
+      Text(
+        stringResource(R.string.result_gosi_employer_helper),
+        style = MaterialTheme.typography.bodySmall,
+        color = designSystemContentColor(darkMode).copy(alpha = 0.55f)
       )
     }
 

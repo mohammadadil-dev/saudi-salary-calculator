@@ -19,14 +19,14 @@ val keystoreProperties = Properties().apply {
 
 android {
   namespace = "com.saudi.salarycalculator"
-  compileSdk = 35
+  compileSdk = 36
 
   defaultConfig {
     applicationId = "com.saudi.salarycalculator"
     minSdk = 24
-    targetSdk = 35
-    versionCode = 5
-    versionName = "1.1.1"
+    targetSdk = 36
+    versionCode = 7
+    versionName = "1.2.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     vectorDrawables { useSupportLibrary = true }
@@ -103,6 +103,8 @@ android {
 
 dependencies {
   implementation(project(":feature:calculator"))
+  implementation(project(":core:model"))
+  implementation(project(":core:calculator"))
   implementation(project(":core:data"))
   implementation(project(":core:database"))
   implementation(project(":core:preferences"))
@@ -118,6 +120,8 @@ dependencies {
   implementation("androidx.core:core-splashscreen:1.0.1")
   implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.2")
   implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 
   implementation("com.google.dagger:hilt-android:2.52")
   kapt("com.google.dagger:hilt-compiler:2.52")

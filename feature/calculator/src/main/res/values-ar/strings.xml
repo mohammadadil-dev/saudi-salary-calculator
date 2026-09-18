@@ -11,6 +11,8 @@
   <string name="common_done">تم</string>
   <string name="common_edit">تعديل</string>
   <string name="common_delete">حذف</string>
+  <string name="common_decrease">إنقاص</string>
+  <string name="common_increase">زيادة</string>
   <string name="common_save">حفظ</string>
   <string name="common_share">مشاركة</string>
   <string name="common_retry">إعادة المحاولة</string>
@@ -23,7 +25,7 @@
   <string name="common_step_of">الخطوة %1$d من %2$d</string>
 
   <!-- Splash -->
-  <string name="splash_app_name">حاسبة الراتب السعودية</string>
+  <string name="splash_app_name">حاسبة الراتب السعودية: مكافأة</string>
   <string name="splash_tagline">بدون ضريبة دخل. تقارير جاهزة بالريال.</string>
 
   <!-- Bottom navigation -->
@@ -46,6 +48,16 @@
   <string name="home_tools_title">أدوات</string>
   <string name="home_tool_expat_costs_title">تكاليف الإقامة للمقيمين</string>
   <string name="home_tool_expat_costs_subtitle">قدّر رسوم المرافقين والتأشيرات وغيرها مقارنة براتبك</string>
+  <string name="home_tool_eosb_tracker_title">متتبّع مكافأة نهاية الخدمة</string>
+  <string name="home_tool_eosb_tracker_subtitle">تابع نمو مكافأتك أولاً بأول، وشاهد محطتك القادمة</string>
+  <string name="home_tool_leave_tracker_title">رصيد إجازتي</string>
+  <string name="home_tool_leave_tracker_subtitle">تابع استحقاق ورصيد إجازتك السنوية</string>
+  <string name="home_tool_offer_scan_title">فاحص العروض الوظيفية</string>
+  <string name="home_tool_offer_scan_subtitle">تحقق من شروط عرض العمل مقارنة بأنظمة العمل السعودي</string>
+  <string name="home_tool_reverse_salary_title">ما الراتب الذي أحتاجه؟</string>
+  <string name="home_tool_reverse_salary_subtitle">احسب الراتب المطلوب انطلاقًا من صافي راتبك المستهدف</string>
+  <string name="home_tool_cost_of_living_title">كم ستكلف الحياة هنا؟</string>
+  <string name="home_tool_cost_of_living_subtitle">قدّر الإيجار والمصاريف اليومية والرسوم الدراسية حسب المدينة</string>
   <string name="home_insights_title">نصائح حول الراتب</string>
   <string name="home_insight_gosi_title">مساهمة التأمينات الاجتماعية</string>
   <string name="home_insight_gosi_body">يساهم الموظف السعودي بنسبة من الراتب الأساسي وبدل السكن شهرياً في التأمينات الاجتماعية — تعتمد النسبة الدقيقة على نظام التأمينات الخاص بك (راجع الإعدادات).</string>
@@ -89,6 +101,7 @@
   <string name="label_absence_deduction">استقطاع الغياب</string>
   <string name="label_unpaid_leave_days">أيام الإجازة بدون راتب</string>
   <string name="helper_unpaid_leave_days">يتم الاستقطاع بمعدل الراتب الأساسي ÷ 30 لليوم</string>
+  <string name="label_other_deduction">استقطاع آخر</string>
 
   <!-- Step 4: Employment details -->
   <string name="label_nationality">الجنسية</string>
@@ -139,6 +152,8 @@
   <string name="result_gosi_employer">تأمينات صاحب العمل</string>
   <string name="result_overtime_amount">مبلغ العمل الإضافي</string>
   <string name="result_eosb_estimate">تقدير مكافأة نهاية الخدمة</string>
+  <string name="result_gosi_employer_helper">يدفعها صاحب العمل بالإضافة إلى راتبك — لا تُخصم من صافي راتبك.</string>
+  <string name="result_eosb_helper">مبلغ يُدفع مرة واحدة عند انتهاء خدمتك، وليس مبلغًا متكررًا — لا يتغير بتبديل شهري/سنوي أعلاه.</string>
   <string name="result_net_salary">صافي الراتب</string>
   <string name="result_breakdown_title">تفاصيل الراتب</string>
   <string name="result_bar_chart_title">المكاسب مقابل الاستقطاعات</string>
@@ -181,9 +196,11 @@
   <string name="comparison_new_offer">الراتب المتوقع</string>
   <string name="action_compare">قارن العروض</string>
   <string name="comparison_net_increase">الزيادة الصافية</string>
+  <string name="comparison_net_decrease">النقص الصافي</string>
   <string name="comparison_percentage_increase">نسبة الزيادة</string>
   <string name="comparison_gosi_difference">الفرق في التأمينات</string>
-  <string name="comparison_eosb_difference">الفرق في مكافأة نهاية الخدمة</string>
+  <string name="comparison_color_legend_helper">الأخضر يعني دائمًا أن التغيير في صالحك — بالنسبة للتأمينات، ذلك يعني استقطاعًا أقل، لذا فإن الرقم السالب هناك هو النتيجة الجيدة.</string>
+  <string name="comparison_eosb_difference">الفرق في مكافأة نهاية الخدمة (بعد 5 سنوات)</string>
   <string name="comparison_monthly_impact">الأثر الشهري</string>
   <string name="comparison_yearly_impact">الأثر السنوي</string>
   <string name="comparison_better_offer">العرض الأفضل</string>
@@ -192,7 +209,7 @@
   <string name="comparison_city_label">المدينة (اختياري، للاطلاع فقط)</string>
   <string name="comparison_city_riyadh">الرياض</string>
   <string name="comparison_city_jeddah">جدة</string>
-  <string name="comparison_city_eastern">المنطقة الشرقية</string>
+  <string name="comparison_city_eastern">الشرقية</string>
   <string name="comparison_city_other">أخرى</string>
   <string name="comparison_city_tier_highest">من بين الأعلى تكلفة بين المدن السعودية الكبرى</string>
   <string name="comparison_city_tier_high">مرتفعة، لكنها غالباً أقل من الرياض بنسبة 10–15%</string>
@@ -214,8 +231,16 @@
   <string name="settings_expat_employee_rate">نسبة الموظف غير السعودي</string>
   <string name="settings_expat_employer_rate">نسبة مخاطر صاحب العمل لغير السعودي</string>
   <string name="settings_gosi_cap">الحد الأقصى الشهري للاشتراك</string>
+  <string name="settings_gosi_cap_helper">لا يُحتسب الأجر الذي يتجاوز هذا الحد ضمن اشتراكات التأمينات — يُحسب الاشتراك على الدخل حتى هذا الحد فقط.</string>
   <string name="settings_gosi_disclaimer">تم التحقق من هذه النسب حتى %1$s، وهي قابلة للتعديل أعلاه. نسب التأمينات الاجتماعية (جوسي) تتغير بشكل دوري — يرجى التأكد من النسبة الحالية عبر gosi.gov.sa قبل الاعتماد عليها في قرارات الرواتب أو الامتثال الفعلية.</string>
   <string name="settings_history">السجل</string>
+  <string name="settings_payday_title">راتب الشهر (يوم الصرف)</string>
+  <string name="settings_payday_description">حدد يوم صرف الراتب من الشهر لرؤية العد التنازلي هنا، وأضف ودجت \"يوم الراتب\" إلى شاشتك الرئيسية.</string>
+  <string name="settings_payday_day_label">يوم الصرف: اليوم %1$d من الشهر</string>
+  <string name="settings_payday_countdown">باقي %1$d يومًا على يوم الصرف</string>
+  <string name="settings_payday_countdown_today">اليوم هو يوم الصرف</string>
+  <string name="settings_payday_clear">إلغاء يوم الصرف</string>
+  <string name="settings_payday_widget_hint">اضغط مطولاً على شاشتك الرئيسية، اختر الودجات، وأضف \"يوم الراتب\" لرؤية العد التنازلي دون فتح التطبيق.</string>
   <string name="settings_export_payroll_summary">تصدير ملخص الرواتب</string>
   <string name="settings_export_payroll_summary_helper">يصدّر الحسابات المحفوظة كملف CSV (يفتح في Excel أو Sheets). هذا ملف مرجعي غير رسمي فقط — وليس ملف WPS/SIF. يجب تقديم الرواتب الفعلية عبر مدد أو بوابة WPS الرسمية الخاصة بالبنك.</string>
   <string name="settings_payroll_export_confirmation">تم تصدير ملخص الرواتب</string>
@@ -223,10 +248,17 @@
 
   <string name="settings_support_title">ادعم التطبيق</string>
   <string name="settings_rate_app">قيّم التطبيق</string>
-  <string name="settings_rate_app_helper">هل يعجبك تطبيق حاسبة الراتب السعودي؟ تقييم سريع في متجر Play يساعد الآخرين على إيجاده.</string>
+  <string name="settings_rate_app_helper">هل يعجبك تطبيق حاسبة الراتب السعودي: مكافأة؟ تقييم سريع في متجر Play يساعد الآخرين على إيجاده.</string>
   <string name="settings_share_app">شارك التطبيق</string>
   <string name="settings_share_app_helper">هل تعرف شخصًا قد يستفيد من هذا التطبيق؟ شاركه معه.</string>
-  <string name="settings_share_app_message">جرّب تطبيق حاسبة الراتب السعودي — تطبيق مجاني لحساب صافي الراتب واشتراكات التأمينات الاجتماعية ومكافأة نهاية الخدمة في السعودية.</string>
+  <string name="settings_share_app_message">جرّب تطبيق حاسبة الراتب السعودي: مكافأة — تطبيق مجاني لحساب صافي الراتب واشتراكات التأمينات الاجتماعية ومكافأة نهاية الخدمة في السعودية.</string>
+
+  <!-- Sentiment gate shown before the Play in-app review flow — see review/ReviewPrompter.kt -->
+  <string name="review_sentiment_title">هل يعجبك التطبيق؟</string>
+  <string name="review_sentiment_body">يسعدنا معرفة رأيك.</string>
+  <string name="review_sentiment_yes">نعم، يعجبني!</string>
+  <string name="review_sentiment_no">ليس تمامًا</string>
+  <string name="review_sentiment_thanks">شكرًا لإخبارنا — نعمل دائمًا على التحسين.</string>
 
   <!-- Expat residency cost estimator -->
   <string name="expat_costs_title">تكاليف الإقامة للمقيمين</string>
@@ -252,12 +284,142 @@
   <string name="expat_costs_result_dependent_levy">رسوم المرافقين</string>
   <string name="expat_costs_result_iqama">تجديد الإقامة</string>
   <string name="expat_costs_result_exit_reentry">تأشيرات الخروج والعودة</string>
+  <string name="expat_costs_iqama_helper">يُعرض كمتوسط شهري: %1$s ريال مرة واحدة سنوياً، موزعة على 12 شهراً.</string>
+  <string name="expat_costs_exit_reentry_helper">يُعرض كمتوسط شهري: %2$s ريال لكل رحلة \u00d7 %1$d رحلة/سنة = %3$s ريال سنوياً، موزعة على 12 شهراً.</string>
   <string name="expat_costs_result_health">التأمين الصحي</string>
   <string name="expat_costs_result_total_monthly">الإجمالي (شهرياً)</string>
   <string name="expat_costs_result_total_yearly">الإجمالي (سنوياً)</string>
   <string name="expat_costs_percent_of_income">يمثل هذا تقريباً %1$d%% من آخر صافي راتب محسوب لك.</string>
   <string name="expat_costs_disclaimer">تم التحقق من هذه الرسوم حتى %1$s، وهي قابلة للتعديل أعلاه. الرسوم الحكومية تتغير بشكل دوري — يرجى التأكد من المبالغ الحالية عبر absher.sa أو qiwa.sa قبل الاعتماد عليها في التخطيط المالي الفعلي.</string>
   <string name="expat_costs_article_40_note">ملاحظة: لا تشمل هذه الأداة رسوم رخصة العمل التي يدفعها صاحب العمل، لأنها، بموجب المادة 40 من نظام العمل، مسؤوليته القانونية وليست مسؤوليتك.</string>
+
+  <!-- EOSB accrual tracker -->
+  <string name="eosb_tracker_title">متتبّع نهاية الخدمة</string>
+  <string name="eosb_tracker_setup_intro">أدخل تاريخ التحاقك بالعمل وراتبك الأساسي الحالي مرة واحدة — يبقي المتتبّع تقدير مكافأة نهاية خدمتك محدّثًا في كل مرة تفتحه فيها.</string>
+  <string name="eosb_tracker_label_basic_salary">الراتب الأساسي الشهري الحالي</string>
+  <string name="eosb_tracker_action_start">ابدأ التتبّع</string>
+  <string name="eosb_tracker_years_months_format">%1$d سنة و%2$d شهر خدمة</string>
+  <string name="eosb_tracker_months_only_format">%1$d شهر خدمة</string>
+  <string name="eosb_tracker_section_estimate">تقديرك اليوم</string>
+  <string name="eosb_tracker_result_resigned_today">إذا استقلت اليوم</string>
+  <string name="eosb_tracker_result_terminated_today">إذا أنهى صاحب العمل عقدك اليوم</string>
+  <string name="eosb_tracker_eligibility_none">أقل من سنتي خدمة — الاستقالة لا تستحق شيئًا وفق المادة 85. أما إنهاء الخدمة فيستحق المكافأة كاملة.</string>
+  <string name="eosb_tracker_eligibility_one_third">من 2 إلى 5 سنوات خدمة — الاستقالة تستحق ثلث المكافأة الكاملة.</string>
+  <string name="eosb_tracker_eligibility_two_thirds">من 5 إلى 10 سنوات خدمة — الاستقالة تستحق ثلثي المكافأة الكاملة.</string>
+  <string name="eosb_tracker_eligibility_full">10 سنوات خدمة فأكثر — الاستقالة تستحق المكافأة كاملة، مثل إنهاء الخدمة تمامًا.</string>
+  <string name="eosb_tracker_milestone_title">المحطة القادمة</string>
+  <string name="eosb_tracker_milestone_days_remaining">تبقّى %1$d يومًا (%2$s)</string>
+  <string name="eosb_tracker_milestone_2_year_label">علامة السنتين</string>
+  <string name="eosb_tracker_milestone_5_year_label">علامة الخمس سنوات</string>
+  <string name="eosb_tracker_milestone_10_year_label">علامة العشر سنوات</string>
+  <string name="eosb_tracker_milestone_2_year_description">تصبح الاستقالة مستحقة لثلث المكافأة (حاليًا لا شيء).</string>
+  <string name="eosb_tracker_milestone_5_year_description">يتضاعف معدل تراكم مكافأتك بدءًا من الآن، وتقفز الاستقالة إلى ثلثي المكافأة.</string>
+  <string name="eosb_tracker_milestone_10_year_description">تصبح الاستقالة مستحقة للمكافأة كاملة، تمامًا مثل إنهاء الخدمة.</string>
+  <string name="eosb_tracker_edit_details">تحديث تاريخ الالتحاق أو الراتب</string>
+  <string name="eosb_tracker_clear_action">إعادة تعيين المتتبّع</string>
+  <string name="eosb_tracker_disclaimer">تقدير فقط، مبني على الراتب الأساسي الذي أدخلته والمادتين 84 و85 من نظام العمل السعودي. إذا كان أساس نهاية الخدمة في عقدك يشمل أيضًا بدلات ثابتة (كالسكن)، فقد يكون استحقاقك الفعلي أعلى — تأكد من صاحب العمل أو استشر مختصًا قانونيًا قبل الاعتماد على هذا الرقم.</string>
+  <string name="leave_tracker_title">متتبع رصيد الإجازات</string>
+  <string name="leave_tracker_setup_intro">أدخل تاريخ التحاقك وعدد أيام الإجازة التي أخذتها بالفعل هذا العام — يحافظ المتتبع على تحديث رصيدك في كل مرة تفتحه.</string>
+  <string name="leave_tracker_label_days_taken">أيام الإجازة المأخوذة هذا العام</string>
+  <string name="leave_tracker_action_start">ابدأ التتبع</string>
+  <string name="leave_tracker_years_months_format">%1$d سنة و%2$d شهرًا من الخدمة</string>
+  <string name="leave_tracker_months_only_format">%1$d شهرًا من الخدمة</string>
+  <string name="leave_tracker_section_balance">رصيدك اليوم</string>
+  <string name="leave_tracker_entitlement_label">الاستحقاق السنوي: %1$d يومًا/سنة</string>
+  <string name="leave_tracker_accrued_label">المتراكم حتى الآن هذا العام</string>
+  <string name="leave_tracker_taken_label">المأخوذ هذا العام</string>
+  <string name="leave_tracker_balance_label">الرصيد</string>
+  <string name="leave_tracker_days_suffix">\u0020يوم</string>
+  <string name="leave_tracker_balance_negative_note">لقد أخذت إجازة أكثر مما تراكم لك حتى الآن هذا العام.</string>
+  <string name="leave_tracker_balance_formula_helper">الرصيد = الإجازة المتراكمة حتى الآن هذا العام − الإجازة المأخوذة بالفعل. تتراكم الإجازة تدريجيًا خلال العام وليس دفعة واحدة، لذا فإن \"المتراكم حتى الآن\" يكون عادة أقل من الاستحقاق السنوي الكامل إلى أن ينتهي العام.</string>
+  <string name="leave_tracker_next_reset_title">بداية عام الإجازة القادم</string>
+  <string name="leave_tracker_next_reset_days">يتبقى %1$d يومًا (%2$s)</string>
+  <string name="leave_tracker_edit_details">تحديث تاريخ الالتحاق أو الأيام المأخوذة</string>
+  <string name="leave_tracker_clear_action">إعادة تعيين المتتبع</string>
+  <string name="leave_tracker_disclaimer">تقدير فقط، مبني على المادة 109 من نظام العمل السعودي (21 يومًا سنويًا لأول 5 سنوات، ثم 30 يومًا سنويًا بعد ذلك). الترحيل الفعلي، والتعويض النقدي، وسياسات الإجازة الخاصة بكل شركة قد تختلف — تأكد من صاحب العمل أو الموارد البشرية قبل الاعتماد على هذا الرقم.</string>
+  <string name="offer_scan_title">فاحص العروض الوظيفية</string>
+  <string name="offer_scan_intro">هذا ليس ماسحًا ضوئيًا للمستندات — أدخل بعض بنود عرض العمل الخاص بك يدويًا، وسنتحقق منها مقابل أنظمة العمل السعودي وأبرز العلامات التحذيرية الشائعة لتوظيف المقيمين. لا تغادر بياناتك جهازك أبدًا.</string>
+  <string name="offer_scan_label_total_salary">إجمالي الراتب الشهري (شامل كل شيء)</string>
+  <string name="offer_scan_label_probation">فترة التجربة (بالأشهر)</string>
+  <string name="offer_scan_label_probation_extension">تم الاتفاق كتابيًا على تمديد التجربة لأكثر من 90 يومًا</string>
+  <string name="offer_scan_label_probation_extension_desc">مهم فقط إذا كانت فترة تجربتك أطول من 3 أشهر</string>
+  <string name="offer_scan_label_employee_notice">مهلة الإشعار المطلوبة منك عند الاستقالة (أيام)</string>
+  <string name="offer_scan_label_employer_notice">مهلة الإشعار المطلوبة من صاحب العمل (أيام)</string>
+  <string name="offer_scan_label_gosi">صاحب العمل يؤكد التسجيل في التأمينات الاجتماعية (GOSI)</string>
+  <string name="offer_scan_label_gosi_desc">إلزامي لجميع موظفي القطاع الخاص، سعوديين وغير سعوديين</string>
+  <string name="offer_scan_label_contract">ستحصل على عقد عمل موقّع ومكتوب</string>
+  <string name="offer_scan_label_contract_desc">يفضّل أن يكون موثّقًا عبر منصة قوى</string>
+  <string name="offer_scan_label_fees">صاحب العمل يطلب منك دفع رسوم توظيف أو تأشيرة</string>
+  <string name="offer_scan_label_fees_desc">هذه التكاليف تقع عادة على عاتق صاحب العمل</string>
+  <string name="action_scan_offer">فحص العرض</string>
+  <string name="offer_scan_empty_title">أدخل بنود عرضك أعلاه واضغط فحص العرض</string>
+  <string name="offer_scan_summary_clear">لم يتم العثور على علامات تحذيرية</string>
+  <string name="offer_scan_summary_issues">تم العثور على %1$d مخالفة/مخالفات و%2$d ملاحظة/ملاحظات تستدعي الحذر</string>
+  <string name="offer_scan_severity_violation">مخالفة محتملة</string>
+  <string name="offer_scan_severity_caution">يستحق التوضيح</string>
+  <string name="offer_scan_severity_info">جيد أن تعرفه</string>
+  <string name="offer_scan_flag_probation_exceeds_title">فترة التجربة تتجاوز الحد القانوني</string>
+  <string name="offer_scan_flag_probation_exceeds_desc">تحدد المادة 53 من نظام العمل السعودي فترة التجربة بحد أقصى 90 يومًا، قابلة للتمديد مرة واحدة فقط إلى 180 يومًا وبموجب اتفاق كتابي منفصل. ما أدخلته أطول من ذلك.</string>
+  <string name="offer_scan_flag_probation_extension_title">فترة تجربة طويلة دون تمديد كتابي</string>
+  <string name="offer_scan_flag_probation_extension_desc">تمديد فترة التجربة لأكثر من 90 يومًا لا يكون صحيحًا إلا باتفاق كتابي منفصل. اطلب من صاحب العمل تأكيد ذلك كتابيًا، وإلا فسيُطبَّق الحد الأقصى الافتراضي 90 يومًا.</string>
+  <string name="offer_scan_flag_gosi_title">التسجيل في التأمينات الاجتماعية غير مؤكد</string>
+  <string name="offer_scan_flag_gosi_desc">التسجيل في التأمينات الاجتماعية (على الأقل فرع الأخطار المهنية) إلزامي لموظفي القطاع الخاص، سعوديين كانوا أم مقيمين. اطلب تأكيدًا كتابيًا قبل التوقيع.</string>
+  <string name="offer_scan_flag_contract_title">لم يتم تأكيد وجود عقد مكتوب</string>
+  <string name="offer_scan_flag_contract_desc">بدون عقد موقّع وموثّق يفضّل أن يكون عبر منصة قوى، لن يكون لديك ما تستند إليه إذا اختلف صاحب العمل لاحقًا حول الشروط المتفق عليها.</string>
+  <string name="offer_scan_flag_fees_title">يُطلب منك دفع رسوم توظيف أو تأشيرة</string>
+  <string name="offer_scan_flag_fees_desc">تكاليف التوظيف والتأشيرة تقع عادة على عاتق صاحب العمل وليس الموظف. تأكد من أن هذا مطلوب منك فعلاً.</string>
+  <string name="offer_scan_flag_notice_title">مهلة الإشعار غير متكافئة</string>
+  <string name="offer_scan_flag_notice_desc">ستكون مطالبًا بمهلة إشعار أطول بكثير مما يلتزم به صاحب العمل — يستحق التفاوض على تقسيم أكثر توازنًا قبل التوقيع.</string>
+  <string name="offer_scan_flag_basic_ratio_title">الراتب الأساسي يمثل حصة صغيرة من إجمالي الراتب</string>
+  <string name="offer_scan_flag_basic_ratio_desc">تُحسب مكافأة نهاية الخدمة والتأمينات الاجتماعية عادة على الراتب الأساسي (مع بدل السكن)، وليس إجمالي الراتب. الراتب الأساسي المنخفض قد يقلل هذه الاستحقاقات حتى لو بدا صافي راتبك جيدًا.</string>
+  <string name="offer_scan_flag_all_clear_title">لم يتم العثور على علامات تحذيرية</string>
+  <string name="offer_scan_flag_all_clear_desc">لا شيء فيما أدخلته يطابق علامة تحذيرية معروفة. هذه أداة فحص أولي وليست ضمانًا — لا يزال يستحق قراءة العقد كاملاً بعناية.</string>
+  <string name="offer_scan_disclaimer">هذه أداة فحص آلية وليست استشارة قانونية. تتحقق من الشروط التي تدخلها مقابل مجموعة صغيرة من أحكام نظام العمل السعودي الموثقة وأنماط المخاطر الشائعة — لا يمكنها رؤية عقدك الفعلي وقد تفوتها بعض التفاصيل. لأي أمر مهم، تأكد من وزارة الموارد البشرية والتنمية الاجتماعية (منصة قوى) أو استشر مختصًا قانونيًا مرخصًا.</string>
+  <string name="reverse_salary_title">حاسبة الراتب المطلوب</string>
+  <string name="reverse_salary_intro">أدخل صافي الراتب الشهري الذي تستهدفه — سنعمل بالعكس عبر نفس قواعد التأمينات الاجتماعية وحساب الراتب المستخدمة في التطبيق لتقدير الراتب الأساسي والحزمة الكاملة التي تحتاج لطلبها.</string>
+  <string name="reverse_salary_label_target">صافي الراتب الشهري المستهدف</string>
+  <string name="reverse_salary_label_housing_percent">بدل السكن (% من الأساسي)</string>
+  <string name="reverse_salary_label_transport_percent">بدل النقل (% من الأساسي)</string>
+  <string name="reverse_salary_allowance_percent_helper">نسبة 25% للسكن و10% للنقل (الإعدادات الافتراضية أعلاه) شائعة في سوق العمل السعودي، وتُطبَّق بنفس الطريقة سواء اخترت سعودي أو غير سعودي أعلاه — فهي أسلوب شائع في هيكلة الراتب وليست قاعدة من قواعد التأمينات الاجتماعية (جوسي)، وهو ما يُغيّره اختيار سعودي/غير سعودي هنا فعلياً. تختلف هذه النسبة من صاحب عمل لآخر — بعضهم يوفر السكن مباشرة بدلاً من بدل مالي، أو يعتمد مبلغاً ثابتاً للنقل. عدّل هذه النسب عند حصولك على عرض فعلي لتطابقه، أو أبقِ الإعدادات الافتراضية لتقدير عام أولي.</string>
+  <string name="action_calculate_salary_needed">احسب الراتب المطلوب</string>
+  <string name="reverse_salary_empty_title">أدخل صافي راتبك المستهدف أعلاه واضغط احسب</string>
+  <string name="reverse_salary_section_result">ما تحتاج طلبه</string>
+  <string name="reverse_salary_basic_label">الراتب الأساسي المطلوب</string>
+  <string name="reverse_salary_package_label">إجمالي الحزمة الشهرية</string>
+  <string name="reverse_salary_package_breakdown">أساسي %1$s + سكن %2$s + نقل %3$s</string>
+  <string name="reverse_salary_achieved_label">هذا يحقق صافي راتب قدره</string>
+  <string name="reverse_salary_gosi_gap_note">الفارق البالغ %1$s ريال بين حزمتك وصافي راتبك هو اشتراك الموظف في التأمينات الاجتماعية (GOSI) — يُحتسب على الأساسي + السكن فقط (وليس النقل)، حسب نظام ونسبة التأمينات المحددة حالياً في الإعدادات.</string>
+  <string name="reverse_salary_not_achievable_title">الهدف قد لا يكون واقعيًا</string>
+  <string name="reverse_salary_not_achievable_body">حتى راتب أساسي مرتفع جدًا لا يصل إلى صافي الراتب المستهدف وفق إعدادات التأمينات الاجتماعية الحالية — تحقق من المبلغ المستهدف.</string>
+  <string name="reverse_salary_disclaimer">تقدير فقط. يفترض أن بدلي السكن والنقل يتناسبان مع الراتب الأساسي بالنسب المحددة أعلاه — تختلف هياكل الرواتب الفعلية باختلاف صاحب العمل، ولا يشمل هذا التقدير بدلات أو مكافآت أو استقطاعات أخرى. استخدم هذا كنقطة انطلاق للتفاوض، وليس ضمانًا.</string>
+  <string name="cost_of_living_title">حاسبة تكلفة المعيشة</string>
+  <string name="cost_of_living_intro">فحص تقريبي للميزانية الشهرية للمغتربين: اختر المدينة وحجم السكن وتكوين الأسرة، وشاهد النطاق المعتاد للإيجار والمصاريف اليومية والرسوم الدراسية — لتحكم إن كان العرض المقدم يغطي حياتك هنا فعلاً.</string>
+  <string name="cost_of_living_section_home">مكان سكنك</string>
+  <string name="cost_of_living_city_label">المدينة</string>
+  <string name="cost_of_living_apartment_label">حجم الشقة</string>
+  <string name="cost_of_living_apartment_studio">استوديو / غرفة نوم واحدة</string>
+  <string name="cost_of_living_apartment_two_br">غرفتا نوم</string>
+  <string name="cost_of_living_apartment_three_br">3 غرف نوم فأكثر</string>
+  <string name="cost_of_living_section_household">الأسرة</string>
+  <string name="cost_of_living_additional_adults">أحد أفراد العائلة</string>
+  <string name="cost_of_living_additional_adults_helper">الزوج/الزوجة، الوالدان، أو أي بالغين آخرين يشاركونك المنزل — لا يشمل نفسك أو الأطفال (يُحتسبون بشكل منفصل أدناه).</string>
+  <string name="cost_of_living_children_count">عدد الأطفال</string>
+  <string name="cost_of_living_children_in_school">أطفال في مدرسة خاصة/دولية</string>
+  <string name="cost_of_living_school_fee_tier_label">فئة الرسوم الدراسية</string>
+  <string name="cost_of_living_school_fee_budget">اقتصادية</string>
+  <string name="cost_of_living_school_fee_mid">متوسطة</string>
+  <string name="cost_of_living_school_fee_premium">مميزة</string>
+  <string name="cost_of_living_action_estimate">قدّر تكلفة المعيشة</string>
+  <string name="cost_of_living_empty_title">حدد مدينتك وأسرتك أعلاه، ثم اضغط تقدير</string>
+  <string name="cost_of_living_section_results">النطاق الشهري المعتاد</string>
+  <string name="cost_of_living_result_rent">الإيجار</string>
+  <string name="cost_of_living_result_non_rent">البقالة والمرافق والنقل والمصاريف اليومية</string>
+  <string name="cost_of_living_result_school_fees">الرسوم الدراسية (الحصة الشهرية من الرسوم السنوية)</string>
+  <string name="cost_of_living_result_total">إجمالي التكلفة الشهرية المقدرة</string>
+  <string name="cost_of_living_range_format">%1$s\u2013%2$s ريال</string>
+  <string name="cost_of_living_target_hint">يقترح هذا استهداف ما لا يقل عن أعلى هذا النطاق كصافي راتب، لتغطية شهر معتاد بارتياح وليس فقط شهرًا موفقًا.</string>
+  <string name="cost_of_living_action_use_as_target">استخدم هذا كراتبي المستهدف</string>
+  <string name="cost_of_living_disclaimer">بيانات سوقية وليست رسمية — مصدرها استطلاعات تكلفة المعيشة والرسوم الدراسية (Numbeo وExpatica وEdarabia)، تم التحقق منها حتى %1$s. تختلف التكاليف الفعلية كثيرًا حسب الحي ونمط الحياة واختيار المدرسة. هذا تقدير تخطيطي وليس نصيحة مالية.</string>
 
   <!-- Generic empty / error / loading states -->
   <string name="state_error_title">حدث خطأ ما</string>

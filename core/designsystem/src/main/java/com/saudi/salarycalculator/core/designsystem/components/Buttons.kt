@@ -21,7 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CircularProgressIndicator
@@ -41,7 +41,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.saudi.salarycalculator.core.designsystem.theme.BrandGreen
 import com.saudi.salarycalculator.core.designsystem.theme.BrandGreenLight
@@ -161,6 +163,13 @@ fun InteractiveCTA(
     ),
     label = "interactive-cta-arrow"
   )
+  // graphicsLayer's translationX is raw draw-space, not layout-direction-aware like padding or
+  // Icons.AutoMirrored — a positive value always nudges toward the physical right of the screen
+  // regardless of locale. Without flipping the sign in RTL, the arrow (now correctly pointing
+  // left, "forward" for Arabic) would nudge right instead, animating backwards from where it
+  // points.
+  val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+  val directionalArrowOffset = if (isRtl) -arrowOffset else arrowOffset
 
   Row(
     modifier = modifier
@@ -198,10 +207,10 @@ fun InteractiveCTA(
     if (!loading) {
       androidx.compose.foundation.layout.Spacer(Modifier.size(8.dp))
       Icon(
-        Icons.Filled.ArrowForward,
+        Icons.AutoMirrored.Filled.ArrowForward,
         contentDescription = null,
         tint = Color.White,
-        modifier = Modifier.size(16.dp).graphicsLayer { translationX = arrowOffset }
+        modifier = Modifier.size(16.dp).graphicsLayer { translationX = directionalArrowOffset }
       )
     }
   }

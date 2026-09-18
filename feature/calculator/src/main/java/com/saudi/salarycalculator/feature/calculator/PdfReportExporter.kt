@@ -50,7 +50,7 @@ object PdfReportExporter {
     val bodyPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
       textSize = 13f
     }
-    canvas.drawText("Saudi Salary Calculator", 40f, 52f, titlePaint)
+    canvas.drawText("Saudi Salary Calculator: EOSB", 40f, 52f, titlePaint)
     var y = 92f
     report.lines().forEach { line ->
       canvas.drawText(line.take(86), 40f, y, bodyPaint)
