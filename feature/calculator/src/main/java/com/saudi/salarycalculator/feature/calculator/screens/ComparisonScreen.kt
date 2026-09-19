@@ -146,7 +146,13 @@ fun ComparisonScreen(
 
       item {
         ComparisonCard(
-          label = stringResource(R.string.comparison_net_increase),
+          // Static "Net increase" next to a red, negative delta read as self-contradictory when
+          // the new offer actually pays less — the label now follows the sign like the
+          // "Clearly better"/"Neutral" title above it does.
+          label = stringResource(
+            if (comparisonResult.monthlyDifference >= 0) R.string.comparison_net_increase
+            else R.string.comparison_net_decrease
+          ),
           currentValue = String.format(Locale.US, "%,.2f", comparisonResult.offerA.netMonthlySalary),
           newValue = String.format(Locale.US, "%,.2f", comparisonResult.offerB.netMonthlySalary),
           deltaLabel = "${if (comparisonResult.monthlyDifference >= 0) "+" else ""}${String.format(Locale.US, "%,.2f", comparisonResult.monthlyDifference)}",
@@ -195,6 +201,16 @@ fun ComparisonScreen(
             currencySymbol
           )
         }
+      }
+      item {
+        // GOSI difference is the one row here where the color logic inverts (a negative/smaller
+        // deduction is the favorable outcome, unlike every other row where bigger-and-positive is
+        // green) — spelled out once for the whole card rather than repeating it per row.
+        Text(
+          stringResource(R.string.comparison_color_legend_helper),
+          style = MaterialTheme.typography.bodySmall,
+          color = designSystemContentColor(darkMode).copy(alpha = 0.55f)
+        )
       }
     }
   }

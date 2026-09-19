@@ -1,3 +1,10 @@
 <resources>
-  <string name="app_name">Saudi Salary Calculator</string>
+  <string name="app_name">Saudi Salary Calculator: EOSB</string>
+
+  <!-- Payday countdown home-screen widget -->
+  <string name="widget_payday_label">Payday</string>
+  <string name="widget_payday_description">A countdown to your next payday, set in the app\'s Settings.</string>
+  <string name="widget_payday_setup_prompt">Tap to set your payday</string>
+  <string name="widget_payday_today">Today!</string>
+  <string name="widget_payday_days_remaining">%1$d days left</string>
 </resources>

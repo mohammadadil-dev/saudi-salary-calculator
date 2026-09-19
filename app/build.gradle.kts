@@ -19,14 +19,14 @@ val keystoreProperties = Properties().apply {
 
 android {
   namespace = "com.saudi.salarycalculator"
-  compileSdk = 35
+  compileSdk = 36
 
   defaultConfig {
     applicationId = "com.saudi.salarycalculator"
     minSdk = 24
-    targetSdk = 35
-    versionCode = 5
-    versionName = "1.1.1"
+    targetSdk = 36
+    versionCode = 8
+    versionName = "1.2.1"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     vectorDrawables { useSupportLibrary = true }
@@ -52,6 +52,14 @@ android {
     release {
       isMinifyEnabled = true
       isShrinkResources = true
+      // Silences Play Console's "not uploaded debug symbols" warning on the App Bundle — the
+      // native code it's referring to isn't ours (no NDK/JNI in this app), it comes from a
+      // dependency (almost certainly AdMob). SYMBOL_TABLE keeps the upload small (just function
+      // names for readable stack traces) rather than FULL (adds local variables/line numbers,
+      // much larger, not needed for a dependency we don't debug ourselves).
+      ndk {
+        debugSymbolLevel = "SYMBOL_TABLE"
+      }
       // Using the non-optimizing default file (not "-optimize.txt"): still shrinks/obfuscates,
       // just skips ProGuard/R8's bytecode-level optimization passes. The "-optimize" variant
       // combined with this app's Compose+Lifecycle version mix was crashing release builds with
@@ -103,6 +111,8 @@ android {
 
 dependencies {
   implementation(project(":feature:calculator"))
+  implementation(project(":core:model"))
+  implementation(project(":core:calculator"))
   implementation(project(":core:data"))
   implementation(project(":core:database"))
   implementation(project(":core:preferences"))
@@ -118,6 +128,8 @@ dependencies {
   implementation("androidx.core:core-splashscreen:1.0.1")
   implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.2")
   implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 
   implementation("com.google.dagger:hilt-android:2.52")
   kapt("com.google.dagger:hilt-compiler:2.52")

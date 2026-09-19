@@ -2,16 +2,22 @@ package com.saudi.salarycalculator.feature.calculator.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -38,6 +45,7 @@ import com.saudi.salarycalculator.core.model.CalculationType
 import com.saudi.salarycalculator.core.model.GosiRateSchedule
 import com.saudi.salarycalculator.core.model.GosiRates
 import com.saudi.salarycalculator.core.model.GosiSystem
+import com.saudi.salarycalculator.core.model.PaydayResult
 import com.saudi.salarycalculator.feature.calculator.PayrollSummaryExporter
 import com.saudi.salarycalculator.feature.calculator.R
 import java.text.SimpleDateFormat
@@ -53,11 +61,15 @@ fun SettingsScreen(
   language: String,
   gosiRates: GosiRates,
   gosiSystem: GosiSystem,
+  paydayDayOfMonth: Int?,
+  paydayResult: PaydayResult?,
   history: List<CalculationRecord>,
   onToggleDarkMode: () -> Unit,
   onSetLanguage: (String) -> Unit,
   onUpdateGosiRates: ((GosiRates) -> GosiRates) -> Unit,
   onSetGosiSystem: (GosiSystem) -> Unit,
+  onSetPaydayDayOfMonth: (Int) -> Unit,
+  onClearPaydayDayOfMonth: () -> Unit,
   onClearHistory: () -> Unit,
   onEditRecord: (CalculationRecord) -> Unit,
   onDeleteRecord: (String) -> Unit,
@@ -165,10 +177,54 @@ fun SettingsScreen(
           darkMode = darkMode,
           onCapChange = { newCap -> onUpdateGosiRates { it.copy(contributionCapSar = newCap) } }
         )
+        // Without this, a high earner watching their GOSI deduction stop scaling with salary
+        // could assume the app is miscalculating, rather than realizing wages above the cap
+        // simply aren't assessed for GOSI at all.
+        Text(
+          stringResource(R.string.settings_gosi_cap_helper),
+          style = MaterialTheme.typography.bodySmall,
+          color = designSystemContentColor(darkMode).copy(alpha = 0.55f)
+        )
         Text(
           stringResource(R.string.settings_gosi_disclaimer, GosiRateSchedule.LAST_VERIFIED_LABEL),
           style = MaterialTheme.typography.bodySmall,
           color = designSystemContentColor(darkMode).copy(alpha = 0.6f)
+        )
+      }
+    }
+
+    item { SectionHeader(title = stringResource(R.string.settings_payday_title), darkMode = darkMode) }
+
+    item {
+      GlassCard(darkMode = darkMode) {
+        Text(
+          stringResource(R.string.settings_payday_description),
+          style = MaterialTheme.typography.bodySmall,
+          color = designSystemContentColor(darkMode).copy(alpha = 0.7f)
+        )
+        PaydayDaySelector(
+          dayOfMonth = paydayDayOfMonth,
+          darkMode = darkMode,
+          onDayChange = onSetPaydayDayOfMonth,
+          onClear = onClearPaydayDayOfMonth
+        )
+        if (paydayResult != null) {
+          HorizontalDivider(color = if (darkMode) Color.White.copy(alpha = 0.08f) else Color(0xFFE7ECE8))
+          Text(
+            if (paydayResult.daysRemaining <= 0L) {
+              stringResource(R.string.settings_payday_countdown_today)
+            } else {
+              stringResource(R.string.settings_payday_countdown, paydayResult.daysRemaining)
+            },
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Black,
+            color = designSystemContentColor(darkMode)
+          )
+        }
+        Text(
+          stringResource(R.string.settings_payday_widget_hint),
+          style = MaterialTheme.typography.bodySmall,
+          color = designSystemContentColor(darkMode).copy(alpha = 0.55f)
         )
       }
     }
@@ -302,6 +358,45 @@ private fun GosiCapField(
     keyboardType = KeyboardType.Decimal,
     trailing = { Text("SAR", color = designSystemContentColor(darkMode).copy(alpha = 0.5f)) }
   )
+}
+
+/** Day-of-month picker for the payday countdown (Settings preview + home-screen widget). Starts
+ * at day 25 on first use (a common mid/end-of-month payday default) rather than an arbitrary 1,
+ * so a first-time user's initial +/- taps land near a plausible value; every tap saves
+ * immediately via [onDayChange], matching this screen's other settings (no separate Save button).
+ * [onClear] only shows once a day is set, to unset the countdown entirely. */
+@Composable
+private fun PaydayDaySelector(
+  dayOfMonth: Int?,
+  darkMode: Boolean,
+  onDayChange: (Int) -> Unit,
+  onClear: () -> Unit
+) {
+  val displayedDay = dayOfMonth ?: 25
+  Row(
+    modifier = Modifier.fillMaxWidth(),
+    verticalAlignment = Alignment.CenterVertically
+  ) {
+    Text(
+      stringResource(R.string.settings_payday_day_label, displayedDay),
+      style = MaterialTheme.typography.bodyMedium,
+      color = designSystemContentColor(darkMode),
+      modifier = Modifier.weight(1f)
+    )
+    IconButton(onClick = { onDayChange((displayedDay - 1).coerceIn(1, 31)) }) {
+      Icon(Icons.Filled.Remove, contentDescription = stringResource(R.string.common_decrease), tint = designSystemContentColor(darkMode))
+    }
+    IconButton(onClick = { onDayChange((displayedDay + 1).coerceIn(1, 31)) }) {
+      Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.common_increase), tint = designSystemContentColor(darkMode))
+    }
+  }
+  if (dayOfMonth != null) {
+    SecondaryButton(
+      text = stringResource(R.string.settings_payday_clear),
+      darkMode = darkMode,
+      onClick = onClear
+    )
+  }
 }
 
 private fun formatCap(cap: Double): String =

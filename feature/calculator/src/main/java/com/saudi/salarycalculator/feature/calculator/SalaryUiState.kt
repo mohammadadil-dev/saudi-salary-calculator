@@ -2,18 +2,27 @@ package com.saudi.salarycalculator.feature.calculator
 
 import com.saudi.salarycalculator.core.model.CalculationRecord
 import com.saudi.salarycalculator.core.model.CityCostOfLiving
+import com.saudi.salarycalculator.core.model.ApartmentSize
+import com.saudi.salarycalculator.core.model.CostOfLivingInput
+import com.saudi.salarycalculator.core.model.CostOfLivingResult
 import com.saudi.salarycalculator.core.model.ContractType
 import com.saudi.salarycalculator.core.model.EmployeeType
 import com.saudi.salarycalculator.core.model.EmploymentSector
+import com.saudi.salarycalculator.core.model.EosbTrackerResult
 import com.saudi.salarycalculator.core.model.ExpatCostInput
 import com.saudi.salarycalculator.core.model.ExpatCostResult
 import com.saudi.salarycalculator.core.model.ExpatCostSchedule
 import com.saudi.salarycalculator.core.model.GosiRates
 import com.saudi.salarycalculator.core.model.GosiSystem
+import com.saudi.salarycalculator.core.model.LeaveTrackerResult
 import com.saudi.salarycalculator.core.model.NetSalaryInput
 import com.saudi.salarycalculator.core.model.NetSalaryResult
 import com.saudi.salarycalculator.core.model.OfferComparisonResult
 import com.saudi.salarycalculator.core.model.OfferInput
+import com.saudi.salarycalculator.core.model.OfferRedFlagResult
+import com.saudi.salarycalculator.core.model.PaydayResult
+import com.saudi.salarycalculator.core.model.ReverseSalaryResult
+import com.saudi.salarycalculator.core.model.SchoolFeeTier
 import com.saudi.salarycalculator.core.model.SaudiCityTier
 
 /** Six steps of the calculator wizard, in display order. The Review step doubles as the
@@ -182,6 +191,80 @@ data class ExpatCostFormState(
   )
 }
 
+
+/** Form for the EOSB tracker's one-time (re-editable) setup: joining date + last basic salary.
+ * String-backed for the salary field, same convention as [WizardFieldsState]. */
+data class EosbTrackerFormState(
+  val joiningDateMillis: Long? = null,
+  val lastBasicSalary: String = ""
+)
+
+/** Form for the leave tracker's one-time (re-editable) setup: joining date + leave days already
+ * taken this leave year. String-backed for the days field, same convention as [WizardFieldsState]. */
+data class LeaveTrackerFormState(
+  val joiningDateMillis: Long? = null,
+  val daysTakenThisYear: String = ""
+)
+
+/** Form for the offer red-flag scanner. Stateless like [OfferFormState]/[ExpatCostFormState] —
+ * nothing here is persisted, since a scan is a one-off check rather than a standing fact about
+ * the user's job. Notice periods and probation default to common, unremarkable values (30/30
+ * days, 3 months) so a first-time user sees a plausible starting point rather than all-zero
+ * fields; the two "assume the good answer" toggles default to true/false respectively so an
+ * untouched form doesn't read as already flagged.
+ *
+ * [employeeNoticeDays]/[employerNoticeDays] are String-backed (like [WizardFieldsState]'s money
+ * fields), not Int, even though they default from and eventually parse to whole numbers — a
+ * typed text field bound directly to an Int round-trips through `.toString()` on every
+ * keystroke, which snaps the field back to a clamped/fallback value (e.g. "0") the instant the
+ * user clears it to type a replacement, making it impossible to actually change the value by
+ * typing. Keeping the raw text lets the field hold blank/partial input while typing; parsing
+ * happens only at scan-time (see [SalaryViewModel.scanOffer]). */
+data class OfferScanFormState(
+  val basicSalary: String = "",
+  val totalMonthlySalary: String = "",
+  val probationMonths: Int = 3,
+  val probationExtendedInWriting: Boolean = false,
+  val employeeNoticeDays: String = "30",
+  val employerNoticeDays: String = "30",
+  val isGosiRegistered: Boolean = true,
+  val hasWrittenContract: Boolean = true,
+  val recruitmentFeesCharged: Boolean = false
+)
+
+/** Form for the reverse "what salary do I need" calculator. Stateless like [OfferScanFormState]
+ * — a one-off "what if" check, not a standing profile. Housing/transport percentages default to
+ * a common Saudi package structure (25% / 10% of basic) but stay adjustable since actual splits
+ * vary a lot by employer. */
+data class ReverseSalaryFormState(
+  val targetNetMonthlySalary: String = "",
+  val housingAllowancePercent: Int = 25,
+  val transportAllowancePercent: Int = 10,
+  val employeeType: EmployeeType = EmployeeType.SAUDI
+)
+
+/** Form for the Cost-of-Living Estimator. Stateless like [OfferScanFormState]/[ReverseSalaryFormState]
+ * — a household budget check the user re-runs whenever their situation changes, not a standing
+ * profile. Defaults to a 2-bedroom apartment in Riyadh with no dependents, a reasonable
+ * first-look scenario for a single expatriate hire evaluating an offer. */
+data class CostOfLivingFormState(
+  val city: SaudiCityTier = SaudiCityTier.RIYADH,
+  val apartmentSize: ApartmentSize = ApartmentSize.TWO_BR,
+  val additionalAdults: Int = 0,
+  val childrenCount: Int = 0,
+  val childrenInSchool: Int = 0,
+  val schoolFeeTier: SchoolFeeTier = SchoolFeeTier.MID_RANGE
+) {
+  fun toCostOfLivingInput(): CostOfLivingInput = CostOfLivingInput(
+    city = city,
+    apartmentSize = apartmentSize,
+    additionalAdults = additionalAdults,
+    childrenCount = childrenCount,
+    childrenInSchool = childrenInSchool.coerceAtMost(childrenCount),
+    schoolFeeTier = schoolFeeTier
+  )
+}
+
 data class SalaryUiState(
   val darkMode: Boolean = false,
   val language: String = "en",
@@ -197,6 +280,27 @@ data class SalaryUiState(
   val offerComparisonResult: OfferComparisonResult? = null,
   val expatCostForm: ExpatCostFormState = ExpatCostFormState(),
   val expatCostResult: ExpatCostResult? = null,
+  val eosbTrackerForm: EosbTrackerFormState = EosbTrackerFormState(),
+  /** True once the user has saved a valid tracker profile (both fields present and salary > 0) —
+   * distinguishes "no profile yet, show setup" from "profile saved, show the live tracker" on the
+   * EosbTracker screen. */
+  val eosbTrackerSaved: Boolean = false,
+  val eosbTrackerResult: EosbTrackerResult? = null,
+  /** Null until the user sets a payday in Settings; the widget/Settings preview shows a setup
+   * prompt instead of a countdown in that case. */
+  val paydayDayOfMonth: Int? = null,
+  val paydayResult: PaydayResult? = null,
+  val leaveTrackerForm: LeaveTrackerFormState = LeaveTrackerFormState(),
+  /** True once the user has saved a valid tracker profile (joining date present, days-taken
+   * parses to a non-negative number) — mirrors [eosbTrackerSaved]'s setup-vs-live-tracker split. */
+  val leaveTrackerSaved: Boolean = false,
+  val leaveTrackerResult: LeaveTrackerResult? = null,
+  val offerScanForm: OfferScanFormState = OfferScanFormState(),
+  val offerScanResult: OfferRedFlagResult? = null,
+  val reverseSalaryForm: ReverseSalaryFormState = ReverseSalaryFormState(),
+  val reverseSalaryResult: ReverseSalaryResult? = null,
+  val costOfLivingForm: CostOfLivingFormState = CostOfLivingFormState(),
+  val costOfLivingResult: CostOfLivingResult? = null,
   val history: List<CalculationRecord> = emptyList(),
   val toastMessage: String? = null
 ) {

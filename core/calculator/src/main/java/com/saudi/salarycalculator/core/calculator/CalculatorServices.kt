@@ -3,21 +3,40 @@ package com.saudi.salarycalculator.core.calculator
 import com.saudi.salarycalculator.core.model.EmployeeType
 import com.saudi.salarycalculator.core.model.EndOfServiceInput
 import com.saudi.salarycalculator.core.model.EndOfServiceResult
+import com.saudi.salarycalculator.core.model.EosbMilestone
+import com.saudi.salarycalculator.core.model.EosbResignationEligibility
+import com.saudi.salarycalculator.core.model.EosbTrackerInput
+import com.saudi.salarycalculator.core.model.EosbTrackerResult
 import com.saudi.salarycalculator.core.model.ExpatCostInput
 import com.saudi.salarycalculator.core.model.ExpatCostResult
+import com.saudi.salarycalculator.core.model.CostOfLivingInput
+import com.saudi.salarycalculator.core.model.CostOfLivingResult
+import com.saudi.salarycalculator.core.model.CostOfLivingSchedule
 import com.saudi.salarycalculator.core.model.GosiInput
 import com.saudi.salarycalculator.core.model.GosiResult
+import com.saudi.salarycalculator.core.model.LeaveTrackerInput
+import com.saudi.salarycalculator.core.model.LeaveTrackerResult
 import com.saudi.salarycalculator.core.model.NetSalaryInput
 import com.saudi.salarycalculator.core.model.NetSalaryResult
 import com.saudi.salarycalculator.core.model.OfferComparisonResult
+import com.saudi.salarycalculator.core.model.OfferFlagSeverity
+import com.saudi.salarycalculator.core.model.OfferFlagType
 import com.saudi.salarycalculator.core.model.OfferInput
+import com.saudi.salarycalculator.core.model.OfferRedFlagFinding
+import com.saudi.salarycalculator.core.model.OfferRedFlagInput
+import com.saudi.salarycalculator.core.model.OfferRedFlagResult
 import com.saudi.salarycalculator.core.model.OfferScore
 import com.saudi.salarycalculator.core.model.OvertimeInput
+import com.saudi.salarycalculator.core.model.ReverseSalaryInput
+import com.saudi.salarycalculator.core.model.ReverseSalaryResult
 import com.saudi.salarycalculator.core.model.OvertimeResult
+import com.saudi.salarycalculator.core.model.PaydayInput
+import com.saudi.salarycalculator.core.model.PaydayResult
 import com.saudi.salarycalculator.core.model.SalaryBreakdownItem
 import com.saudi.salarycalculator.core.model.SavingsInput
 import com.saudi.salarycalculator.core.model.SavingsResult
 import com.saudi.salarycalculator.core.model.WorkingHoursSchedule
+import java.util.Calendar
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
@@ -37,8 +56,28 @@ interface EndOfServiceCalculatorService {
   fun calculate(input: EndOfServiceInput): EndOfServiceResult
 }
 
+interface EosbTrackerCalculatorService {
+  fun calculate(input: EosbTrackerInput): EosbTrackerResult
+}
+
+interface PaydayCalculatorService {
+  fun calculate(input: PaydayInput): PaydayResult
+}
+
+interface LeaveTrackerCalculatorService {
+  fun calculate(input: LeaveTrackerInput): LeaveTrackerResult
+}
+
 interface OfferComparisonCalculatorService {
   fun calculate(offerA: OfferInput, offerB: OfferInput): OfferComparisonResult
+}
+
+interface OfferRedFlagCalculatorService {
+  fun scan(input: OfferRedFlagInput): OfferRedFlagResult
+}
+
+interface ReverseSalaryCalculatorService {
+  fun calculate(input: ReverseSalaryInput): ReverseSalaryResult
 }
 
 interface SavingsCalculatorService {
@@ -187,13 +226,277 @@ class DefaultEndOfServiceCalculatorService : EndOfServiceCalculatorService {
   }
 }
 
+/** Standing "my employment" tracker: reuses [EndOfServiceCalculatorService] for the actual
+ * Article 84-85 reward math (see that class for the formula) so the tracker and the one-shot
+ * wizard estimate can never silently disagree, and layers on top: years of service computed
+ * against a live "as of" timestamp rather than a fixed calculation month, both the
+ * resign-today and terminated-today figures side by side, and a countdown to the next
+ * service-length milestone where the resignation fraction or accrual rate changes. */
+class DefaultEosbTrackerCalculatorService(
+  private val endOfServiceCalculatorService: EndOfServiceCalculatorService = DefaultEndOfServiceCalculatorService()
+) : EosbTrackerCalculatorService {
+  override fun calculate(input: EosbTrackerInput): EosbTrackerResult {
+    val yearsOfService = yearsBetween(input.joiningDateMillis, input.asOfMillis)
+
+    val terminated = endOfServiceCalculatorService.calculate(
+      EndOfServiceInput(
+        lastBasicSalary = input.lastBasicSalary,
+        yearsOfService = yearsOfService,
+        resigned = false
+      )
+    )
+    val resigned = endOfServiceCalculatorService.calculate(
+      EndOfServiceInput(
+        lastBasicSalary = input.lastBasicSalary,
+        yearsOfService = yearsOfService,
+        resigned = true
+      )
+    )
+
+    val eligibility = when {
+      yearsOfService < 2.0 -> EosbResignationEligibility.NONE
+      yearsOfService < 5.0 -> EosbResignationEligibility.ONE_THIRD
+      yearsOfService < 10.0 -> EosbResignationEligibility.TWO_THIRDS
+      else -> EosbResignationEligibility.FULL
+    }
+
+    return EosbTrackerResult(
+      yearsOfService = yearsOfService,
+      accruedIfTerminated = terminated.rewardAmount,
+      accruedIfResignedToday = resigned.rewardAmount,
+      resignationEligibility = eligibility,
+      nextMilestone = nextEosbMilestone(input.joiningDateMillis, yearsOfService, input.asOfMillis)
+    )
+  }
+}
+
+private val EOSB_MILESTONE_THRESHOLDS = listOf(2.0 to "2_YEAR", 5.0 to "5_YEAR", 10.0 to "10_YEAR")
+
+/** Null once [yearsOfService] is past the last threshold (10 years) — Article 85's resignation
+ * ladder tops out at "full award" there, so there's no further cliff to count down to. */
+private fun nextEosbMilestone(joiningDateMillis: Long, yearsOfService: Double, asOfMillis: Long): EosbMilestone? {
+  val (thresholdYears, key) = EOSB_MILESTONE_THRESHOLDS.firstOrNull { (years, _) -> years > yearsOfService } ?: return null
+  val millisPerYear = 1000.0 * 60.0 * 60.0 * 24.0 * 365.25
+  val targetMillis = joiningDateMillis + (thresholdYears * millisPerYear).roundToLong()
+  val daysRemaining = (targetMillis - asOfMillis).coerceAtLeast(0L) / (1000L * 60 * 60 * 24)
+  return EosbMilestone(
+    yearsThreshold = thresholdYears,
+    dateMillis = targetMillis,
+    daysRemaining = daysRemaining,
+    milestoneKey = key
+  )
+}
+
+/** Reuses [Calendar] month-length awareness so a payday set to the 31st correctly lands on the
+ * 28th/29th in February rather than overflowing into March. Compares against the start of
+ * [PaydayInput.asOfMillis]'s day (not the raw timestamp) so "today is payday" reads as 0 days
+ * remaining all day, not a few hours' worth of a fractional day. */
+class DefaultPaydayCalculatorService : PaydayCalculatorService {
+  override fun calculate(input: PaydayInput): PaydayResult {
+    val now = Calendar.getInstance().apply { timeInMillis = input.asOfMillis }
+    val todayStart = (now.clone() as Calendar).apply {
+      set(Calendar.HOUR_OF_DAY, 0)
+      set(Calendar.MINUTE, 0)
+      set(Calendar.SECOND, 0)
+      set(Calendar.MILLISECOND, 0)
+    }
+
+    fun paydayInMonth(monthOffset: Int): Calendar {
+      val cal = todayStart.clone() as Calendar
+      cal.add(Calendar.MONTH, monthOffset)
+      val lastDayOfMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
+      cal.set(Calendar.DAY_OF_MONTH, minOf(input.dayOfMonth, lastDayOfMonth))
+      return cal
+    }
+
+    var candidate = paydayInMonth(0)
+    if (candidate.timeInMillis < todayStart.timeInMillis) {
+      candidate = paydayInMonth(1)
+    }
+
+    val daysRemaining = (candidate.timeInMillis - todayStart.timeInMillis) / (1000L * 60 * 60 * 24)
+    return PaydayResult(nextPaydayMillis = candidate.timeInMillis, daysRemaining = daysRemaining)
+  }
+}
+
+/** Saudi Labor Law Article 109: annual leave is at least 21 days per year of service, rising to
+ * at least 30 days/year once the employee passes 5 years — the same 5-year cliff
+ * [DefaultEndOfServiceCalculatorService] uses for the EOSB accrual rate, so this mirrors that
+ * threshold rather than inventing a new one. The "leave year" is anchored to the joining-date
+ * anniversary (not the calendar year), since that is what the law measures service against;
+ * accrual within the current leave year is prorated by elapsed days over the *actual* length of
+ * that specific anniversary-to-anniversary span (365 or 366 days) rather than a fixed 365, so a
+ * leap year doesn't quietly overstate the accrual rate. */
+class DefaultLeaveTrackerCalculatorService : LeaveTrackerCalculatorService {
+  override fun calculate(input: LeaveTrackerInput): LeaveTrackerResult {
+    val yearsOfService = yearsBetween(input.joiningDateMillis, input.asOfMillis)
+    val annualEntitlementDays = if (yearsOfService >= 5.0) 30 else 21
+
+    fun Calendar.toDayStart(): Calendar = (clone() as Calendar).apply {
+      set(Calendar.HOUR_OF_DAY, 0)
+      set(Calendar.MINUTE, 0)
+      set(Calendar.SECOND, 0)
+      set(Calendar.MILLISECOND, 0)
+    }
+
+    val joining = (Calendar.getInstance().apply { timeInMillis = input.joiningDateMillis }).toDayStart()
+    val asOf = (Calendar.getInstance().apply { timeInMillis = input.asOfMillis }).toDayStart()
+
+    var anniversary = (joining.clone() as Calendar).apply { set(Calendar.YEAR, asOf.get(Calendar.YEAR)) }
+    if (anniversary.timeInMillis > asOf.timeInMillis) {
+      anniversary = (anniversary.clone() as Calendar).apply { add(Calendar.YEAR, -1) }
+    }
+    // Guards a just-joined employee (under a year of service): the step above can otherwise land
+    // on a fictional anniversary before the real joining date, which would understate service.
+    if (anniversary.timeInMillis < joining.timeInMillis) {
+      anniversary = joining
+    }
+
+    val nextAnniversary = (anniversary.clone() as Calendar).apply { add(Calendar.YEAR, 1) }
+    val totalDaysThisLeaveYear = (nextAnniversary.timeInMillis - anniversary.timeInMillis) / (1000L * 60 * 60 * 24)
+    val elapsedDaysThisYear = (asOf.timeInMillis - anniversary.timeInMillis) / (1000L * 60 * 60 * 24)
+    val daysAccruedSoFarThisYear = if (totalDaysThisLeaveYear > 0) {
+      annualEntitlementDays * (elapsedDaysThisYear.toDouble() / totalDaysThisLeaveYear.toDouble())
+    } else {
+      0.0
+    }
+
+    return LeaveTrackerResult(
+      yearsOfService = yearsOfService,
+      annualEntitlementDays = annualEntitlementDays,
+      currentLeaveYearStartMillis = anniversary.timeInMillis,
+      daysAccruedSoFarThisYear = daysAccruedSoFarThisYear,
+      daysTakenThisYear = input.daysTakenThisYear,
+      daysRemainingBalance = daysAccruedSoFarThisYear - input.daysTakenThisYear,
+      nextAnniversaryMillis = nextAnniversary.timeInMillis,
+      daysUntilNextAnniversary = (nextAnniversary.timeInMillis - asOf.timeInMillis) / (1000L * 60 * 60 * 24)
+    )
+  }
+}
+
+/** Pure rule-based screening against Saudi Labor Law norms and common expat-hiring risk
+ * patterns — see [OfferFlagType] for what each rule checks and why. Deliberately conservative:
+ * every rule is grounded in a specific, well-documented provision or a plainly one-sided term,
+ * and the screen surfacing these results always pairs them with a "this isn't legal advice"
+ * disclaimer rather than a bare verdict. */
+class DefaultOfferRedFlagCalculatorService : OfferRedFlagCalculatorService {
+  override fun scan(input: OfferRedFlagInput): OfferRedFlagResult {
+    val findings = mutableListOf<OfferRedFlagFinding>()
+
+    // Article 53: probation caps at 90 days, extendable once to 180 days only by a distinct
+    // written agreement between employer and employee.
+    if (input.probationMonths > 6) {
+      findings += OfferRedFlagFinding(OfferFlagType.PROBATION_EXCEEDS_MAX, OfferFlagSeverity.VIOLATION)
+    } else if (input.probationMonths > 3 && !input.probationExtendedInWriting) {
+      findings += OfferRedFlagFinding(OfferFlagType.PROBATION_EXTENSION_NOT_WRITTEN, OfferFlagSeverity.CAUTION)
+    }
+
+    if (!input.isGosiRegistered) {
+      findings += OfferRedFlagFinding(OfferFlagType.GOSI_NOT_REGISTERED, OfferFlagSeverity.VIOLATION)
+    }
+
+    if (!input.hasWrittenContract) {
+      findings += OfferRedFlagFinding(OfferFlagType.NO_WRITTEN_CONTRACT, OfferFlagSeverity.CAUTION)
+    }
+
+    if (input.recruitmentFeesCharged) {
+      findings += OfferRedFlagFinding(OfferFlagType.RECRUITMENT_FEES_CHARGED, OfferFlagSeverity.VIOLATION)
+    }
+
+    // Flags a lopsided notice term (employee owes meaningfully more than the employer) rather
+    // than any asymmetry at all, so a routine 30/30 or even 45/30 split doesn't trigger this.
+    if (input.employeeNoticeDays - input.employerNoticeDays >= 15) {
+      findings += OfferRedFlagFinding(OfferFlagType.ASYMMETRIC_NOTICE_PERIOD, OfferFlagSeverity.CAUTION)
+    }
+
+    if (input.totalMonthlySalary > 0.0 && input.basicSalary / input.totalMonthlySalary < 0.5) {
+      findings += OfferRedFlagFinding(OfferFlagType.LOW_BASIC_RATIO, OfferFlagSeverity.INFO)
+    }
+
+    if (findings.isEmpty()) {
+      findings += OfferRedFlagFinding(OfferFlagType.ALL_CLEAR, OfferFlagSeverity.INFO)
+    }
+
+    return OfferRedFlagResult(
+      findings = findings,
+      violationCount = findings.count { it.severity == OfferFlagSeverity.VIOLATION },
+      cautionCount = findings.count { it.severity == OfferFlagSeverity.CAUTION }
+    )
+  }
+}
+
+/** Solves for the basic salary that produces a target net take-home by binary-searching against
+ * the real [NetSalaryCalculatorService] (never a re-derived approximation of it), so this can
+ * never drift out of sync with however net salary is actually calculated. Net pay is monotonic
+ * non-decreasing in basic salary (GOSI's contribution cap only ever plateaus the deduction, it
+ * never reduces net pay as gross rises), so binary search is guaranteed to converge. */
+class DefaultReverseSalaryCalculatorService(
+  private val netSalaryCalculatorService: NetSalaryCalculatorService
+) : ReverseSalaryCalculatorService {
+  private companion object {
+    const val SEARCH_CEILING_SAR = 300000.0
+    const val ITERATIONS = 60
+  }
+
+  private fun netFor(input: ReverseSalaryInput, basicSalary: Double): Double {
+    val housing = basicSalary * input.housingAllowancePercent / 100.0
+    val transport = basicSalary * input.transportAllowancePercent / 100.0
+    return netSalaryCalculatorService.calculate(
+      NetSalaryInput(
+        basicSalary = basicSalary,
+        housingAllowance = housing,
+        transportAllowance = transport,
+        employeeType = input.employeeType,
+        gosiRates = input.gosiRates
+      )
+    ).netSalary
+  }
+
+  override fun calculate(input: ReverseSalaryInput): ReverseSalaryResult {
+    if (input.targetNetMonthlySalary <= 0.0) {
+      return ReverseSalaryResult(0.0, 0.0, 0.0, 0.0, netFor(input, 0.0), true)
+    }
+
+    val isAchievable = netFor(input, SEARCH_CEILING_SAR) >= input.targetNetMonthlySalary
+    var low = 0.0
+    var high = SEARCH_CEILING_SAR
+    repeat(ITERATIONS) {
+      val mid = (low + high) / 2.0
+      if (netFor(input, mid) < input.targetNetMonthlySalary) low = mid else high = mid
+    }
+
+    val basicSalary = high
+    val housing = basicSalary * input.housingAllowancePercent / 100.0
+    val transport = basicSalary * input.transportAllowancePercent / 100.0
+    return ReverseSalaryResult(
+      requiredBasicSalary = basicSalary,
+      requiredHousingAllowance = housing,
+      requiredTransportAllowance = transport,
+      requiredTotalMonthlyPackage = basicSalary + housing + transport,
+      achievedNetSalary = netFor(input, basicSalary),
+      isAchievable = isAchievable
+    )
+  }
+}
+
 class DefaultOfferComparisonCalculatorService(
   private val netSalaryCalculatorService: NetSalaryCalculatorService,
   private val endOfServiceCalculatorService: EndOfServiceCalculatorService = DefaultEndOfServiceCalculatorService()
 ) : OfferComparisonCalculatorService {
+  private companion object {
+    // OfferInput.yearsOfService defaults to 0 and this screen never collects a real tenure for
+    // either side (these are hypothetical/prospective offers, not a standing job) — projecting
+    // EOSB at 0 years of service made the reward, and therefore eosbDifference, always exactly
+    // 0.00 no matter what the two offers' salaries were. Comparing both offers at a fixed
+    // reference tenure instead makes the gap reflect the actual salary difference between them;
+    // 5 years is just a representative mid-career reference point, called out in the UI label
+    // (see comparison_eosb_difference) so it doesn't read as either offer's real service length.
+    const val EOSB_REFERENCE_YEARS_OF_SERVICE = 5.0
+  }
+
   override fun calculate(offerA: OfferInput, offerB: OfferInput): OfferComparisonResult {
-    val scoreA = offerA.toScore(netSalaryCalculatorService, endOfServiceCalculatorService)
-    val scoreB = offerB.toScore(netSalaryCalculatorService, endOfServiceCalculatorService)
+    val scoreA = offerA.toScore(netSalaryCalculatorService, endOfServiceCalculatorService, EOSB_REFERENCE_YEARS_OF_SERVICE)
+    val scoreB = offerB.toScore(netSalaryCalculatorService, endOfServiceCalculatorService, EOSB_REFERENCE_YEARS_OF_SERVICE)
     // Was ">=", which silently named offer B (the "new" offer) the winner on an exact tie —
     // e.g. basic 15000/HRA 5000 vs basic 14000/HRA 6000 both net to the same take-home pay
     // (GOSI only depends on basic+HRA combined, not the split), so every tie was misreported
@@ -254,6 +557,10 @@ interface ExpatCostCalculatorService {
   fun calculate(input: ExpatCostInput): ExpatCostResult
 }
 
+interface CostOfLivingCalculatorService {
+  fun estimate(input: CostOfLivingInput): CostOfLivingResult
+}
+
 class DefaultExpatCostCalculatorService : ExpatCostCalculatorService {
   override fun calculate(input: ExpatCostInput): ExpatCostResult {
     val monthlyDependentLevy = (input.dependentCount.coerceAtLeast(0) * input.dependentMonthlyLevySar).toCurrency()
@@ -282,9 +589,53 @@ class DefaultExpatCostCalculatorService : ExpatCostCalculatorService {
   }
 }
 
+/**
+ * Combines [CostOfLivingSchedule]'s sourced rent, non-rent, and school-fee ranges into one
+ * household budget range. Every input scales a wide reference range rather than producing a
+ * single precise figure, since the underlying market data doesn't support that precision (see
+ * [CostOfLivingSchedule]'s class doc) — the UI is expected to present this as a range, not a
+ * point estimate.
+ */
+class DefaultCostOfLivingCalculatorService : CostOfLivingCalculatorService {
+  override fun estimate(input: CostOfLivingInput): CostOfLivingResult {
+    val rentRange = CostOfLivingSchedule.rentRangeSar(input.city, input.apartmentSize)
+    val baseline = CostOfLivingSchedule.nonRentBaselineSar(input.city)
+
+    val additionalAdults = input.additionalAdults.coerceAtLeast(0)
+    val childrenCount = input.childrenCount.coerceAtLeast(0)
+    val childrenInSchool = input.childrenInSchool.coerceIn(0, childrenCount)
+
+    val householdMultiplier = 1.0 +
+      additionalAdults * CostOfLivingSchedule.ADDITIONAL_ADULT_MULTIPLIER +
+      childrenCount * CostOfLivingSchedule.ADDITIONAL_CHILD_MULTIPLIER
+
+    val nonRentRange = (baseline.first * householdMultiplier).roundToInt()..
+      (baseline.last * householdMultiplier).roundToInt()
+
+    val monthlySchoolFeeRange = if (childrenInSchool > 0) {
+      val annualFee = CostOfLivingSchedule.annualSchoolFeeRangeSar(input.schoolFeeTier)
+      ((annualFee.first * childrenInSchool) / 12)..((annualFee.last * childrenInSchool) / 12)
+    } else {
+      0..0
+    }
+
+    val totalRange = (rentRange.first + nonRentRange.first + monthlySchoolFeeRange.first)..
+      (rentRange.last + nonRentRange.last + monthlySchoolFeeRange.last)
+
+    return CostOfLivingResult(
+      rentRangeSar = rentRange,
+      nonRentRangeSar = nonRentRange,
+      monthlySchoolFeeRangeSar = monthlySchoolFeeRange,
+      totalMonthlyRangeSar = totalRange,
+      suggestedTargetNetSalarySar = totalRange.last
+    )
+  }
+}
+
 private fun OfferInput.toScore(
   netSalaryCalculatorService: NetSalaryCalculatorService,
-  endOfServiceCalculatorService: EndOfServiceCalculatorService
+  endOfServiceCalculatorService: EndOfServiceCalculatorService,
+  eosbReferenceYearsOfService: Double = yearsOfService
 ): OfferScore {
   val result = netSalaryCalculatorService.calculate(
     NetSalaryInput(
@@ -300,7 +651,7 @@ private fun OfferInput.toScore(
     )
   )
   val eosb = endOfServiceCalculatorService.calculate(
-    EndOfServiceInput(lastBasicSalary = basicSalary, yearsOfService = yearsOfService, resigned = resigned)
+    EndOfServiceInput(lastBasicSalary = basicSalary, yearsOfService = eosbReferenceYearsOfService, resigned = resigned)
   ).rewardAmount
 
   return OfferScore(

@@ -19,8 +19,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.BeachAccess
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Calculate
+import androidx.compose.material.icons.filled.House
+import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.FlightTakeoff
+import androidx.compose.material.icons.filled.HourglassBottom
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,6 +45,8 @@ import com.saudi.salarycalculator.core.designsystem.components.SalarySummaryCard
 import com.saudi.salarycalculator.core.designsystem.components.SectionHeader
 import com.saudi.salarycalculator.core.designsystem.theme.BrandGold
 import com.saudi.salarycalculator.core.designsystem.theme.BrandGreen
+import com.saudi.salarycalculator.core.designsystem.theme.BrandGreenLight
+import com.saudi.salarycalculator.core.designsystem.theme.BrandRed
 import com.saudi.salarycalculator.core.designsystem.theme.BrandTeal
 import com.saudi.salarycalculator.core.designsystem.theme.designSystemContentColor
 import com.saudi.salarycalculator.core.model.CalculationRecord
@@ -61,6 +68,11 @@ fun HomeScreen(
   onEditRecord: (CalculationRecord) -> Unit,
   onDeleteRecord: (String) -> Unit,
   onOpenExpatCosts: () -> Unit,
+  onOpenEosbTracker: () -> Unit,
+  onOpenLeaveTracker: () -> Unit,
+  onOpenOfferScan: () -> Unit,
+  onOpenReverseSalary: () -> Unit,
+  onOpenCostOfLiving: () -> Unit,
   modifier: Modifier = Modifier
 ) {
   val greeting = when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
@@ -167,6 +179,61 @@ fun HomeScreen(
         modifier = Modifier.fillMaxWidth()
       )
     }
+    item {
+      ToolLinkCard(
+        title = stringResource(R.string.home_tool_eosb_tracker_title),
+        subtitle = stringResource(R.string.home_tool_eosb_tracker_subtitle),
+        icon = Icons.Filled.HourglassBottom,
+        accent = BrandGold,
+        darkMode = darkMode,
+        onClick = onOpenEosbTracker,
+        modifier = Modifier.fillMaxWidth()
+      )
+    }
+    item {
+      ToolLinkCard(
+        title = stringResource(R.string.home_tool_leave_tracker_title),
+        subtitle = stringResource(R.string.home_tool_leave_tracker_subtitle),
+        icon = Icons.Filled.BeachAccess,
+        accent = BrandGreen,
+        darkMode = darkMode,
+        onClick = onOpenLeaveTracker,
+        modifier = Modifier.fillMaxWidth()
+      )
+    }
+    item {
+      ToolLinkCard(
+        title = stringResource(R.string.home_tool_offer_scan_title),
+        subtitle = stringResource(R.string.home_tool_offer_scan_subtitle),
+        icon = Icons.Filled.Flag,
+        accent = BrandRed,
+        darkMode = darkMode,
+        onClick = onOpenOfferScan,
+        modifier = Modifier.fillMaxWidth()
+      )
+    }
+    item {
+      ToolLinkCard(
+        title = stringResource(R.string.home_tool_reverse_salary_title),
+        subtitle = stringResource(R.string.home_tool_reverse_salary_subtitle),
+        icon = Icons.Filled.Calculate,
+        accent = BrandGold,
+        darkMode = darkMode,
+        onClick = onOpenReverseSalary,
+        modifier = Modifier.fillMaxWidth()
+      )
+    }
+    item {
+      ToolLinkCard(
+        title = stringResource(R.string.home_tool_cost_of_living_title),
+        subtitle = stringResource(R.string.home_tool_cost_of_living_subtitle),
+        icon = Icons.Filled.House,
+        accent = BrandGreenLight,
+        darkMode = darkMode,
+        onClick = onOpenCostOfLiving,
+        modifier = Modifier.fillMaxWidth()
+      )
+    }
 
     item { SectionHeader(title = stringResource(R.string.home_insights_title), darkMode = darkMode) }
 
@@ -203,9 +270,9 @@ fun HomeScreen(
   }
 }
 
-/** Clickable entry point into a standalone tool screen pushed from Home (currently just the
- * expat residency-cost estimator). Visually similar to [InsightCard] but adds a trailing chevron
- * to signal it's navigable rather than purely informational. */
+/** Clickable entry point into a standalone tool screen pushed from Home (the expat
+ * residency-cost estimator and the EOSB accrual tracker). Visually similar to [InsightCard] but
+ * adds a trailing chevron to signal it's navigable rather than purely informational. */
 @Composable
 private fun ToolLinkCard(
   title: String,

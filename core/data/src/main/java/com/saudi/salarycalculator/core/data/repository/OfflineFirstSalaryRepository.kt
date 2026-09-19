@@ -1,22 +1,33 @@
 package com.saudi.salarycalculator.core.data.repository
 
 import com.saudi.salarycalculator.core.calculator.EndOfServiceCalculatorService
+import com.saudi.salarycalculator.core.calculator.EosbTrackerCalculatorService
 import com.saudi.salarycalculator.core.calculator.ExpatCostCalculatorService
+import com.saudi.salarycalculator.core.calculator.CostOfLivingCalculatorService
 import com.saudi.salarycalculator.core.calculator.GosiCalculatorService
 import com.saudi.salarycalculator.core.calculator.NetSalaryCalculatorService
 import com.saudi.salarycalculator.core.calculator.OfferComparisonCalculatorService
+import com.saudi.salarycalculator.core.calculator.OfferRedFlagCalculatorService
 import com.saudi.salarycalculator.core.calculator.OvertimeCalculatorService
+import com.saudi.salarycalculator.core.calculator.ReverseSalaryCalculatorService
+import com.saudi.salarycalculator.core.calculator.PaydayCalculatorService
+import com.saudi.salarycalculator.core.calculator.LeaveTrackerCalculatorService
 import com.saudi.salarycalculator.core.calculator.SavingsCalculatorService
 import com.saudi.salarycalculator.core.data.SalaryRepository
 import com.saudi.salarycalculator.core.database.dao.CalculationRecordDao
 import com.saudi.salarycalculator.core.database.entity.CalculationRecordEntity
 import com.saudi.salarycalculator.core.model.CalculationRecord
 import com.saudi.salarycalculator.core.model.CalculationType
+import com.saudi.salarycalculator.core.model.CostOfLivingInput
+import com.saudi.salarycalculator.core.model.CostOfLivingResult
 import com.saudi.salarycalculator.core.model.ContractType
 import com.saudi.salarycalculator.core.model.EmployeeType
 import com.saudi.salarycalculator.core.model.EmploymentSector
 import com.saudi.salarycalculator.core.model.EndOfServiceInput
 import com.saudi.salarycalculator.core.model.EndOfServiceResult
+import com.saudi.salarycalculator.core.model.EosbTrackerInput
+import com.saudi.salarycalculator.core.model.EosbTrackerProfile
+import com.saudi.salarycalculator.core.model.EosbTrackerResult
 import com.saudi.salarycalculator.core.model.ExpatCostInput
 import com.saudi.salarycalculator.core.model.ExpatCostResult
 import com.saudi.salarycalculator.core.model.GosiInput
@@ -27,12 +38,22 @@ import com.saudi.salarycalculator.core.model.NetSalaryInput
 import com.saudi.salarycalculator.core.model.NetSalaryResult
 import com.saudi.salarycalculator.core.model.OfferComparisonResult
 import com.saudi.salarycalculator.core.model.OfferInput
+import com.saudi.salarycalculator.core.model.OfferRedFlagInput
+import com.saudi.salarycalculator.core.model.OfferRedFlagResult
+import com.saudi.salarycalculator.core.model.PaydayInput
+import com.saudi.salarycalculator.core.model.ReverseSalaryInput
+import com.saudi.salarycalculator.core.model.ReverseSalaryResult
+import com.saudi.salarycalculator.core.model.PaydayResult
+import com.saudi.salarycalculator.core.model.LeaveTrackerInput
+import com.saudi.salarycalculator.core.model.LeaveTrackerProfile
+import com.saudi.salarycalculator.core.model.LeaveTrackerResult
 import com.saudi.salarycalculator.core.model.OvertimeInput
 import com.saudi.salarycalculator.core.model.OvertimeResult
 import com.saudi.salarycalculator.core.model.SavingsInput
 import com.saudi.salarycalculator.core.model.SavingsResult
 import com.saudi.salarycalculator.core.preferences.UserPreferencesStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -44,6 +65,12 @@ class OfflineFirstSalaryRepository @Inject constructor(
   private val offerComparisonCalculatorService: OfferComparisonCalculatorService,
   private val savingsCalculatorService: SavingsCalculatorService,
   private val expatCostCalculatorService: ExpatCostCalculatorService,
+  private val eosbTrackerCalculatorService: EosbTrackerCalculatorService,
+  private val paydayCalculatorService: PaydayCalculatorService,
+  private val leaveTrackerCalculatorService: LeaveTrackerCalculatorService,
+  private val offerRedFlagCalculatorService: OfferRedFlagCalculatorService,
+  private val reverseSalaryCalculatorService: ReverseSalaryCalculatorService,
+  private val costOfLivingCalculatorService: CostOfLivingCalculatorService,
   private val calculationRecordDao: CalculationRecordDao,
   private val preferencesStore: UserPreferencesStore
 ) : SalaryRepository {
@@ -108,6 +135,66 @@ class OfflineFirstSalaryRepository @Inject constructor(
   override suspend fun setGosiSystem(system: GosiSystem) {
     preferencesStore.setGosiSystem(system.name)
   }
+
+  override fun observeEosbTrackerProfile(): Flow<EosbTrackerProfile> = combine(
+    preferencesStore.eosbJoiningDateMillis,
+    preferencesStore.eosbLastBasicSalary
+  ) { joiningDateMillis, lastBasicSalary ->
+    EosbTrackerProfile(joiningDateMillis = joiningDateMillis, lastBasicSalary = lastBasicSalary)
+  }
+
+  override suspend fun setEosbTrackerProfile(joiningDateMillis: Long, lastBasicSalary: Double) {
+    preferencesStore.setEosbTrackerProfile(joiningDateMillis, lastBasicSalary)
+  }
+
+  override suspend fun clearEosbTrackerProfile() {
+    preferencesStore.clearEosbTrackerProfile()
+  }
+
+  override suspend fun calculateEosbTracker(input: EosbTrackerInput): EosbTrackerResult =
+    eosbTrackerCalculatorService.calculate(input)
+
+  override fun observePaydayDayOfMonth(): Flow<Int?> = preferencesStore.paydayDayOfMonth
+
+  override suspend fun setPaydayDayOfMonth(dayOfMonth: Int) {
+    preferencesStore.setPaydayDayOfMonth(dayOfMonth)
+  }
+
+  override suspend fun clearPaydayDayOfMonth() {
+    preferencesStore.clearPaydayDayOfMonth()
+  }
+
+  // Not suspend, unlike the other calculate* members here — pure in-memory date math, no I/O.
+  override fun calculatePayday(input: PaydayInput): PaydayResult =
+    paydayCalculatorService.calculate(input)
+
+
+  override fun observeLeaveTrackerProfile(): Flow<LeaveTrackerProfile> = combine(
+    preferencesStore.leaveJoiningDateMillis,
+    preferencesStore.leaveDaysTakenThisYear
+  ) { joiningDateMillis, daysTakenThisYear ->
+    LeaveTrackerProfile(joiningDateMillis = joiningDateMillis, daysTakenThisYear = daysTakenThisYear)
+  }
+
+  override suspend fun setLeaveTrackerProfile(joiningDateMillis: Long, daysTakenThisYear: Int) {
+    preferencesStore.setLeaveTrackerProfile(joiningDateMillis, daysTakenThisYear)
+  }
+
+  override suspend fun clearLeaveTrackerProfile() {
+    preferencesStore.clearLeaveTrackerProfile()
+  }
+
+  override fun calculateLeaveTracker(input: LeaveTrackerInput): LeaveTrackerResult =
+    leaveTrackerCalculatorService.calculate(input)
+
+  override suspend fun scanOfferForRedFlags(input: OfferRedFlagInput): OfferRedFlagResult =
+    offerRedFlagCalculatorService.scan(input)
+
+  override suspend fun calculateReverseSalary(input: ReverseSalaryInput): ReverseSalaryResult =
+    reverseSalaryCalculatorService.calculate(input)
+
+  override suspend fun estimateCostOfLiving(input: CostOfLivingInput): CostOfLivingResult =
+    costOfLivingCalculatorService.estimate(input)
 }
 
 private fun CalculationRecordEntity.toModel(): CalculationRecord =
